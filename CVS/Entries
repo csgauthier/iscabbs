@@ -1,0 +1,52 @@
+/INSTALL.COMPILING/1.1.1.1/Thu Apr 25 07:47:27 2002//
+/LICENSE/1.1.1.1/Thu Apr 25 07:47:27 2002//
+/MISCELLANEOUS/1.1.1.1/Thu Apr 25 07:47:27 2002//
+/Makefile/1.1.1.1/Thu Apr 25 07:46:58 2002//
+/PREVIOUS_VERSIONS/1.1.1.1/Thu Apr 25 07:47:30 2002//
+/TODO/1.1.1.1/Thu Apr 25 07:46:59 2002//
+/backup.c/1.1.1.1/Thu Apr 25 07:46:59 2002//
+/bbs.h/1.1.1.1/Thu Apr 25 07:47:01 2002//
+/defs.h/1.1.1.1/Thu Apr 25 07:47:01 2002//
+/doc.c/1.1.1.1/Thu Apr 25 07:47:03 2002//
+/doc_aide.c/1.1.1.1/Thu Apr 25 07:47:04 2002//
+/doc_msgs.c/1.1.1.1/Thu Apr 25 07:47:06 2002//
+/doc_rooms.c/1.1.1.1/Thu Apr 25 07:47:08 2002//
+/doc_routines.c/1.1.1.1/Thu Apr 25 07:47:09 2002//
+/ext.h/1.1.1.1/Thu Apr 25 07:47:09 2002//
+/finger.c/1.1.1.1/Thu Apr 25 07:47:10 2002//
+/global.c/1.1.1.1/Thu Apr 25 07:47:10 2002//
+/io.c/1.1.1.1/Thu Apr 25 07:47:10 2002//
+/main.c/1.1.1.1/Thu Apr 25 07:47:10 2002//
+/proto.h/1.1.1.1/Thu Apr 25 07:47:10 2002//
+/qmisc.c/1.1.1.1/Thu Apr 25 07:47:11 2002//
+/qrunbbs.c/1.1.1.1/Thu Apr 25 07:47:11 2002//
+/qstate.c/1.1.1.1/Thu Apr 25 07:47:12 2002//
+/qtelnet.h/1.1.1.1/Thu Apr 25 07:47:13 2002//
+/queue.c/1.1.1.1/Thu Apr 25 07:47:13 2002//
+/queue.h/1.1.1.1/Thu Apr 25 07:47:13 2002//
+/searchtool.c/1.1.1.1/Thu Apr 25 07:47:13 2002//
+/sem.c/1.1.1.1/Thu Apr 25 07:47:14 2002//
+/setup.c/1.1.1.1/Thu Apr 25 07:47:16 2002//
+/setupbbs.c/1.1.1.1/Thu Apr 25 07:47:16 2002//
+/shell.c/1.1.1.1/Thu Apr 25 07:47:17 2002//
+/ssl.c/1.1.1.1/Thu Apr 25 07:47:17 2002//
+/state.c/1.1.1.1/Thu Apr 25 07:47:17 2002//
+/syncer.c/1.1.1.1/Thu Apr 25 07:47:17 2002//
+/system.c/1.1.1.1/Thu Apr 25 07:47:18 2002//
+/sysutil.c/1.1.1.1/Thu Apr 25 07:47:20 2002//
+/telnet.h/1.1.1.1/Thu Apr 25 07:47:20 2002//
+/term.c/1.1.1.1/Thu Apr 25 07:47:20 2002//
+/update.c/1.1.1.1/Thu Apr 25 07:47:21 2002//
+/user.c/1.1.1.1/Thu Apr 25 07:47:22 2002//
+/users.c/1.1.1.1/Thu Apr 25 07:47:23 2002//
+/users.h/1.1.1.1/Thu Apr 25 07:47:23 2002//
+/utility.c/1.1.1.1/Thu Apr 25 07:47:23 2002//
+/vote.c/1.1.1.1/Thu Apr 25 07:47:24 2002//
+/who.c/1.1.1.1/Thu Apr 25 07:47:24 2002//
+/xmsg.c/1.1.1.1/Thu Apr 25 07:47:26 2002//
+D/contrib////
+D/etc////
+D/help////
+D/ssl////
+/README/1.2/Fri Apr 26 21:01:53 2002//
+/INSTALL.OVERVIEW/1.2/Fri Apr 26 21:31:29 2002//

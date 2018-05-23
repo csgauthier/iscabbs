@@ -1,0 +1,63 @@
+TODO STUFF FROM NEUROPHYRE:
+
+Fix ttys appearing in wholist, and (related?) "The BBS is down, but you
+will be let in" originating in shell.c which lets a user in when the BBS
+is down if they appear to be on a tty (?).
+
+Figure out command line options (main.c and _netbbs/_clientbbs) where
+necessary, especially -b (the backup option).  _netbbs and _clientbbs
+are internal, -q is to start the queue, -u is to update the <@>-list
+and whoknowsroom files.
+
+Figure out config files etc/limits etc/lockout.
+
+Fix voting booth.
+
+Check 'user is not online' when attempting to X Guest
+
+Investigate if bad to remove "Empty message -- message not entered"
+checking in doc_msgs.c
+
+?) Figure out the #ifdef linux stuff in defs.h
+
+Consider removing or disabling code to preserve old Xes across
+sessions - probably better to make this an option for users to pick,
+based on the opinions they've expressed
+
+Write compile docs, autoconf, shell scripts??
+
+Remove hardcoded paths etc from ssl_server.c ?  (fixed?)
+
+Remove gethostbyname from ssl_server.c to prevent connection delay on
+hosts that this times out on if possible.
+
+Attempt to make sitebanning code use netmasks and IPs only if it
+doesn't.  Figure it out first.  (for now, a firewall script is in use)
+
+Help files:
+
+The following are missing (?) help files which haven't been investigated:
+
+? doc.c:      help("yell.voice.1", NO);
+? doc.c:      help("yell.voice.2", NO);
+? doc.c:      help("yell.voice.3", NO);
+? doc.c:      help("yell.voice.4", NO);
+xmsg.c:        help("oldexpressopt", NO);
+system.c:    help("new.disallow", NO);
+system.c:    help("new.restricted", NO);
+system.c:       help("new.namesame", NO);
+system.c:    help("new.restrictedbye", NO);
+
+This may not be all the source files they're in, so grep on the filenames.
+
+
+
+TODO STUFF GRANDFATHERED IN FROM THE PARENT VERSION:
+
+Relogging in will cause errno # 11 in sem_unlock.  ?
+SILC
+OVERRIDE
+Re-check new account creation
+Make username change to use same number.
+Would be nice to have a <r>eadall and/or e<x>press all command that reads
+*all* data.

@@ -1,0 +1,811 @@
+INSTALL.OVERVIEW Last updated April 23, 2002 by Neurophyre
+
+---
+
+Disclaimer:  This document is almost certainly not complete, and contains
+mistakes.  This is intended as a general setup guide only.  I cannot help
+with all setup questions; when I got this source code, it came with NO
+documentation, files were missing, and so forth, so this is the best I can
+do.  If you still have questions, please visit Utopia Dammit! BBS and post
+in the BBS> room or other appropriate rooms.
+
+Utopia Dammit! BBS
+
+telnet/ssh utopia.sevenminutelull.com  login: bbs  blank password
+ISCABBS client port 6969
+ISCABBS SSL-ized client port 4123
+
+---
+
+WHAT YOU NEED
+
+So, you want to start a BBS.  Great.  Let's make a brief list of what
+you'll need.
+
+* A stable system running Unix or Linux (the rest of this document
+  assumes that you're running Linux, specifically Debian GNU/Linux 2.2,
+  though this code and close relatives have run successfully on SunOS and
+  BSD)
+
+* A working knowledge of how to administrate such a system, including
+  how to close security holes, keep the system up to date, and turn OFF
+  any and all unnecessary services such as HTTP, SMTP, finger, etc.  This
+  is beyond the scope of this document, but you would be very wise to
+  lock down your BBS system as tight as possible.
+
+* A familiarity with the commands and usage of a DOC BBS.  I reccommend
+  that you use one for a while before you run one, because I can't
+  possibly list all the commands and how they're used, and so forth.
+  The following BBSes that I know of were running code similar to this
+  at the time of the writing of this document.  (You may telnet to any,
+  and I reccommend using ANSI color where available).
+
+  Utopia Dammit! BBS - utopia.sevenminutelull.com
+  eschwa BBS - bbs.eschwa.com
+  Get Off The Net - bbs.getoffthe.net
+  Heinous BBS - bbs.heinous.net
+
+* A stable net connection, with either a static IP, or "dynamic DNS"..
+  for those without a static IP who need Dynamic DNS, see
+
+  http://www.dyndns.org/
+  http://www.technopagan.org/dynamic/
+  http://www.google.com/search?hl=en&q=dynamic+DNS
+
+* In addition to the operating system, several hundred megabytes of free
+  hard disk space (1GB or more on the partition the BBS's home directory
+  will be on is probably comfortable... a fresh install with the defaults
+  as set in the source will consume around 650MB, but you need room to
+  grow).  You'll also want a good amount of RAM.  32MB is probably the
+  absolute rock bottom for a small BBS, and a lot of swap space would be
+  required.  128MB should be reasonable, 256MB more than enough for all
+  but the busiest installations.  The BBS can take 1-1.5MB per user, but
+  idle users should get swapped out by the operating system.  A hefty CPU
+  is not needed.  Something on the order of a K6-II 400Mhz should be more
+  than adequate, and smaller systems will probably function quite happily
+  on something like a Pentium 166, a K6-200, or similar given enough RAM.
+  A fast 486 should even be fine for smaller sites or even moderate ones if
+  you give it enough RAM.
+
+* To support SSL clients, you'll need OpenSSL.  To support ssh users, you'll
+  need a secure shell daemon, for which OpenSSH is a good candidate.
+
+  OpenSSL: http://www.openssl.org/
+  OpenSSH: http://www.openssh.com/
+
+  Note that linux users MAY be able to get either or both as packages,
+  depending on their distribution.
+
+* To have a pleasant user experience, you'll need the 'fortune' program
+  installed in /usr/games/fortune, and some fortune cookies in the database.
+  Check the documentation of your operating system for further details.
+  A set of fortune cookies specific to the BBS (currently consisting of
+  a bunch of quotes from George W. Bush, but in the future also containing
+  witty Xes and posts from various DOC users) is included with the source,
+  for information on how to include it in your fortune cookie database,
+  refer to the documentation provided by your OS, usually 'man fortune'.
+
+QUICK OVERVIEW OF STEPS
+
+Okay, now that you've collected everything and looked over the BBS package,
+you're ready to begin.  Let's start with a quick overview of the general
+steps involved, and then focus in more detail on the ones that are within
+the scope of this document.
+
+     I. Install and configure your operating system
+    II. Set up the BBS directory structure
+   III. Building the BBS programs
+    IV. Installing the programs and associated files
+     V. Logging in for the first time
+    VI. Setting the BBS up for users to log in
+   VII. Starting ISCABBS client and SSL servers
+  VIII. Odds and ends
+
+You may want to print this document at this point, if it will be easier for
+you to refer to it on paper, mark off what you've taken care of, and so on.
+
+STEP I - INSTALLING AND CONFIGURING YOUR OPERATING SYSTEM
+
+I. Install and configure your operating system
+   A. assumptions
+   B. partitions
+   C. the Linux kernel
+   D. creating the bbs user
+   E. locking down for security
+
+I. A. ASSUMPTIONS
+
+This step is mostly out of the scope of this document, except for a couple
+of steps.  It should be noted here, once again, that this document assumes
+you are running Debian GNU/Linux 2.2 (potato) in all examples;  The next
+release of Debian, due out soon, should be quite similar.  Users of Red Hat
+Linux, other distributions of Linux, FreeBSD, SunOS, etc. are on their own,
+and some things may be different.
+
+This document also assumes that the machine the BBS will be running on is
+intended solely for that purpose and is not a desktop system, workstation,
+etc.  It's generally better that way, and since a small BBS can run happily
+on a 486 with a fair amount of disk and RAM, why not?
+
+First, you'll need to choose an operating system, install it, and configure
+the base system.  XWindows is not needed and should not be installed.  A
+C compiler (gcc) should be installed, so select the Development packages for
+your system.
+
+Here is where I reccommend that you run what I'm assuming you're running,
+Debian GNU/Linux, specifically release 2.2 (potato), though most if not all
+of these instructions should hold for the next release.  Debian is a very
+good operating system and a very good Linux distribution.  It's very stable,
+secure, and well-maintained.  The package management system is excellent.
+Once you're set up, all you have to do is run the tool of your choice (I
+use dselect for the warm n fuzzy interface) say once a week, and you can
+instantly download and install all the latest security updates and patches.
+It's great stuff.  Use it.
+
+Debian GNU/Linux:
+  http://www.debian.org/
+
+I. B. PARTITIONS
+
+Since your BBS will take up several hundred megabytes, you may wish to have
+it on a separate partition or a separate hard disk altogether.  For example,
+my BBS exists on its own 1.2GB hard disk, mounted on /home/bbs.  How you
+partition or set your system up is up to you, but keep in mind, that an
+actual unix user will need to be created for the bbs, so most likely you're
+going to want the partition or hard disk to be mounted on /home/bbs.  This
+step MAY be accomplished when you first install your operating system, or
+later, both of which are beyond the scope of this document.
+
+I. C. THE LINUX KERNEL
+
+You'll most likely also want to build a custom Linux kernel, removing all
+the crap you don't need, and PUTTING IN certain options for firewalling
+if you choose to use a firewall script such as the one included.  This isn't
+necessary, except possibly if you want to use the firewall script.
+
+Linux Kernel HOWTO:
+  http://www.linuxdoc.org/HOWTO/Kernel-HOWTO.html
+  http://www.google.com/search?hl=en&q=linux+kernel+compiling+howto
+
+Debian GNU/Linux kernel-package utilities:
+  'man make-kpkg' on your Debian system with kernel-package installed.
+  This is optional, but suggested if you are going to rebuild your kernel
+  on Debian as it takes care of installing the modules and things for you
+  and setting you up to boot with your new kernel automatically.
+
+A word of caution:  Use the *2.2* Linux kernel series with Debian 2.2, NOT
+the 2.4 series.  Special packages are required to use 2.4 with potato, and
+since I haven't done it, and the 2.2 kernel works fine for running a BBS
+on Debian 2.2, I'm suggesting you don't either.
+
+I. D. CREATING THE BBS USER
+
+Assuming you have everything set up, and /home/bbs mounted if it needs to
+be, you can go ahead and create the bbs user.  For now, this is going to
+be a normal user on your system.
+
+Logged in as root, simply type 'adduser bbs' and follow the prompts.  For
+now, you should pick a password for the bbs user, you can remove it later.
+
+I. E. LOCKING DOWN FOR SECURITY
+
+No matter how much you and I might like to believe that everybody in the BBS
+community is a bastion of goodwill, such is not the case.  As long as BBSes
+exist, there will always be malicious users.  Not only that, but having a
+telnet and/or ssh port open on your system and having it sitting on all day
+every day is enough to make it a target.  One would hope that crackers would
+just log in to the BBS and enjoy themselves, but they may have other ideas.
+So, you'll need to secure your system if you plan for your BBS to be around
+for very long.  If you do not secure your system, eventually it will be
+compromised, guaranteed.  If it's a Red Hat system with a default install,
+it'll probably be cracked within days.
+
+Here's where I depart from the party line about Debian:  Debian is a very
+good operating system.  However, it might not be the most secure.  If you're
+a security freak, maybe you should consider OpenBSD.  If you're a security
+freak, you should NOT be running Red Hat.  Enough said.
+
+Once again a large part of this section is out of the scope of this document.
+You're largely on your own in regards to locking down your system but I'll
+give you a few basic tips.
+
+* REMOVE unnecessary software.  You don't need an FTP daemon, you don't need
+  a finger daemon, and you don't need a web server.  If other Debian
+  packages don't depend on these pieces of software, remove them entirely.
+  You'll save disk space and cut down on potential security holes.  Removing
+  the software, if it was installed at all, is easy to do with 'dselect'.
+
+* SHUT OFF network software that you're leaving installed (for whatever
+  reason).  There are two main places to check for this.  You should comment
+  out everything you're not using in /etc/inetd.conf, and you should check
+  /etc/rc2.d to see what's being started (assuming you use runlevel 2, the
+  default) and remove or rename links to daemons you don't need.
+
+* FIREWALL your system.  Included with the BBS package is a script called
+  'firewall.sh'.  This is an ipchains-based firewall script that can also
+  be used for IP Masquerade (though I don't reccommend setting your BBS
+  machine up as your NAT router!).  You'll need to have some options
+  compiled into your kernel for it to work, but you can try running it as
+  root to see if it dies if you can't figure out how to compile a kernel --
+  maybe it'll work.  Of course, you have to EDIT the script first.  It's
+  fairly self-explanatory...  comment out all the 'allow' parts for stuff
+  you're not running or don't want people accessing, like SMTP, POP3,
+  identd, etc., but leave telnet and ssh (ports 23 and 22) and all the
+  high ports (1024-65536)!  You can also siteban troublesome users by
+  placing the IP ranges they connect to your system from in the 'banned
+  networks' area.  This is especially useful since I haven't yet figured
+  out how the BBS's sitebanning code works.  Once you've configured the
+  script to your liking, find a home for it, and set it up to be called
+  when you boot, after your network is up.
+
+  Oh yeah, the syntax is 'firewall.sh [iface]'.
+  So if your network card is "eth0", you'd use 'firewall.sh eth0'.
+
+STEP II - SET UP THE BBS DIRECTORY STRUCTURE
+
+II. Set up the BBS directory structure
+    A. initial decisions
+    B. making the layout
+
+II. A. INITIAL DECISIONS
+
+Okay, so you're almost ready to build the BBS and begin setting it up, but
+first you need a place for it to reside.  Of course, you've made the bbs
+user, and /home/bbs exists (and is mounted, if necessary), but you need a
+place to store the BBS source code (and to build it), and a bunch of other
+files needed by the BBS.  All of this will exist under /home/bbs.  Note
+that this may not be the BEST way to do things, and may lead to some extra
+typing, but this is how I have it laid out, and it's fairly organized.
+Feel free to modify how you see fit, except for the parts that aren't
+modifiable (ie, locations of bbs files).
+
+The initial decisions bit will most likely consist of reading the next part
+of this step and figuring out if you want to modify it, which may entail
+modifying BBS source files.
+
+You need places for:
+
+* the bbs source
+* the bbs tree, including all its datafiles
+* the bbs executables
+* SSL certs, keys, and so forth, assuming you choose to run the SSL server
+* a place to store miscellaneous files, like crontabs, fortunes, a copy of
+  the firewall script, notes to yourself, and so forth
+
+II. B. MAKING THE LAYOUT
+
+Here's my top-level layout:
+
+/home/bbs
+/home/bbs/bbs        - the BBS root directory.  If this is different for you
+                       then you'll need to edit bbs.h.
+/home/bbs/src        - the BBS source code directory.  This stores the BBS
+                       package and is where you build the programs.
+/home/bbs/sslprivate - this holds stuff for the SSL server.
+/home/bbs/junk       - this holds miscellaneous files, namely local copies of
+                       my fortune cookies, crontabs, and so forth.
+
+Now let's go into detail on each.  I suggest you create each of these
+directories as you read their names, unless otherwise noted.  One of these
+days I just might write a shell script that sets up the bbs tree for you, but
+until then, you have to walk to and from school uphill both ways, just like I
+did.
+
+NOTE that the following detail assumes that you prepend "/home/bbs/" to each
+of the directories.  You MUST have the bbs/* directories created BEFORE you
+run 'setupbbs' after building the BBS in a later step.
+
+bbs/var                 - stores runtime data for the BBS.
+bbs/message             - stores the BBS message base.
+bbs/message/desc        - stores roominfo files for each room on the BBS.
+bbs/help                - stores menus and <h>elpfiles for the BBS.  Menus
+                          are included in the help directory in the source
+                          package.  You have to come up with your own
+                          <h>elpfiles as needed.
+bbs/etc                 - stores some config files and stuff like the login
+                          screen, etc.
+bbs/etc/who             - stores whoknowsroom data for all possible rooms.
+bbs/data                - stores data files.  :-P
+bbs/core                - has two subdirs which follow, apparently for
+                          runtime data.
+bbs/core/bbs            - see above
+bbs/core/bbsqueued      - see above
+bbs/bin                 - this is where binaries go, like the bbs executable
+                          itself, and the SSL server and other things you
+                          might like to put in here like helpful shell or
+                          Perl scripts, etc.
+
+junk/                   - no subdirectories unless you need them
+
+src/                    - subdirectories dictated by how many copies of the
+                          BBS package you have lying around, plus if you
+                          build OpenSSL in here for some reason (generally
+                          not), or other utilities.
+
+sslprivate/             - no subdirectories, just holds a couple of files.
+
+Now that you've made all these directories, you're ready to move onto the next
+step.  If you changed anything including (or under) bbs/ or sslprivate/, be
+prepared to edit files in the source package, and you're on your own.
+
+STEP III - BUILDING THE BBS PROGRAMS
+
+This step is covered in the INSTALL.COMPILING file.  Please see that for
+detailed instructions.
+
+STEP IV - INSTALLING THE PROGRAMS AND ASSOCIATED FILES
+
+IV. Installing the programs and associated files
+    A. list of files to copy
+    B. setting up the data structures
+
+IV. A. LIST OF FILES TO COPY
+
+Remember that directory structure you made before building the BBS?  Well,
+here you get to put stuff into it.
+
+Just so you don't have to page back and forth, here's a list of the
+binaries you should have from Step III.
+
+* bbs - the BBS executable itself
+* ssl_server - the SSL server for SSL-ized ISCABBS clients
+* setupbbs   - what you renamed 'a.out' to after doing 'cc setupbbs.c'.
+* runssl     - the script to start the SSL server included in contrib/
+* striplast  - the perl script to strip the last newline off a textfile, in
+               contrib/
+
+Copy ALL of these binaries EXCEPT 'setupbbs' to /home/bbs/bbs/bin.
+Copy 'setupbbs' to /home/bbs/bbs.
+
+Now copy ALL the files in the help/ directory in the BBS source directory to
+/home/bbs/help.
+
+Copy ALL the files in the etc/ directory in the BBS source directory to
+/home/bbs/etc.
+
+IV. B. SETTING UP THE DATA STRUCTURES
+
+In case you hadn't guessed, 'setupbbs' writes all the initial data files
+and so forth.  So now, change your working directory to /home/bbs/bbs, and
+(logged in as the bbs user of course), execute './setupbbs'.  Depending
+on the speed of your system, this process may take several minutes, as
+several hundred megabytes of blank files are being initialized.  Hey,
+nobody is claiming that this system is all that efficient.
+
+All right!  Now that 'setupbbs' is done executing, you're well on your way
+to having your very own functioning BBS!
+
+STEP V - LOGGING IN FOR THE FIRST TIME
+
+V. Logging in for the first time
+   A. executing the BBS and creating an account
+   B. creating rooms
+   C. the Guest user
+
+V. A. EXECUTING THE BBS AND CREATING AN ACCOUNT
+
+Excited yet?  Good.  It's time to log in for the first time and take care
+of initial setup.
+
+Please take note, this part is written wholly from memory, since I didn't
+set up a little test BBS to go through this and write it down, so be
+especially vigilant for errors.
+
+Change your working directory to /home/bbs/bbs.  Now, execute 'bin/bbs'.
+You should be presented with a few lines of text and a "Name:" prompt.
+Enter 'New' at the prompt.  Go through the new user creation procedure
+and SAVE the password, since the first user you create will be
+all-powerful.  (You can create more Sysops later, of course).  Do NOT
+attempt to name this user 'Sysop' or similar - it won't let you, for
+various murky reasons.  Just create it with your usual handle or whatever.
+
+Once you're done creating your account, you should be booted to a ">"
+prompt.  Don't be fooled, this is actually a room prompt!  It's just that
+the "Lobby" (the room that everyone is in when they first log in) doesn't
+have a name yet.  Before you go messing around with rooms though, you
+need to Validate yourself... yeah, that's right.
+
+Here's a note about the keypress conventions used from here on out in
+this document.  BBS keypress commands will be enclosed in angle brackets,
+like so:  < >.
+
+If the letter in the angle brackets is a CAPITAL LETTER, such as <V>, then
+you should enter a capital letter for the command.  If it is lower case,
+like <v>, then you don't need to press shift to access the function.  This
+is important because some vDOC keypress commands are case-sensitive.
+
+Okay, so, now you need to Validate yourself.  Press <V> at the ">" prompt.
+Then press <a> to <a>ccept yourself as a valid user.  You should be booted
+back to the ">" prompt.
+
+V. B. CREATING ROOMS
+
+Okay, now you're ready to create rooms for your BBS!  First, though, you
+need to name the "Lobby" and create several rooms in a specific order,
+because the way the bbs program is made, the first few rooms serve special
+purposes, and if you don't create them right, you'll be having some
+unintended results!
+
+First, let's name the "Lobby".  This should get you familiar with the menus
+you'll be using a lot, later.
+
+At the ">" prompt, press <a>.
+
+Now, press <e> for <e>dit, and enter a name for the "Lobby".  Remember,
+this is the first room that any user logging into your BBS will see, and
+only Sysops and Programmers are allowed to post there.  It is intended for
+posts announcing things that will affect the entire system, so think
+carefully.  If you don't know what to name it, type 'Lobby'.
+
+Now, select <1> for a public room (that all users can see), and select
+<1> again for a non-anon-optional room, since people shouldn't be posting
+anonymously to the "Lobby" (and who knows what kind of bugs this might
+cause anyway).  Select <y> to save changes.
+
+Now that you've created the "Lobby", you're ready to create a few more
+rooms, but they have to be done in exactly the following order or you're
+going to have problems.
+
+Hit enter or return until you're back to the ">" prompt..  except now
+instead of the ">" prompt, it's going to be whatever you named the "Lobby"
+room.  I'll assume you've named it "Lobby", so you should be at the
+"Lobby>" prompt.
+
+ROOM 1
+
+Press <a> for the <a>ide menu (you'll learn later that this menu is
+different depending on if you're a Sysop or just a Roomaide).
+
+Now press <c> for <c>reate new room.  The room you are going to create,
+room 1, is the Mail room.  At the "Name for new forum?" prompt, type
+'Mail'.
+
+Select <1> for a public room (do NOT select anything else here!).  Select
+<y> at the "Install it?" prompt.
+
+You'll be booted back to the "Forum command ->" prompt.  Stay there.
+
+ROOM 2
+
+You're about to create room 2, the place where Yells to the Sysops are
+saved when users enter them.  NOTE:  If you changed AIDE_RM_NBR in
+bbs.h, you're on your own here.
+
+Press <c> for <c>reate new room.  At the "Name for new forum?" prompt,
+type 'Yellroom'.
+
+Select <4> for a private room (you could try a passworded room, I have
+never used such a thing and don't even know if it works, but if the
+password were to leak you'd be in trouble -- DON'T select public or
+guessname).  Select <y> at the "Install it?" prompt.
+
+You'll be booted back to the "Forum command ->" prompt.  Stay there.
+
+ROOM 3
+
+You're about to create room 3, the place where responses to Yells,
+Sysop posts, and Roomaide posts are copied to when Sysops/Roomaides
+enter them.  NOTE:  If you changed SYSOP_RM_NBR in bbs.h, you're on
+your own here.
+
+Press <c> for <c>reate new room.  At the "Name for new forum?" prompt,
+type 'Sysop' or some creative substitute, such as 'Miniluv Telescreen'.
+
+Select <4> for a private room.  Select <y> at the "Install it?" prompt.
+
+You'll be booted back to the "Forum command ->" prompt.  Stay there.
+
+ROOM 4
+
+You're about to create room 4.  This room can serve two purposes.
+Either you can make it a private (invite-only) room, for example, for
+Roomaides to discuss their duties, or for Sysops to talk privately
+or whatever, or you can make it public.  If you make it public, please
+be aware UNVALIDATED USERS MAY POST IN IT.  This was intentional on
+my part, and is descended from a bug in DOC 1.7, Fbrd rev. 0.3 in
+which unvalidated users could post in rooms up to room 6 if the rooms
+were public.  I decided that, if controlled, this feature could be
+useful, so I changed it to allow unvalidated users to post up to room
+4.  Since they can't post in Lobby> anyway, and Mail> is specially
+coded, and they can't see Yellroom> or Sysop>, this isn't an issue.
+
+If you make the room private, name it whatever you want.  If you make
+it public, you may wish to name it Tech Support> to go along with the
+helpfiles included with the BBS source package.
+
+MORE ROOMS
+
+Now, go ahead and create a few more rooms on a variety of topics.
+Of course, you'll want to make most of them public rooms unless you're
+truly nasty.
+
+V. C. THE GUEST USER
+
+After you're done creating rooms, hit enter or return until you're back
+at the short prompt.  Once there, press <l> for <l>ogout and select <y>
+at the ensuing prompt.  If you've installed fortune, you should see a
+fortune cookie before the BBS logs you out.  If you haven't, it's
+covered later in this document.
+
+Now, execute 'bin/bbs' again to log back into the BBS.  At the "Name:"
+prompt, type 'New'.  When the BBS asks you to choose a name for
+yourself, enter 'Guest' and ignore any potential error messages.  The
+BBS will go on to ask for a password, which will be discarded after
+the initial login, and address information - it's not smart enough to
+realize that none of this is relevant.  Enter whatever you want, don't
+worry about the password, and 'NONE' should do for all of the address
+fields.  Tell the BBS to hide all of your personal information.  Once
+the account is successfully created and you're at the "Lobby>" prompt
+or similar, press <l> to <l>ogout, and select <y>.
+
+That's it!  Your BBS has just been born.  You've got a Sysop account,
+a Guest account, and some basic rooms.  Now it's time to accomplish the
+rest of the setup so you can get the last piece of the puzzle:  users.
+
+STEP VI - SETTING UP THE BBS FOR USERS TO LOG IN
+
+VI. Setting up the BBS for users to log in
+    A. The BBS as a shell
+    B. The BBS admin user
+    C. Resetting the bbs user password
+    D. PAM
+    E. OpenSSH
+
+VI. A. THE BBS AS A SHELL
+
+So, you say.  When the users telnet or ssh to my box, how are they to
+access the BBS when there's a password on the account, and they'd have
+to find the binary and run it?  Well, that's not how they do it.
+
+Log out of the bbs user account and log in as root.
+
+Type 'chsh bbs' to change the login shell for the bbs user, and then
+when it asks you for the shell, type '/home/bbs/bbs/bin/bbs', or
+whereever your 'bbs' binary resides.  I told you my directory layout
+would make for a little extra typing.
+
+VI. B. THE BBS ADMIN USER
+
+Now, how are you going to access the bbs user account directly, if
+the login shell is the BBS itself?  Easy.  You're going to create
+another account, using the shell of your choice, which has the same
+UID and GID as the bbs user.  So, for example, you'd do, as root:
+
+'adduser bbsadm'
+
+Followed by:
+ 
+'vipw'  (This command edits /etc/passwd safely).
+ 
+Now, at the bottom of the list of user data presented in vipw, you
+should see a couple of lines like this:
+ 
+bbs:x:1001:1001:Utopia BBS User,,,:/home/bbs:/home/bbs/bbs/bin/bbs
+bbsadm:x:1002:1002:BBS Admin Account,,,:/home/bbsadm:/bin/bash
+
+Notice how the fields are separated by colons.  See how the third
+and fourth fields contain numbers?  They're the UID and GID of
+that account, respectively.  So what you're going to do is change
+the UID and GID numbers of the 'bbsadm' account to be the same as
+those of the 'bbs' account.  This will give you the ability to
+access all of the files and directories owned by the bbs user.
+
+Once you're done, save the file, do 'cat /etc/passwd' to make sure
+the changes got saved properly, and you should be good to go.
+
+When you log in as bbsadm (or su to bbsadm), simply type 'cd ~bbs'
+and you're ready to do whatever you need in the bbs user's home
+directory tree.  From here on out, when I say "logged in as the
+BBS user", I mean bbsadm.
+
+PLEASE NOTE:  This document previously contained instructions for
+using 'su' to change directly to the bbs account, executing a
+shell of your choice.  It involved placing the path to the bbs
+binary in /etc/shells.  If you have done this, PLEASE UNDO IT and
+use the second-account method of accessing the bbs user's files.
+It cuts out some potential security holes which could be quite
+serious, especially if your bbs user has a blank password, which
+isn't an uncommon situation.  See below.
+
+VI. C. RESETTING THE BBS USER PASSWORD
+
+Your bbs user account still has a password.  However, it's not
+convenient to have to distribute the password to people who are
+telnetting or ssh'ing in so they can gain access; it could really
+put a crimp on the number of new users you'd get.  If you decide
+that you need a blank password for the bbs user account (remember,
+the account's shell is now the bbs, so people won't be able to
+log in and have direct access to the data files and such), here's
+what to do:
+
+As root, type 'passwd bbs' and then enter a blank password for the
+bbs user, or a password of your choice.  (The rest of this document
+assumes you're using a blank password.)
+
+Please note that having a blank password could definitely cause or
+exacerbate security problems; that's why it's a good idea to run
+a BBS on a machine where very few other people have accounts.
+
+VI. D. PAM
+
+If using a blank password, you may have to alter things in /etc/pam.d!
+
+In particular, in /etc/pam.d/su, /etc/pam.d/login and
+/etc/pam.d/passwd, you may have to add the keyword 'nullok' to lines
+that start with
+"auth       required   pam_unix.so"
+"auth       required   /lib/security/pam_unix.so"
+"password   required   pam_unix.so"
+and so forth!
+
+If you've set the password to blank, and SSH is still asking for a
+password, or you can't telnet it, or su to the bbs user, CHECK THESE
+FILES in /etc/pam.d!
+
+VI. E. OPENSSH
+
+Okay, now that you've reset the password and the shell for the bbs
+user, people should be able to telnet to your machine and access the
+bbs merely by logging in as 'bbs'.  Hooray!  But what about SSH?
+I'm assuming you've properly installed OpenSSH and gotten sshd
+running (and set it up to execute on startup).  Here are a couple
+options you need to be sure are set in /usr/local/etc/sshd_config:
+
+Protocol 2,1
+PermitRootLogin no   (good idea from a security standpoint. use 'su'.)
+RhostsAuthentication no
+PasswordAuthentication yes   (important!)
+PermitEmptyPasswords yes     (also important with blank bbs password)
+
+Now, I hope you compiled it with PAM support.  If you did, you're
+going to need an entry in /etc/pam.d.  Name the file /etc/pam.d/sshd
+and use some form of the following entry (works for me with Debian):
+
+#%PAM-1.0
+auth       required     /lib/security/pam_unix.so shadow nodelay nullok
+auth       required     /lib/security/pam_nologin.so
+account    required     /lib/security/pam_unix.so
+password   required     /lib/security/pam_cracklib.so
+password   required     /lib/security/pam_unix.so shadow nullok use_authtok
+session    required     /lib/security/pam_unix.so
+session    required     /lib/security/pam_limits.so
+
+If you've made any changes, make sure to restart the daemon.  Now, users
+should be able to log into the bbs by SSH'ing to your system as user 'bbs'
+with a blank password!
+
+STEP VII - STARTING ISCABBS CLIENT AND SSL SERVERS
+
+VII. Starting ISCABBS client and SSL servers
+     A. plaintext server
+     B. SSL server
+
+VII. A. PLAINTEXT SERVER
+
+This is simple.  Logged in as the BBS admin user created in Step VI,
+change your working directoryto /home/bbs/bbs and execute 'bin/bbs -q'.
+
+Now, assuming you left the PORT definition in queue.h alone, you should be
+able to connect to port 6969 on your machine with an ISCABBS client.
+
+ISCABBS clients: http://www.google.com/search?hl=en&q=isca+bbs+client
+
+Note that any particular version of a client a) may not work with this
+variant of DOC b) may be full of rubbish and bugs.  Try IO ERROR's
+first.
+
+VII. B. SSL SERVER
+
+This is a little bit more involved.  I'm assuming your directory for SSL
+stuff is /home/bbs/sslprivate, otherwise you'd better have edited bbs.h
+to reflect what it is.  In the BBS source package directory, copy
+ssl/certs/server/* to /home/bbs/sslprivate.  (Note that I'd like to
+update this section with instructions on generating your own cert, key,
+and so forth, because it's probably a bad idea for multiple BBSes to be
+sharing the same ones from a security standpoint).
+
+Assuming you have everything in the same places I do, and have put the
+'runssl' script into /home/bbs/bbs/bin, you should be able to, logged in
+as the BBS admin user, chdir to /home/bbs/bbs and execute 'bin/runssl' to
+start the SSL server.  If not, here's what 'runssl' looks like so you can
+figure it out on your own (also simply try executing 'ssl_server' by
+itself, and it'll give you some helpful output):
+
+#!/bin/sh
+/home/bbs/bbs/bin/ssl_server -c /home/bbs/sslprivate/sitecert.pem \
+  -k /home/bbs/sslprivate/privkey.pem -p 4123 -l /home/bbs/bbs/etc/ssllog -x
+
+(That's all on one line without the nice \ I added, but you get the idea.)
+
+Note that the SSL server must be started AFTER the plaintext server is,
+because from what I can gather, the SSL server is just a stub that hands off
+to the plaintext server via loopback.
+
+Now, once again assuming you haven't messed with crap, you should be able
+to connect to the BBS with an SSL-enabled ISCABBS client on port 4123.
+
+Ivor's modified IO ERROR client w/SSL: http://my-client.isbroken.com/
+
+You could also look for tabbs (TOM and Ayourk's BBS client) which supports
+SSL, but http://bbsclient.net/ or http://www.bbsclient.net/ seems to be
+perpetually broken these days, and I don't know where else they're hosting
+it.  Maybe I'll put up a copy.
+
+STEP VIII - ODDS AND ENDS
+
+VIII. Odds and ends
+      A. <@>-list and whoknowsroom updates
+      B. helpfiles and striplast
+      C. keeping accurate time
+
+VIII. A. <@>-LIST AND WHOKNOWSROOM UPDATES
+
+The list of Sysops, Programmers and Roomaides accessed by pressing <@> at
+the short prompts, as well as the <w>hoknowsroom lists accessed from the
+<a>ide menu are updated by invoking the bbs binary as 'bbs -q'.  Since it
+won't do to have to do this by hand all the time, it's good to set up a
+crontab to do it.
+
+Here's one to do it every hour:
+
+0 * * * * /home/bbs/bbs/bin/bbs -u
+
+You put that in a file, and insert it into your system crontab using,
+surprise, 'crontab'.  'man crontab' for more information.  For large
+systems or slow computers, or people whose BBSes weren't just started a
+couple weeks ago (like mine), I'd reccommend setting the crontab to do
+this once a day at some slow time, say 4:00am.
+
+VIII. B. HELPFILES AND STRIPLAST
+
+As you found out, there are a bunch of default helpfiles (menus, actual
+helpfiles for the <h>elp menu, and so forth) included in the help/
+directory of the BBS source package.  As you may have noticed, a number
+of these don't have a newline on the last line on the file.  This is due
+to a quirk or quirks in the BBS code that others, and I, are/were too
+lazy to track down and fix.  So, if you use an editor like 'vi' that
+automagically appends a newline to the last line of the file, you can
+use the helpful 'striplast' utility included in contrib/ to strip it.
+It requires Perl.  The syntax is 'striplast [filename]'.  It will
+produce a file called "filename.strip" which you can then copy over the
+original.  I'm too lazy to make this simpler, since somebody else gave
+me the Perl snippet.
+
+When it comes to helpfiles for the <h>elp menu, the menu of help topics
+is located in bbs/help/topics which you can of course edit.  When adding
+a help topic, you add the topic name (say, "foo") to the menu in the
+"topics" file, and then you must name the associated helpfile
+"topics.foo", so that the BBS can access it when users type 'foo' into
+the <h>elp menu.  So, the included helpfile "topics.pony" is accessed
+by typing 'pony' into the <h>elp menu.
+
+VIII. C. KEEPING ACCURATE TIME
+
+You may realize that it's helpful to have accurate time on a public BBS,
+so the clock doesn't drift, then have to be reset, which could screw up
+the message base.  Therefore, it's advisable to use a utility such as
+'ntpdate' to keep the clock adjusted.
+
+I've installed the 'ntpdate' Debian package, and edited the command line
+in my /etc/init.d/ntpdate file to the following:
+
+/usr/sbin/ntpdate -b -s -u [space-delimited IP list]
+
+The -u option is necessary when using the firewall script included in
+the BBS source package.
+
+In addition, since this file is usually only run at boot time, I've set
+up a root crontab as follows:
+
+0 0,4,8,12,16,20 * * * /etc/init.d/ntpdate start
+
+This runs ntpdate to adjust the clock every four hours at zero minutes
+past the hour.
+
+If your system clock is too far off the time that ntpdate gets from the
+timeservers you place in your list (always good to have at least two),
+it may refuse to adjust the time.  In this case, 'man ntpdate' for
+details to get it to print out the time it is getting, manually set the
+system clock to within 30 seconds of that time, and re-run ntpdate.
+
+That's it.  Enjoy your BBS!

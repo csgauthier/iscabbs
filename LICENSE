@@ -1,0 +1,55 @@
+vDOC 1.7 (a variant of DOC Version 1.7, Fbrd rev. 0.3) is currently not
+released under the GPL or similar license.  If I understand correctly,
+the version of DOC which Firebird modified WAS GPL'ed, but since he did
+not officially release his modified code, the GPL does not apply to this
+branch.  You may read the messages at the bottom of this file and decide
+for yourself about the state of the code at this time.
+
+That being said:
+
+vDOC is NOT distributed with ANY WARRANTY, express or implied, even an
+implicit warranty or guarantee of fitness for a particular purpose.
+By compiling or using vDOC, you agree to hold any and all authors,
+programmers, or redistributors of vDOC harmless from any and all damages
+that may be caused, whether directly or incidentally, by the compilation,
+use, abuse, or malfunction of vDOC, or any software or other products
+which incorporate code or other parts from vDOC in any form.
+
+---
+
+Feb 3, 2002 16:57 from Neurophyre to Firebird
+Hey, did you release JayDOC under any sort of license (say GPL or similar).
+[content deleted for privacy reasons here - Neuro]
+[Mail> msg #373050 (24 remaining)] Read cmd ->
+
+Feb 3, 2002 20:59 from Firebird to Neurophyre
+I never released it.  Never got to clean it up.
+[content deleted for privacy reasons here - Neuro]
+[Mail> msg #373313 (20 remaining)] Read cmd ->
+
+Feb 21, 2002 15:50 from Neurophyre to Firebird
+Sorry to pepper your mailbox with questions, but can you clear up a licensing
+question?  A party who wishes to remain nameless was looking at the source from
+my-client.isbroken.com (recently updated, I might add, and still available to
+anyone) and was concerned that with no license info included, it falls under
+default copyright and it would be a violation to modify/redistribute it.  And
+you -did- say before that you hadn't released the code...  but it didn't seem
+like you minded that it's being redistributed and potentially modified.  And
+obviously Ivor doesn't care since he's putting it up.  But could you clarify
+your position once and for all?
+[Mail> msg #389172 (6 remaining)] Read cmd ->
+
+Feb 21, 2002 20:11 from Firebird to Neurophyre
+It's okay to redistribute it and remodify it and what not, but it should be
+clear that:
+The code is based on DOC 1.7 (or whatever the version number is) and
+it has been modified to give its current features to Fbrd 0.3 (that was my
+final version number before I quit) and then whatever version number you may
+give to it, say Neuro 1.8.
+Take a look at the Eschwa login screen how it says Doc 1.7, Fbrd 0.3.  That's
+all you need, and it would be nice if that were available to the public, either
+via the hello message or by the old ABC command of <c>onfig, <v>ersion.  I
+can't remember if I put that in here or not.  Now, let me go back and re-read
+the other mails and make some sense out of them. :)
+[Mail> msg #389333 (4 remaining)] Read cmd ->
+

@@ -1,0 +1,3 @@
+Note that the user struct has been changed from unaltered DOC Version 1.7,
+Fbrd rev. 0.3.  Therefore, you shouldn't use this source with a pre-existing
+user/messagebase.

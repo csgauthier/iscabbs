@@ -1,0 +1,61 @@
+Create etc/down in your BBS dir to deny access if you're kicking people
+off for maintenance or something (may not work if your wholist is showing
+TTYs for most users -- see TODO)
+
+---
+
+There is a hack in doc.c that allows new users to post in rooms with
+roomnumber of 4 or lower (excluding lobby).  grep for 'newuseraccess'
+in doc.c, it's right around there.  Due to text in the newuseraccess
+help file, room 4 should be Tech Support>.  room 0 is lobby, 1 is
+mail, 2 and 3 should be Aide (yells pasted) and Sysop (copies of yell
+correspondence, etc) respectively.
+
+---
+
+*** Message (#48) from Marx Marvelous at 21:22 on Mar 28, 2002 ***
+>The queue doesn't work unless you create an etc/limits file.
+
+--- Message (#49) to Marx Marvelous at 21:24 on Mar 28, 2002 ---
+-Just an empty file, or specific format?
+
+*** Message (#50) from Marx Marvelous at 21:24 on Mar 28, 2002 ***
+>maxusers lockoutflag
+>I usually just use 100 and 0 and things seem to work.
+
+--- Message (#51) to Marx Marvelous at 21:25 on Mar 28, 2002 ---
+-Wow, dude.  maxusers = max users before queued, lockoutflag = similar to
+-/etc/down's functionality?
+
+*** Message (#52) from Marx Marvelous at 21:26 on Mar 28, 2002 ***
+>I think lockoutflag enables the queue.  You'll just have to mess with it; I'm
+>giving up on this codebase.
+
+---
+
+For SSL server:
+edit Makefile lib paths, and uncomment SSLINC, SSLLIB with paths, anad
+comment out SSLLIB without paths.  result:
+SSLINC= -I/home/bbs/include
+SSLLIB= -L/home/bbs/lib -lssl -lcrypto
+#SSLLIB=-lssl -lcrypto
+Remove -lsocket from ssl_server: in Makefile
+edit hardcoded BBSPath in ssl_server.c to reflect location of
+dedicated (read: -D_SSL compiled) bbs binary, or use -f to override on
+command line
+
+---
+
+Mar 20, 2002 23:38 from Marx Marvelous
+I think -- though I have not tested this -- "bbs -b" does something backup-
+-related.
+If you're getting a repeated error and respawning every 15 seconds, I think
+you need to grep the source for "errno != 11" or similar and change the 11 to
+EAGAIN.
+Voting booth is on the <.> key.  Don't try to edit a question from the client.
+[Design The Next Great BBS> msg #17 (0 remaining)] Read cmd ->
+
+---
+
+On solaris, set semsys:seminfo_semmnu=100 in /etc/system seems to control
+number of possible users.

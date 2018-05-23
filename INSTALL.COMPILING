@@ -1,0 +1,162 @@
+INSTALL.COMPILING Last updated April 23, 2002 by Neurophyre
+
+---
+
+Disclaimer:  This document is almost certainly not complete, and contains
+mistakes.  This is intended as a general setup guide only.  I cannot help
+with all setup questions; when I got this source code, it came with NO
+documentation, files were missing, and so forth, so this is the best I can
+do.  If you still have questions, please visit Utopia Dammit! BBS and post
+in the BBS> room or other appropriate rooms.
+
+Utopia Dammit! BBS
+
+telnet/ssh utopia.sevenminutelull.com  login: bbs  blank password
+ISCABBS client port 6969
+ISCABBS SSL-ized client port 4123
+
+---
+
+QUICK OVERVIEW OF STEPS
+
+    I. Edit files
+   II. Build BBS binary
+  III. Build BBS setup program
+   IV. Build SSL server
+    V. Cleanup
+
+You may want to print this document at this point, if it will be easier for
+you to refer to it on paper, mark off what you've taken care of, and so on.
+
+STEP I - EDIT FILES
+
+I. Edit files
+   A. edit bbs.h
+   B. edit queue.h
+   C. edit Makefile
+
+I. A. EDIT BBS.H
+
+Get into the source directory and load up bbs.h in your favorite editor.
+You might want to do this in a 'screen' session so you can page back and
+forth between the editor and a command prompt (logged in as the bbs user)
+so you can gather any information needed.
+
+Here are the different #defines you may need to edit.
+
+#define BBSNAME - Enter a short text string with the name of your BBS.
+
+
+#define BBSUID and BBSGID - Do 'grep bbs /etc/passwd' and you should
+                            get some output that looks like this:
+
+  bbs:x:1001:1001:Utopia BBS User,,,:/home/bbs:/home/bbs/bbs/bin/bbs
+
+  The first number is BBSUID, the second is BBSGID.
+
+
+#define NXCONF thru MAXVOTES - Generally best to leave these alone.  Isn't
+                               200 rooms with 200 messages each enough for
+                               anybody?  This will take up around 650MB.
+
+
+#define ROOT - if you used my directory layout, this should be as follows:
+               #define ROOT        "/home/bbs/bbs/"
+
+
+#define SSLCERTIFICATE
+        SSLKEYPATH     - once again, with my directory layout:
+                         #ifdef _SSL
+                         #define SSLCERTIFICATE  ROOT"sslprivate"
+                         #define SSLKEYPATH      ROOT"sslprivate"
+                         #endif
+
+
+Leave everything else alone with the possible exception of FORTUNE.
+
+I. B. EDIT QUEUE.H
+
+The only thing you should touch here is #define PORT.  Enter a port number
+(greater than 1024) for your PLAINTEXT clients to connect to.  The SSL
+port is defined elsewhere (on the command line, in my examples).
+
+Two BBSes that use this source code or a close relative have their
+plaintext port on 6969, so unless you have a good reason not to use this
+port, you may as well just leave it set to 6969.
+
+I. C. EDIT MAKEFILE
+
+This, as you can see from looking at it, is a Makefile that's undergone
+some heavy evolution.  It's still got stuff about ISCA in it.  Marx
+Marvelous make some updates to it so that one could use 'make install',
+but they don't work with my directory layout, and I haven't fixed them
+yet, so DON'T use 'make install' or you'll end up with binaries in the
+wrong places.
+
+All the commented SSL stuff is stuff that worked on systems other than
+the one I'm using, which is Debian GNU/Linux 2.2 with OpenSSL installed
+in its default location.  For SunOS you're going to need to uncomment
+-lnsl and -lsocket.  For Linux, leave them commented.
+
+DO NOT uncomment -D_SSL.  Leave it alone.
+
+If you're running Debian, the Makefile should theoretically work untouched.
+
+STEP II - BUILD THE BBS BINARY
+
+Once you've edited all the files, in the BBS source directory, type 'make'
+and watch for any errors.  If no errors occur, do 'ls -l bbs' to verify
+that you've got yourself a bbs binary.  Don't use 'make install' .. see
+above for details.
+
+STEP III - BUILD THE BBS SETUP PROGRAM
+
+In the same directory as you were after building the BBS binary, type
+'cc setupbbs.c'.  Now, type 'mv a.out setupbbs'.
+
+NOTE:  If you need to reinitialize something on a live BBS, edit setupbbs.c
+and comment out everything you do NOT want nuked from main().
+
+STEP IV - BUILD THE SSL SERVER
+
+IV. Build the SSL Server
+    A. Editing files
+    B. Building the binary
+    C. Cleanup
+
+IV. A. EDITING FILES
+
+Change to the ssl/ directory in the BBS source directory.  Edit the
+Makefile, paying attention to the SSL lines in the same manner that you
+did in the Makefile in the BBS source directory.  You may need to add
+-lnsl and -lsocket for SunOS.  Remember that commented lines are most
+likely things that worked on OTHER systems, but not on a Debian
+installation that parallels my own.
+
+Edit ssl_server.c and change the "int port = [nnnn]" declaration to
+a port number of your choice, unless you wish to just set it on the
+command line as I do in my examples.  Most people should just leave it
+set to 4123.
+
+IV. B. BUILDING THE BINARY
+
+Run 'make' in the ssl/ directory under the BBS source directory.
+
+IV. C. CLEANUP
+
+Move the 'ssl_server' binary to the BBS source directory by executing
+'mv ssl_server ..' and then run 'make clean' in the ssl/ directory.
+
+STEP V - CLEANUP
+
+NOTE:  DO NOT carry out this step until after you've gone back to
+INSTALL.OVERVIEW and moved all the binaries (bbs, setupbbs, and
+ssl_server) from the BBS source directory to their respective
+locations!  However, it is IMPORTANT that you do carry out this step
+after you move the binaries.  If you modify the source code and then
+attempt to recompile it without having carried out this step, problems
+may result!
+
+Run 'make clean' in the BBS source directory.
+ 
+That's it!
