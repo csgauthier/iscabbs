@@ -341,7 +341,7 @@ register int i;
     my_printf ("readmessage:  no mh!\n");
     return (MNFERR);
   }
-  if ((int)p & 3)
+  if ((int)p & 3) // This is appears to be testing for an address not aligned to 32-bit boundary. But why?
   {
     printf ("wtf?\r\n");
     return(MNFERR);
