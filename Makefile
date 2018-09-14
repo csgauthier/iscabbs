@@ -1,34 +1,74 @@
-#  Makefile for ISCA BBS (HP-UX version for whip)
-#
-# SSLLIB= -L/usr/local/ssl/lib -lssl -lcrypto
-# SSLLIB=-lssl -lcrypto
-# SSLINC= -I/usr/local/ssl/include
-CFLAGS= $(SSLINC) #   -D_SSL
-LIBS= $(SSLLIB) -lcrypt # -lnsl -lsocket
+#  Makefile for ISCA BBS
+CC := gcc
+CPPFLAGS += $(SSLINC) #   -D_SSL
+CFLAGS   += -O2
+CFLAGS   += -g
+#CFLAGS   += -Wall
+#CFLAGS   += -Wextra
+#CFLAGS   += -Werror
+LDFLAGS  +=
+LIBS    += $(SSLLIB) -lcrypt # -lnsl -lsocket
 
-CC= gcc #-ggdb
- 
-.c.o:
-	$(CC) -c $*.c $(CFLAGS) 
+bbs_sources :=  \
+	backup.c \
+	doc.c \
+	doc_aide.c \
+	doc_msgs.c \
+	doc_rooms.c \
+	doc_routines.c \
+	finger.c \
+	global.c \
+	io.c \
+	main.c \
+	qmisc.c \
+	qrunbbs.c \
+	qstate.c \
+	queue.c \
+	searchtool.c \
+	sem.c \
+	setup.c \
+	shell.c \
+	state.c \
+	syncer.c \
+	system.c \
+	sysutil.c \
+	term.c \
+	update.c \
+	user.c \
+	users.c \
+	utility.c \
+	vote.c \
+	who.c \
+	xmsg.c
 
-bbs: vote.o searchtool.o shell.o user.o system.o sysutil.o setup.o doc.o doc_msgs.o doc_rooms.o doc_routines.o xmsg.o doc_aide.o term.o state.o io.o who.o finger.o users.o syncer.o update.o backup.o queue.o qmisc.o qrunbbs.o qstate.o utility.o main.o global.o sem.o
-	$(CC) -o bbs vote.o searchtool.o shell.o user.o system.o sysutil.o setup.o doc.o doc_msgs.o doc_rooms.o doc_routines.o xmsg.o doc_aide.o term.o state.o io.o who.o finger.o users.o syncer.o update.o backup.o queue.o qmisc.o qrunbbs.o qstate.o utility.o main.o global.o sem.o $(CFLAGS) $(LIBS)
+bbs_headers := \
+	bbs.h \
+	defs.h \
+	ext.h \
+	proto.h \
+	qtelnet.h \
+	queue.h \
+	telnet.h \
+	users.h
 
+bbs_objects := $(bbs_sources:.c=.o)
 
+.PHONY: all
+all: bbs
+
+bbs: $(bbs_objects)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+$(bbs_objects): %.o : %.c $(bbs_headers)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
 clean:
-	rm -f mydoc.tgz setupbbs bbs *.o *~
+	$(RM) $(wildcard mydoc.tgz setupbbs bbs *.o *~)
 
-tgz:	clean
-	CURRDIR=`pwd`; export CURRDIR; cd ..;\
-	tar -cof - `basename $$CURRDIR` | gzip -c -9 > /tmp/mydoc.tgz
-	cp /tmp/mydoc.tgz mydoc.tgz
-	rm /tmp/mydoc.tgz
-
-install:
+.PHONY: install
+install: bbs
 	install -m 550 bbs ../bin/bbs
 	#install -m 550 ssl/ssl_server ../bin/ssl_server
-	
 
 
-
-shell.o user.o sem.o system.o sysutil.o setup.o doc.o doc_msgs.o doc_rooms.o doc_routines.o xmsg.o doc_aide.o term.o state.o io.o who.o finger.o users.o syncer.o update.o backup.o queue.o qmisc.o qrunbbs.o qstate.o utility.o main.o global.o: defs.h ext.h proto.h bbs.h telnet.h users.h queue.h qtelnet.h
