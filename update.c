@@ -20,13 +20,12 @@ struct userinfo
   unsigned int f_aide:1;
 };
 
-
-struct userinfo * getusers();
-
-
+struct userinfo * getusers(long* ucount);
+static int update_aides(struct userinfo *start, long *ucount);
+static int update_whoknows(struct userinfo *start, long *ucount);
 
 void
-bbsupdate()
+bbsupdate(void)
 {
 struct userinfo *start;
 long    ucount;
@@ -66,8 +65,7 @@ int f;
 
 
 struct userinfo *
-getusers(ucount)
-long   *ucount;
+getusers(long   *ucount)
 {
 register int i;
 struct userinfo *start;
@@ -196,9 +194,9 @@ char	work[80];
 // The following are a couple comparison functions needed for qsort()
 // calls in update_aides.
 
-int cmp_userinfo(first, second)     // return lt, eq, gt for userinfo structs
-  const struct userinfo *first;     // based on their usernumber.  see
-  const struct userinfo *second;    // man 3 qsort for details
+int cmp_userinfo(                   // return lt, eq, gt for userinfo structs
+  const struct userinfo *first,     // based on their usernumber.  see
+  const struct userinfo *second)    // man 3 qsort for details
 {
   if (first->usernum > second->usernum)
     return(1);
@@ -209,9 +207,9 @@ int cmp_userinfo(first, second)     // return lt, eq, gt for userinfo structs
 }
 
 
-int cmp_room_glob(first, second)    // return lt, eq, gt for room_glob structs
-  const struct room_glob *first;    // based on alphabetical of the roomname
-  const struct room_glob *second;   // case-insensitive
+int cmp_room_glob(                  // return lt, eq, gt for room_glob structs
+  const struct room_glob *first,    // based on alphabetical of the roomname
+  const struct room_glob *second)   // case-insensitive
 {
   int c = 0, retval = 0;
 
@@ -237,9 +235,8 @@ int cmp_room_glob(first, second)    // return lt, eq, gt for room_glob structs
 
 
 
-update_aides(start, ucount)
-struct userinfo *start;
-long   *ucount;
+static int
+update_aides(struct userinfo *start, long   *ucount)
 {
 FILE   *af;
 //int     nameflag = NO;
@@ -337,7 +334,7 @@ bkey = &dummy;
   size = sizeof(*start);
 
   // sort array of userinfo structs into ascending numeric order by usernum
-  qsort(start, num_elements, size, cmp_userinfo);
+  qsort(start, num_elements, size, (int(*)(const void*,const void*))cmp_userinfo);
 
   // now we do a binary search to find the user name associated with the
   // room's moderator usernumber.  If the moderator usernumber is zero,
@@ -351,7 +348,7 @@ bkey = &dummy;
     if (roomdata[c].moderator_number)
     {   
       bkey->usernum = roomdata[c].moderator_number;
-      curruser = bsearch(bkey, start, num_elements, size, cmp_userinfo);
+      curruser = bsearch(bkey, start, num_elements, size, (int(*)(const void*,const void*))cmp_userinfo);
 
       /*if (curruser->usernum == roomdata[c].moderator_number)*/
 	if (curruser && curruser->usernum == roomdata[c].moderator_number)
@@ -375,7 +372,7 @@ bkey = &dummy;
   num_elements = max_display_rooms;
   size = sizeof(*roomdata);
 
-  qsort(roomdata, num_elements, size, cmp_room_glob);
+  qsort(roomdata, num_elements, size, (int(*)(const void*,const void*))cmp_room_glob);
   
 
   // Now we display the array
@@ -423,9 +420,8 @@ bkey = &dummy;
 
 
 
-update_whoknows(start, ucount)
-struct userinfo *start;
-int    *ucount;
+static int
+update_whoknows(struct userinfo *start, long *ucount)
 {
 FILE   *file;
 char    filestr[160];
@@ -511,8 +507,7 @@ unsigned char filebuf[8192];
   };
 
 int
-hack_xconf(u)
-register struct user *u;
+hack_xconf(struct user *u)
 {
   register int i;
   struct xconf x[60];
@@ -539,11 +534,7 @@ register struct user *u;
 
 
 int
-addxconf(u, num, x, which)
-register struct user *u;
-register long num;
-struct xconf x[60];
-register int which;
+addxconf(struct user *u, long num, struct xconf x[60], int which)
 {
   register char *name, *tmpname;
   register int i, j;

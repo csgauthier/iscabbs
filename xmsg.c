@@ -5,12 +5,7 @@
 
 
 int
-displayx(pos, num, t, prev, next)
-register long pos;
-register int num;
-register time_t *t;
-register long *prev;
-register long *next;
+displayx(long pos, int num, time_t *t, long *prev, long *next)
 {
   char nstr[12];
   char name[MAXALIAS + 1];
@@ -114,8 +109,7 @@ register long *next;
 
 
 void
-checkx(resetnox)
-register int resetnox;
+checkx(int resetnox)
 {
   register int i;
   register int nox = mybtmp->nox;
@@ -161,8 +155,7 @@ register int resetnox;
 
 
 void
-express(which)
-int which;
+express(int which)
 {
 register int i;
 register char *name;
@@ -415,11 +408,8 @@ char send_string[XLENGTH][80];
 
 
 void
-sendx(buser, touser, send_string, override)
-register struct btmp *buser;
-register struct user *touser;
-char send_string[][80];
-int override;
+sendx(struct btmp *buser, struct user *touser,
+        char send_string[][80], int override)
 {
 struct xheader xh;
 time_t t;
@@ -577,14 +567,13 @@ register int wasbusy = 0;
 
 
 void
-change_express(cmd)
-register int cmd;
+change_express(int cmd)
 {
   colorize("%s@ReXpress messages %sABLED\n", cmd ? "Change eXpress status\n\n" : "", (mybtmp->xstat ^= 1) ? "DIS" : "EN");
 }
 
 void
-change_beeps()
+change_beeps(void)
 {
   locks (SEM_USER);
   colorize ("@ReXpress beeps %sABLED\n", (ouruser->f_nobeep ^= 1) ? "DIS" : "EN");
@@ -593,7 +582,7 @@ change_beeps()
 
 
 void
-old_express()
+old_express(void)
 {
 char nstr[8];
 long prev;
@@ -727,8 +716,7 @@ register int savedir;
 
 
 void
-get_syself_help(cmd)
-int cmd;
+get_syself_help(int cmd)
 {
   char send_string[XLENGTH][80];
   struct btmp btmp;
@@ -833,8 +821,7 @@ int cmd;
 
 
 int
-syself_ok(name)
-register char *name;
+syself_ok(char *name)
 {
 register struct user *up;
 register int i;
@@ -850,7 +837,7 @@ register int i;
 
 
 void
-xbroadcast()
+xbroadcast(void)
 {
 char send_string[XLENGTH][80];
 register int i;
@@ -904,9 +891,7 @@ char override = 'B';
 
 
 int
-xyell(up, p)
-register struct user *up;
-register unsigned char *p;
+xyell(struct user *up, unsigned char *p)
 {
   char nstr[8];
   register long pos = ouruser->xmaxpos;
@@ -965,10 +950,8 @@ register unsigned char *p;
 }
 
 
-
 void
-xinit(reset)
-int reset;
+xinit(int reset)
 {
   ouruser->xseenpos = 0;
 
@@ -986,8 +969,7 @@ int reset;
 
 
 void
-clean_xconf(tmpuser)
-register struct user *tmpuser;
+clean_xconf(struct user *tmpuser)
 {
   register int i, j;
   register long num;

@@ -6,8 +6,7 @@
 
 
 void
-locks(which)
-register int which;
+locks(int which)
 {
   register int i;
 
@@ -38,8 +37,7 @@ register int which;
  
 
 void
-unlocks(which)
-register int which;
+unlocks(int which)
 {
   register int i;
 
@@ -71,8 +69,7 @@ register int which;
 
 
 int
-add_loggedin(up)
-  struct user *up;
+add_loggedin(struct user *up)
 {
 register int i;
 register int j;
@@ -183,8 +180,7 @@ int btmpindex = 0;
 
 
 void
-remove_loggedin(p)
-register int p;
+remove_loggedin(int p)
 {
 register int i;
 register struct btmp *btmp;
@@ -216,7 +212,7 @@ register struct btmp *btmp;
  */
 
 void
-reserve_slot()
+reserve_slot(void)
 {
 struct btmp newbtmp;
 register int i;
@@ -309,7 +305,7 @@ long mineternal;
 
 
 void
-clientwho()
+clientwho(void)
 {
 struct btmp *btmp;
 int i;
@@ -375,8 +371,7 @@ long mineternal;
 
 
 void
-validate_users(what)
-int what;
+validate_users(int what)
 {
   register int c = ' ';
   register int i;
@@ -526,8 +521,7 @@ int what;
 
 
 void
-newmaxnewbie(num)
-register int num;
+newmaxnewbie(int num)
 {
   locks(SEM_NEWBIE);
   if (num == msg->maxnewbie)
@@ -548,10 +542,7 @@ register int num;
  * given, progress messages are provided.
  */
 void
-logout_user(tmpuser, btmp, how)
-register struct user *tmpuser;
-register struct btmp *btmp;
-register int how;
+logout_user(struct user *tmpuser, struct btmp *btmp, int how)
 {
   struct btmp copybtmp;
   register int copyindex;

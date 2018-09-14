@@ -5,8 +5,7 @@
 #include "ext.h"
 
 int
-telrcv(noflush)
-register int *noflush;
+telrcv(int *noflush)
 {
 	register int c;
 
@@ -205,7 +204,7 @@ gotiac:			switch (c) {
 
 
 void
-init_states()
+init_states(void)
 {
   state = TS_DATA;
 

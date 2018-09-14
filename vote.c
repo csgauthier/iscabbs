@@ -6,8 +6,10 @@
 #include "defs.h"
 #include "ext.h"
 
+static int makevotemsg(void);
 
-vote()
+void
+vote(void)
 {
   int err;
   struct user *user;
@@ -173,7 +175,8 @@ vote()
 
 
 /* This is just a modified makemessage() */
-int makevotemsg(void)
+static int
+makevotemsg(void)
 {
 struct vote vote;
 int     auth;

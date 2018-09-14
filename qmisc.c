@@ -3,7 +3,7 @@
 
 
 void
-reap()
+reap(void)
 {
   int stat_loc;
 
@@ -17,7 +17,7 @@ reap()
 
 
 void
-ring()
+ring(void)
 {
   if (++f_qalarm > 4)
   {
@@ -39,7 +39,7 @@ ring()
 
 
 void
-dump()
+dump(void)
 {
   struct bigbtmp *temp;
 
@@ -52,7 +52,7 @@ dump()
 
 
 void
-do_ring()
+do_ring(void)
 {
 char pst_data[128];
 register struct pst_dynamic *pst = (struct pst_dynamic *)(void *)pst_data;
@@ -104,7 +104,7 @@ register int z;
 
 
 void
-reread()
+reread(void)
 {
   f_reread = 1;
   signal(SIGHUP, (void *)reread);
@@ -113,7 +113,7 @@ reread()
 
 
 void
-do_reread()
+do_reread(void)
 {
 unsigned char buf[256];
 FILE *f;
@@ -176,7 +176,7 @@ int i;
 
 
 void
-quit()
+quit(void)
 {
   f_term = 1;
   signal(SIGTERM, (void *)quit);
@@ -185,7 +185,7 @@ quit()
 
 
 void
-do_quit()
+do_quit(void)
 {
   syslog(LOG_INFO, "users %d, queue %d, limit %d, lockout %d", q->forks - q->reaps, q->qp, q->limit, q->lockout);
   syslog(LOG_INFO, "forks %d, maxqueue %d", q->forks, q->maxqp);
@@ -196,7 +196,7 @@ do_quit()
 
 
 void
-restart()
+restart(void)
 {
   f_restart = 1;
   signal(SIGUSR2, (void *)restart);
@@ -205,7 +205,7 @@ restart()
 
 
 void
-do_restart()
+do_restart(void)
 {
   char *newenv[2];
 
@@ -220,7 +220,7 @@ do_restart()
 
 
 void
-setup()
+setup(void)
 {
   f_quit = 1;
   signal(SIGQUIT, (void *)setup);
@@ -229,7 +229,7 @@ setup()
 
 
 void
-do_setup()
+do_setup(void)
 {
 struct sockaddr_in sa;
 int on = 1;
@@ -260,8 +260,7 @@ long oldmask;
 
 
 void
-checkauth(x)
-register int x;
+checkauth(int x)
 {
 char work[80];
 register struct user *u;
@@ -327,9 +326,7 @@ register int i, j;
 
 
 void
-dologin(c, x)
-register int c;
-register int x;
+dologin(int c, int x)
 {
   char d;
 
@@ -410,8 +407,7 @@ register int x;
 
 
 void
-logfatal(error)
-char *error;
+logfatal(char *error)
 {
   struct timeval tv;
 
@@ -424,10 +420,8 @@ char *error;
   _exit(1);
 }
 
-
 void
-drop(s)
-int s;
+drop(int s)
 {
 register int i, j;
 
@@ -455,10 +449,7 @@ register int i, j;
 
 
 int
-ssend(s, msg, len)
-register int s;
-register char *msg;
-register int len;
+ssend(int s, char* msg, int len)
 {
   register int x;
 

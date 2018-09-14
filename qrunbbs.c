@@ -3,8 +3,7 @@
 
 
 void
-runbbs(s)
-int s;
+runbbs(int s)
 {
 int len;
 int i, j;

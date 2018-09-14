@@ -20,9 +20,7 @@
  */
 
 char   *
-get_name(prompt, quit_priv)
-register char *prompt;
-register int quit_priv;
+get_name(char *prompt, int quit_priv)
 {
 register char *p;
 register int c;
@@ -130,7 +128,7 @@ register int invalid = 0;
  */
 
 void
-do_login()
+do_login(void)
 {
 register int i;
 register int users;
@@ -302,8 +300,7 @@ char myname[MAXALIAS + 1];
 
 
 void
-profile_user(all)
-register int all;
+profile_user(int all)
 {
 register char *name;
 register int how = PROF_REG;

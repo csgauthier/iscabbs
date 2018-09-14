@@ -15,8 +15,7 @@
  */
 
 void
-show_online(level)
-  int     level;
+show_online(int     level)
 {
 struct btmp *btmp;
 struct user *tmpuser;
@@ -171,10 +170,7 @@ int whostart, whoend, whoincr;
  */
 
 struct btmp *
-is_online(btmp, user, name)
-struct btmp *btmp;
-struct user *user;
-char *name;
+is_online(struct btmp *btmp, struct user *user, char *name)
 {
 register int i;
 
@@ -217,10 +213,7 @@ register int i;
  */
 
 int
-profile(name, tuser, flags)
-char   *name;
-struct user *tuser;
-int flags;
+profile(char   *name, struct user *tuser, int flags)
 {
 struct user *tmpuser;
 struct btmp userstat;
@@ -409,10 +402,7 @@ int showanon;
 
 
 char *
-mymmap(name, size, priv)
-register char *name;
-register int *size;
-register int priv;
+mymmap(char *name, int *size, int priv)
 {
   register int f = -1;
   register char *p;

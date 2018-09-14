@@ -103,7 +103,7 @@ int fun_len = sizeof(fun_stuff) / sizeof(char[80]);
  *    get a seed (just 32 bits) for the pseudorandom generator, using
  *    the simplest possible thing (time returned by gettimeofday()).
  */
-static long getseed()
+static long getseed(void)
 {
     struct timeval tp; 
     struct timezone tzp;
@@ -132,7 +132,7 @@ int rnd(int n)
 } 
 
 void
-bbsstart()
+bbsstart(void)
 {
 unsigned char stdinbuf[STDINBUFSIZ];
 long    uglastmsg;	/* last msg seen in prev. rm */
@@ -588,12 +588,10 @@ char    bueller = 0;
  * in ouruser->lastseen[MAIL_RM_NBR].
  */
 int
-checkmail(tmpuser, quiet)
-  struct user *tmpuser;
-  int     quiet;
+checkmail(struct user *tmpuser, int  quiet)
 {
-register int i;
-int     count = 0;
+    int i;
+    int     count = 0;
 
   /* See if user is such a doofus we've kicked them out of Mail> */
   if (tmpuser->generation[MAIL_RM_NBR] == RODSERLING)
@@ -620,9 +618,7 @@ int     count = 0;
 
 
 void
-help(topic, morehelp)
-register char *topic;
-register int morehelp;
+help(char *topic, int morehelp)
 {
 char help_str[30];
 char hfile[100];
@@ -669,7 +665,7 @@ int toast;
  * consistent.  Also resets any pointers that might have gotten out of range.
  */
 void
-inituser()
+inituser(void)
 {
 register int i;
 
@@ -696,8 +692,7 @@ register int i;
 
 
 int
-wanttoyell(cmd)
-int cmd;
+wanttoyell(int cmd)
 {
   my_printf("%s", cmd == 'y' ? "Yell to Sysop\n" : "Upload Yell to Sysop\n");
   help("yell.list", NO);
@@ -727,7 +722,7 @@ int cmd;
 }
 
 void
-blockhost()
+blockhost(void)
 {
 char bl_host[51];
 char blockhost[125];
@@ -778,7 +773,7 @@ colorize("@RCanceled.\n");
 }
 
 void
-twitter()
+twitter(void)
 {
 char twname[32];
 char twpass[16];
@@ -800,7 +795,7 @@ system(tweetpost);
 }
 
 void
-dologout()
+dologout(void)
 {
   my_printf("Logout\n\nReally log out? (Y/N) -> ");
   flush_input(0);

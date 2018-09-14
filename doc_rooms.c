@@ -10,7 +10,7 @@
 * Count how many rooms were skipped, notify user, and reset skipping array.
 **********************************************************************/
 void
-count_skips()
+count_skips(void)
 {
 register int i;
 register int count;
@@ -36,7 +36,7 @@ register int count;
 * We return YES or NO because we want to control access to passworded rooms.
 ****************************************************************************/
 int 
-findroom()
+findroom(void)
 {
 int     i;
 char   *rname;
@@ -167,7 +167,7 @@ int     rmnum = -1;
 * User chooses this option (Z key) to unsubscribe to the current room.
 **********************************************************************/
 int
-forgetroom()
+forgetroom(void)
 {
   if (curr < AIDE_RM_NBR)
   {
@@ -195,7 +195,7 @@ forgetroom()
 *    Read the fullroom structure
 ****************************************************************************/
 void
-loadroom()
+loadroom(void)
 {
   register int i, j;
 
@@ -254,7 +254,7 @@ loadroom()
 * It calls count_skips.
 ****************************************************************************/
 int
-nextroom()
+nextroom(void)
 {
 register int i;
 
@@ -308,7 +308,7 @@ register int i;
 * Loads the room specified by curr_rm, and opens it up for reading.
 **************************************************************************/
 void
-openroom()
+openroom(void)
 {
   loadroom();
 
@@ -341,8 +341,7 @@ openroom()
 *         changed '#' to search by FRchron  -dn
 ************************************************************************/
 void
-readroom(cit_cmd)
-  int     cit_cmd;
+readroom(int cit_cmd)
 {
 int    *auth;
 int     chr;
@@ -764,11 +763,7 @@ int savedrows = -1;
 * search by FRchron added 4-23-91 -dn  (added searchkey)
 **********************************************************************/
 void
-set_read_params(cit_cmd, dir, rm_msg_nbr, searchkey)
-  int     cit_cmd;
-  int    *dir;
-  int    *rm_msg_nbr;
-  long   *searchkey;
+set_read_params(int cit_cmd, int *dir, int *rm_msg_nbr, long *searchkey)
 {
 
 int     nbr;
@@ -816,8 +811,7 @@ char    nbr_str[12];	/* C-defined max for longs is +/- 2,147,483,647 */
 
 
 int
-resetpos(savedid)
-long savedid;
+resetpos(long savedid)
 {
 register int i;
 

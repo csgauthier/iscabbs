@@ -15,7 +15,7 @@
 * NOT do <A>ideify <C>reateroom <Z>ap room.
 **********************************************************************/
 void
-aide_menu()
+aide_menu(void)
 {
 register int chr = '?';
 int     i;
@@ -134,7 +134,7 @@ int     i;
 * createroom
 **********************************************************************/
 void
-createroom()
+createroom(void)
 {
 register int i;
 int     found;
@@ -304,7 +304,7 @@ char pas[11];
 * deleteroom
 **********************************************************************/
 void
-deleteroom()
+deleteroom(void)
 {
 char    filename[100];
 char    confirm[7];
@@ -346,7 +346,7 @@ char    confirm[7];
 * to be roomaide.
 **********************************************************************/
 void
-editdesc()
+editdesc(void)
 {
 int     bytes;
 int    chr;
@@ -454,7 +454,7 @@ struct user *tmpuser;
 * <E>dit room in aide menu
 **********************************************************************/
 void
-editroom()
+editroom(void)
 {
 char    anon_opt;
 char    opt;
@@ -590,7 +590,7 @@ int     gen;
 * of the room.
 **********************************************************************/
 void
-invite()
+invite(void)
 {
 struct user *tmpuser;
 char   *uname;
@@ -630,7 +630,7 @@ char   *uname;
 * Edit a user's generation number for a room so (s)he can't get to it.
 **********************************************************************/
 void
-kickout()
+kickout(void)
 {
 struct user *tmpuser;
 char   *uname;
@@ -677,7 +677,7 @@ char   *uname;
 
 
 void
-aide_logout()
+aide_logout(void)
 {
 struct user *tmpuser;
 char   *uname;
@@ -704,7 +704,7 @@ register int i;
 
 
 void
-logout_all()
+logout_all(void)
 {
   register int i;
   register int p;
@@ -736,7 +736,7 @@ logout_all()
 * update aide list is called after an aide change
 **********************************************************************/
 void
-whoknows()
+whoknows(void)
 {
 char    filename[100];
 

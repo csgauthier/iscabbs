@@ -5,7 +5,7 @@
 #include "ext.h"
 
 void
-termset()
+termset(void)
 {
 struct winsize mywin;
 
@@ -21,7 +21,7 @@ struct winsize mywin;
 
 
 int
-askansi()
+askansi(void)
 {
   my_printf ("\nAre you on an ANSI terminal? (Y/N) -> ");
   if (yesno (-1))

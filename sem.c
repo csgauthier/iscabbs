@@ -5,7 +5,8 @@
 static int semid[7] = { -1, -1, -1, -1, -1, -1, -1 };
 
 
-int msem_init (int *sem, int val)
+int
+msem_init (int *sem, int val)
 {
   *sem = val;
   return 1;
@@ -13,9 +14,8 @@ int msem_init (int *sem, int val)
 
 
 /* lock a semaphore */
-int msem_lock (which, unused)
-int *which;
-int unused;
+int
+msem_lock (int *which, int unused)
 {
 struct sembuf lock[2];
 
@@ -43,9 +43,8 @@ struct sembuf lock[2];
 
 
 /* unlock */
-int msem_unlock (which, unused)
-int *which;
-int unused;
+int
+msem_unlock (int *which, int unused)
 {
 struct sembuf unlock;
 
