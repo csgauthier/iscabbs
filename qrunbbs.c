@@ -209,7 +209,7 @@ char *p;
         sa.sin_family = AF_INET;
         sa.sin_addr.s_addr = addr;
         sa.sin_port = htons(113);
-	connect(s, &sa, sizeof sa);
+	connect(s, (const struct sockaddr*)&sa, sizeof sa);
 	tv.tv_sec = 4;
 	tv.tv_usec = 0;
 	fds = 1 << s;

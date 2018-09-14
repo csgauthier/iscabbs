@@ -25,7 +25,7 @@ setup_socket()
   sa.sin_family = AF_INET;
   sa.sin_addr.s_addr = htonl(0);
   sa.sin_port = htons(79);
-  if (bind(0, &sa, sizeof sa) < 0)
+  if (bind(0, (const struct sockaddr*)&sa, sizeof sa) < 0)
     _exit(1);
   if (listen(0, SOMAXCONN) < 0)
     _exit(1);
@@ -132,7 +132,7 @@ unsigned char bigstdoutbuf[262143];
 
       fd[0].conn = 0;
       size = sizeof sa;
-      if ((i = accept(0, &sa, &size)) < 0)
+      if ((i = accept(0, (struct sockaddr*)&sa, &size)) < 0)
         break;
       if (i != 1)
       {
