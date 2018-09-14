@@ -1,11 +1,12 @@
 #  Makefile for ISCA BBS
-CC := gcc
+CC := gcc -std=gnu11
 CPPFLAGS += $(SSLINC) #   -D_SSL
 CFLAGS   += -O2
 CFLAGS   += -g
 #CFLAGS   += -Wall
 #CFLAGS   += -Wextra
 #CFLAGS   += -Werror
+
 LDFLAGS  +=
 LIBS    += $(SSLLIB) -lcrypt # -lnsl -lsocket
 
