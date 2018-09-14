@@ -115,7 +115,7 @@ static long getseed()
 
 int rnd(int n)
 {
-  static first_time=1;                                       
+  static int first_time=1;
   static char state[256];                                   
   if (first_time) {                                        
     first_time = 0;                                       
