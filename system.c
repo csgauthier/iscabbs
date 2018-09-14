@@ -14,9 +14,7 @@
  */
 
 struct user *
-login_user(name, passwd)
-  char   *name;
-  char   *passwd;
+login_user(char   *name, char   *passwd)
 {
 struct user *up;
 char   *cp;
@@ -56,11 +54,7 @@ char   *cp;
  */
 
 void
-change_password(up, old, new, noold)
-  struct user *up;
-  char   *old,
-         *new;
-  int     noold;
+change_password(struct user *up, char*old, char* new, int noold)
 {
 time_t  salt;
 char    saltc[4];
@@ -93,10 +87,8 @@ int     c,
   unlocks(SEM_USER);
 }
 
-
-
 int
-new_user()
+new_user(void)
 {
   register int i;
   register int j;
@@ -414,8 +406,7 @@ new_user()
 
 
 void
-check_quit(s)
-register char *s;
+check_quit(char *s)
 {
   if (!strcasecmp(s, "exit") || !strcasecmp(s, "quit") || !strcasecmp(s, "logout"))
   {

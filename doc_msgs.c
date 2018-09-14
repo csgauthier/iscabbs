@@ -14,9 +14,7 @@
 * Adjusted for FRchron on 4-23-91 -dn
 ****************************************************************************/
 void
-deletemessage(delnum, quiet)
-  long    delnum;
-  int     quiet;
+deletemessage(long delnum, int quiet)
 {
   locks(SEM_MSG);
   fr_delete(delnum);
@@ -43,10 +41,9 @@ deletemessage(delnum, quiet)
 *
 **********************************************************************/
 int
-entermessage(troom, recipient, upload)
-  int     troom;
-  char   *recipient;
-  int     upload;
+entermessage(int     troom,
+  char   *recipient,
+  int     upload)
 {
 int     curr_rm = troom;
 int     err;
@@ -308,17 +305,17 @@ register int i;
  * making parsing messages much quicker and easier.  Messages are headed by a
  * special magic byte on a word (4 byte) boundary that is unique (M_MAGIC).
  */
-int
 
 /*
  *   Copy the POST_E POST_S stuff from readmessage()'s wrapper
  */
-newreadmessage(p, auth, aname, new, msgid)
-  unsigned char *p;
-  int    *auth;         /* set this parameter to YES if author */
-  char   *aname;
-  int     new;          /* TRUE to skip new message author just wrote */
-  long    msgid;        /* message id (validity check -- if 0 ignore it) */
+int
+newreadmessage(
+  unsigned char *p,
+  int    *auth,         /* set this parameter to YES if author */
+  char   *aname,
+  int     new,          /* TRUE to skip new message author just wrote */
+  long    msgid)        /* message id (validity check -- if 0 ignore it) */
 {
 struct mheader *mh;
 char    title[120];	/* This used to be 70.  Caused seg faults.  Bad -JB */
@@ -469,12 +466,12 @@ register int i;
 
 
 int
-readmessage(p, auth, aname, new, msgid)
-  unsigned char *p;
-  int    *auth;         /* set this parameter to YES if author */
-  char   *aname;
-  int     new;          /* TRUE to skip new message author just wrote */
-  long    msgid;        /* message id (validity check -- if 0 ignore it) */
+readmessage(
+  unsigned char *p,
+  int    *auth,         /* set this parameter to YES if author */
+  char   *aname,
+  int     new,          /* TRUE to skip new message author just wrote */
+  long    msgid)        /* message id (validity check -- if 0 ignore it) */
 {
   register int ret;
 
@@ -501,10 +498,10 @@ readmessage(p, auth, aname, new, msgid)
 
 
 int
-makemessage(recipient, mtype, upload)
-  struct user *recipient; /* on entry, NULL if its not mail */
-  int     mtype;	/* MES_NORMAL, MES_ANON, MES_AN2, MES_DESC */
-  int     upload;	/* TRUE if user wants to end a message via ctrl-D */
+makemessage(
+  struct user *recipient, /* on entry, NULL if its not mail */
+  int     mtype,	/* MES_NORMAL, MES_ANON, MES_AN2, MES_DESC */
+  int     upload)	/* TRUE if user wants to end a message via ctrl-D */
 {
 int     auth;
 int     chr = CTRL_D;

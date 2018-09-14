@@ -2,11 +2,8 @@
 #include "defs.h"
 #include "ext.h"
 
-
-
 void
-bbsqueue(dofork)
-register int dofork;
+bbsqueue(int dofork)
 {
 register int x;
 register int s;

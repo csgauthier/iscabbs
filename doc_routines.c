@@ -9,7 +9,7 @@
 * countmsgs
 **********************************************************************/
 int
-countmsgs()
+countmsgs(void)
 {
 int     count = 0;
 int     new = 0;
@@ -44,7 +44,7 @@ register int i;
 * debug report
 **********************************************************************/
 void
-debug()
+debug(void)
 {
 }
 
@@ -55,8 +55,7 @@ debug()
 * with unread messages, and list all forgotten rooms.
 -----------------------------------------------------------------------*/
 void
-knrooms(tmpuser)
-  struct user *tmpuser;
+knrooms(struct user *tmpuser)
 {
 int     i;
 int     limit = 24;
@@ -215,9 +214,7 @@ int     rm_nbr;
 * returns 0 for okay keep going, -1 for quit reading.
 ************************************************************/
 int
-line_more(nbr, percent)
-int    *nbr;
-int     percent;
+line_more(int *nbr, int percent)
 {
 int     chr;
 int     savenox = mybtmp->nox;
@@ -345,8 +342,7 @@ int     savenox = mybtmp->nox;
 
 
 void
-flush_input(sec)
-register int sec;
+flush_input(int sec)
 {
 register int i;
 int flush = -1;
@@ -382,8 +378,7 @@ int flush = -1;
 *  struct fullrm *fullrm - the new updated fullrm (out)
 *********************************************************************/
 void
-fr_delete(delnum)
-  long    delnum;
+fr_delete(long    delnum)
 {
 int i;
 
@@ -448,12 +443,7 @@ int i;
 *  long pos;                   Position in the msgmain file         *
 *********************************************************************/
 void
-fr_post(rm, msgnum, pos, mmhi, tmpuser)
-  int     rm;
-  long    msgnum;
-  long    pos;
-  long    mmhi;
-  struct user *tmpuser;
+fr_post(int rm, long msgnum, long pos, long mmhi, struct user *tmpuser)
 {
   register int i;
 
@@ -522,7 +512,7 @@ fr_post(rm, msgnum, pos, mmhi, tmpuser)
 * read room description
 **********************************************************************/
 void
-readdesc()
+readdesc(void)
 {
 int     dummy;
 char    file[100];
@@ -553,9 +543,7 @@ int size;
 * last seen in *uglastmsg.
 ***************************************************************************/
 void
-storeug(uglastmsg, ugtemp)
-  long   *uglastmsg;
-  long   *ugtemp;
+storeug(long   *uglastmsg, long   *ugtemp)
 {
   *uglastmsg = *ugtemp;
   *ugtemp = ouruser->lastseen[curr];
@@ -567,10 +555,7 @@ storeug(uglastmsg, ugtemp)
 * ungoto
 **********************************************************************/
 void
-ungoto(prev, uglastmsg, ugtemp)
-  int    prev;
-  long   *uglastmsg;
-  long   *ugtemp;
+ungoto(int prev, long *uglastmsg, long *ugtemp)
 {
   if (prev == TWILIGHTZONE)
     return;
@@ -590,8 +575,7 @@ ungoto(prev, uglastmsg, ugtemp)
 * Notate ouruser record accordingly.
 **********************************************************************/
 void
-updatels(prev)
-  short    *prev;
+updatels(short    *prev)
 {
   *prev = curr;
   ouruser->lastseen[curr] = room->num[MSGSPERRM - 1];
@@ -605,8 +589,7 @@ updatels(prev)
 * returns Y == YES , N == NO
 **********************************************************************/
 int
-yesno(def)
-int def;
+yesno(int def)
 {
 register int i;
  
@@ -629,7 +612,7 @@ register int i;
 }
 
 void 
-do_fortune()
+do_fortune(void)
 {
 char 	*cmd = FORTUNE;
 char 	*p;
@@ -659,9 +642,7 @@ char *days[7] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
 
 char *
-formtime (how, timetoform)
-int how;
-time_t timetoform;
+formtime (int how, time_t timetoform)
 {
 static char tstring[80];
 struct tm *tm;
@@ -731,7 +712,7 @@ char stamp[5];
 
 
 #include <utmpx.h>
-char *gethost()
+char *gethost(void)
 {
 register struct utmpx *ut;
 register char *tp;
@@ -773,9 +754,8 @@ static char hname[MAXHOSTNAMELEN + 1];
 /*
  * a case insensitive strstr().
  */
-char *mystrstr(haystack, needle)
-char *haystack;
-char *needle;
+char *
+mystrstr(char *haystack, char* needle)
 {
     register char *s;
 
@@ -788,14 +768,14 @@ char *needle;
         return (s);
 }
 
-bcdplus1encode (number)
-long number;
+void
+bcdplus1encode (long number)
 {
 char	digit;
 long	remainder;
 
   if (number < 0)
-    return -1;
+    return;
 
   remainder = number / 10;
   digit = number - remainder * 10 + 1;
@@ -806,8 +786,8 @@ long	remainder;
   my_putc (digit, stdout);
 }
 
-
-version()
+void
+version(void)
 {
   my_printf ("#define BBSNAME		%d\n", BBSNAME);
   my_printf ("#define BBSUID		%d\n", BBSUID);

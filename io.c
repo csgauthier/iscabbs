@@ -11,6 +11,7 @@ int ansi = 0;
 
 /* A standard printf -- no color code recognition. */
 /* works best if output is not fflushed */
+int
 my_printf (const char *fmt, ...)
 {
     char string [1024];
@@ -23,8 +24,8 @@ my_printf (const char *fmt, ...)
 }
 
 
-my_puts (s)
-char *s;
+int
+my_puts (char* s)
 {
   int count;
 
@@ -40,6 +41,7 @@ char *s;
 
 
 /* A simple printf that recognizes color codes */
+int
 colorize (const char *fmt, ...)
 {
     char string [1024];
@@ -54,8 +56,8 @@ colorize (const char *fmt, ...)
 
 /* check for color codes and \r\n translation.  Return the number of characters
    (not including color codes) printed. */
-my_cputs (s)
-char *s;
+int
+my_cputs (char *s)
 {
   int count;
 
@@ -115,8 +117,8 @@ char *s;
 }
 
 
-output (s)
-char *s;
+int
+output (char *s)
 {
   while (*s) {
     my_putchar (*s);
@@ -126,8 +128,8 @@ char *s;
 }
 
 
-my_putchar (c)
-int c;
+int
+my_putchar (int c)
 {
 #ifdef _SSL
   char newline = '\r';
@@ -145,12 +147,8 @@ int c;
 #endif
 }
 
-my_putc (c, stream)
-int c;
-FILE *stream;
+int
+my_putc (int c, FILE* stream)
 {
-  int i;
-  i = putc (c, stream);
-
-  return (i);
+    return putc (c, stream);
 }

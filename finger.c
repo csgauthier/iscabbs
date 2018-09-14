@@ -4,14 +4,10 @@
 #include "defs.h"
 #include "ext.h"
 
-
 #define MAXCONN 60
 
-
-
-
 static void
-setup_socket()
+setup_socket(void)
 {
   struct sockaddr_in sa;
   int one = 1;
@@ -32,18 +28,16 @@ setup_socket()
 }
 
 
-
 static void
-s_sigalrm2()
+s_sigalrm2(int signo)
 {
   signal(SIGALRM, s_sigalrm2);
   alarm(30);
 }
 
 
-
 void
-bbsfinger()
+bbsfinger(void)
 {
 register int n;
 register int i;

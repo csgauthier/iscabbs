@@ -3,7 +3,7 @@
 
 
 int
-openfiles()
+openfiles(void)
 {
  int size;
 

@@ -30,7 +30,7 @@ s_sigquit()
 
 
 void
-s_sigio()
+s_sigio(void)
 {
   /* Force-check */
   if (XPENDING)
@@ -41,7 +41,7 @@ s_sigio()
 
 
 void
-s_sigusr2()
+s_sigusr2(void)
 {
   register int i;
 
@@ -59,7 +59,7 @@ s_sigusr2()
 
 
 void
-s_sigalrm()
+s_sigalrm(void)
 {
   signal(SIGALRM, (void *)s_sigalrm);
 
@@ -82,7 +82,7 @@ s_sigalrm()
 
 
 void
-alarmclock()
+alarmclock(void)
 {
   f_alarm = 0;
   logintime += 5;
@@ -148,7 +148,7 @@ alarmclock()
  * Initialize the system. 
  */
 void
-init_system()
+init_system(void)
 {
 char    myhost[65];
 char    host[80];
@@ -233,8 +233,7 @@ struct sigaction sact;
 
 
 void
-logevent(message)
-register char *message;
+logevent(char *message)
 {
 register int f;
 register struct tm *tp;
@@ -257,8 +256,7 @@ char buf[120];
  * Exit the program in an orderly way. 
  */
 void
-my_exit(doflush)
-register int doflush;
+my_exit(int doflush)
 {
   register int save = f_death;
 
@@ -347,8 +345,7 @@ register int doflush;
 
 
 void
-myecho(mode)
-  int     mode;
+myecho(int     mode)
 {
 struct termios term;
 
@@ -379,7 +376,7 @@ struct termios term;
  */
 
 int
-inkey()
+inkey(void)
 {
 register int i = 257;
 int noflush = 1;
@@ -443,8 +440,7 @@ int noflush = 1;
 
 
 void
-printdate(s)
-register char *s;
+printdate(char* s)
 {
 time_t  t;
 
@@ -464,28 +460,24 @@ time_t  t;
  */
 
 void
-get_string(prompt, length, result, line)
-  char   *prompt;
-  int     length;
-  char   *result;
-  int     line;
+get_string(char *prompt, int length, char *result, int line)
 {
      get_new_string(prompt, length, result, line, 5);
 }
 
 void
-get_new_string(prompt, length, result, line, limit)
-  char   *prompt;
-  int     length;
-  char   *result;
-  int     line; 
-  int     limit; 
+get_new_string(
+  char   *prompt,
+  int     length,
+  char   *result,
+  int     line, 
+  int     limit)
 {
 static char wrap[80];
 char *rest;
-register char *p = result;
-register char *q;
-register c;
+char *p = result;
+char *q;
+int c;
 int     hidden;
 int     invalid = 0;
 
@@ -610,8 +602,7 @@ int     invalid = 0;
 
 
 int
-get_single_quiet(valid_string)
-  char   *valid_string;
+get_single_quiet(char   *valid_string)
 {
 register int c;
 int invalid = 0;
@@ -638,7 +629,7 @@ int invalid = 0;
 
 
 void
-hit_return_now()
+hit_return_now(void)
 {
   flush_input(0);
   my_printf("\nHit return to continue...");
@@ -656,9 +647,7 @@ hit_return_now()
  */
 
 void
-more(filename, comments)
-  char   *filename;
-  int comments;
+more(char   *filename, int comments)
 {
 int     line;
 int size;
@@ -690,8 +679,7 @@ register int noprint;
 
 
 unsigned int
-sleep(sec)
-register unsigned int sec;
+sleep(unsigned int sec)
 {
   struct timeval tv;
   register time_t t;
@@ -753,9 +741,7 @@ register int f;
 
 
 int
-strcasecmp(s1, s2)
-register const char *s1;
-register const char *s2;
+strcasecmp(const char *s1, const char *s2)
 {
   for (; *s1 && tolower(*s1) == tolower(*s2); s1++, s2++)
     ;

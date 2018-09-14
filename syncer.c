@@ -8,8 +8,7 @@
 
 
 int
-bbssync(init)
-int init;
+bbssync(int init)
 {
   long pst_data[32];
   unsigned char outbuf[100];

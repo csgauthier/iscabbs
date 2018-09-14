@@ -15,10 +15,7 @@ static int savelinknum;
  * pointer to the user struct on success, NULL on failure.
  */
 struct user *
-finduser(name, usernum, linknum)
-register char *name;
-register long usernum;
-register int linknum;
+finduser(char *name, long usernum, int linknum)
 {
   register int old;
   register int gen;
@@ -78,9 +75,7 @@ register int linknum;
  * NULL on failure.
  */
 struct user *
-adduser(name, usernum)
-register char *name;
-register long usernum;
+adduser(char *name, long usernum)
 {
   register struct user *user;
   register int old;
@@ -176,8 +171,7 @@ register long usernum;
  * on success, -1 on failure.
  */
 int
-deleteuser(name)
-register char *name;
+deleteuser(char *name)
 {
   register struct user *user;
   register int old;
@@ -241,8 +235,7 @@ register char *name;
  * Returns a pointer to the user struct on success, NULL on failure.
  */
 struct user *
-getuser(name)
-register char *name;
+getuser(char *name)
 {
   register struct user *user;
 
@@ -260,23 +253,19 @@ register char *name;
  * instead of NULL)
  */
 char *
-getusername(num, how)
-register const long num;
-register const int how;
+getusername(const long num, const int how)
 {
   return(finduser(NULL, num, 0) ? udata->link[savelinknum].name : (how ? "<Deleted User>" : NULL));
- }
- 
+}
 
 
 /*
  * Returns index to user in udata structure, for use with finduser().
  */
 int
-getuserlink(tmpuser)
-const register struct user *tmpuser;
+getuserlink(const struct user *tmpuser)
 {
-  return((tmpuser - (struct user *)(udata + 1)) / sizeof(struct user));
+    return((tmpuser - (struct user *)(udata + 1)) / sizeof(struct user));
 }
 
 
@@ -285,8 +274,7 @@ const register struct user *tmpuser;
  * Isn't strictly necessary, but useful for VM management.
  */
 void
-freeuser(tmpuser)
-register struct user *tmpuser;
+freeuser(struct user *tmpuser)
 {
 #if 0
   /*
@@ -314,7 +302,7 @@ register struct user *tmpuser;
  * success, -1 on failure.
  */
 int
-openuser()
+openuser(void)
 {
   register int f;
 
@@ -338,10 +326,8 @@ openuser()
 #endif
 }
 
-
-
 struct userdata *
-copyuserdata()
+copyuserdata(void)
 {
   register struct userdata *ucopy;
 
@@ -356,10 +342,8 @@ copyuserdata()
   return(ucopy); 
 }
 
-
-
 int
-backupuserdata()
+backupuserdata(void)
 {
   register struct userdata *ucopy;
   register char *zero;
@@ -407,7 +391,7 @@ backupuserdata()
 
 
 int
-listusers()
+listusers(void)
 {
   register int i;
   register int which;

@@ -4,8 +4,7 @@
 
 
 void
-qtelrcv(x)
-register int x;
+qtelrcv(int x)
 {
 	register unsigned char c;
 
@@ -191,10 +190,8 @@ gotiac:			switch (c) {
 }
 
 
-	void
-send_do(option, init, x)
-	int option, init;
-	int x;
+void
+send_do(int option, int init, int x)
 {
 	if (init) {
 		if (!q->qt[x].do_dont_resp[option] && his_state_is_will(option) ||
@@ -208,10 +205,8 @@ send_do(option, init, x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-	void
-willoption(option, x)
-	int option;
-	int x;
+void
+willoption(int option, int x)
 {
 	if (option >= 64) {
 		send_dont(option, 0, x);
@@ -238,10 +233,8 @@ willoption(option, x)
 	set_his_state_will(option);
 }
 
-	void
-send_dont(option, init, x)
-	int option, init;
-	int x;
+void
+send_dont(int option, int init, int x)
 {
 	if (init) {
 		if (!q->qt[x].do_dont_resp[option] && his_state_is_wont(option) ||
@@ -255,10 +248,8 @@ send_dont(option, init, x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-	void
-wontoption(option, x)
-	int option;
-	int x;
+void
+wontoption(int option, int x)
 {
 	if (option >= 64)
 		return;
@@ -275,10 +266,8 @@ wontoption(option, x)
 	set_his_state_wont(option);
 }
 
-	void
-send_will(option, init, x)
-	int option, init;
-	int x;
+void
+send_will(int option, int init, int x)
 {
 	if (init) {
 		if (!q->qt[x].will_wont_resp[option] && my_state_is_will(option) ||
@@ -292,10 +281,8 @@ send_will(option, init, x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-	void
-dooption(option, x)
-	int option;
-	int x;
+void
+dooption(int option, int x)
 {
 	if (option >= 64) {
 		send_wont(option, 0, x);
@@ -317,10 +304,8 @@ dooption(option, x)
 	set_my_state_will(option);
 }
 
-	void
-send_wont(option, init, x)
-	int option, init;
-	int x;
+void
+send_wont(int option, int init, int x)
 {
 	if (init) {
 		if (!q->qt[x].will_wont_resp[option] && my_state_is_wont(option) ||
@@ -334,10 +319,8 @@ send_wont(option, init, x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-	void
-dontoption(option, x)
-	int option;
-	int x;
+void
+dontoption(int option, int x)
 {
 	if (option >= 64)
 		return;
@@ -358,9 +341,8 @@ dontoption(option, x)
 	set_my_state_wont(option);
 }
 
-	void
-suboption(x)
-	int x;
+void
+suboption(int x)
 {
     char *cp, *varp, *valp;
     register int c;
@@ -423,8 +405,7 @@ suboption(x)
 
 
 void
-qinit(x)
-register int x;
+qinit(int x)
 {
 	register int i;
 

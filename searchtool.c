@@ -9,7 +9,8 @@
 #include "defs.h"
 #include "ext.h"
 
-searchtool ()
+void
+searchtool (void)
 {
   register struct user *user;
   char string[75];

@@ -7,13 +7,14 @@
 char *zerobuf;
 size_t zerobuflen = 1048576;
 
-
-void tick ()
+void
+tick (void)
 {
     write (1, ".", 1);
 }
 
-void setupbtmp()
+void 
+setupbtmp(void)
 {
   int fd;
   struct bigbtmp bigbtmp;
@@ -30,7 +31,8 @@ void setupbtmp()
   printf ("btmp setup complete\n");
 }
 
-void setupmsgmain()
+void
+setupmsgmain(void)
 {
   int fd;
   long i;
@@ -57,7 +59,8 @@ void setupmsgmain()
 }
 
 
-void setupmsgdata()
+void
+setupmsgdata(void)
 {
   int fd;
   struct msg msg;
@@ -75,7 +78,8 @@ void setupmsgdata()
 }
 
 
-void setupuserdata()
+void
+setupuserdata(void)
 {
   int fd;
   int i;
@@ -104,7 +108,8 @@ void setupuserdata()
 }
 
 
-void setupxmsgdata()
+void
+setupxmsgdata(void)
 {
   int fd;
   int i;
@@ -132,7 +137,8 @@ void setupxmsgdata()
   printf ("xmsgdata done\n");
 }
 
-void setupvoteinfo()
+void 
+setupvoteinfo(void)
 {
   struct voteinfo voteinfo;
   int fd;
@@ -150,7 +156,8 @@ void setupvoteinfo()
 }
 
 
-void main(int argc, char **argv)
+void
+main(int argc, char **argv)
 {
   if ((zerobuf = calloc (zerobuflen, 1)) == NULL) {
     perror ("Couldn't allocate zero buffer");

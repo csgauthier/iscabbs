@@ -4,12 +4,8 @@
 #include "defs.h"
 #include "ext.h"
 
-
-
 int
-main(argc, argv)
-register int argc;
-register char **argv;
+main(int argc, char **argv)
 {
   register int cmd = 0;
   char work[80];

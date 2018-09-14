@@ -10,8 +10,7 @@
  */
 
 void
-change_setup(workuser)
-struct user *workuser;
+change_setup(struct user *workuser)
 {
 register int c = -1;
 register int i;
@@ -279,9 +278,7 @@ char *name;
 
 
 void
-change_addr(tuser, chflag)
-  struct user *tuser;
-  int     chflag;
+change_addr(struct user *tuser, int chflag)
 {
   char work[81], answer[41];
 
@@ -387,8 +384,7 @@ change_addr(tuser, chflag)
 
 
 void
-change_aide_info(tuser)
-struct user *tuser;
+change_aide_info(struct user *tuser)
 {
   char junk[80];
 
@@ -408,9 +404,7 @@ struct user *tuser;
 
 
 void
-change_anonymous(tuser, chflag)
-register struct user *tuser;
-register int chflag;
+change_anonymous(struct user *tuser, int chflag)
 {
   register int c;
 
@@ -512,13 +506,8 @@ register int chflag;
   }
 }
 
-
-
-
 void
-change_pass(tuser, noold)
-  struct user *tuser;
-  int     noold;
+change_pass(struct user *tuser, int noold)
 {
 
 char    pas[9],
@@ -575,8 +564,7 @@ char *cp;
 
 
 void
-change_reminder(tuser)
-struct user *tuser;
+change_reminder(struct user *tuser)
 {
   char junk[80];
 
@@ -601,8 +589,7 @@ struct user *tuser;
  */
 
 void
-change_info(tuser)
-  struct user *tuser;
+change_info(struct user *tuser)
 {
   char junk[5][80];
   register int i;
@@ -655,8 +642,7 @@ change_info(tuser)
 
 
 void
-change_name(workuser)
-struct user *workuser;
+change_name(struct user *workuser)
 {
   char work[60];
   register struct user *tmpuser;
@@ -774,9 +760,7 @@ struct user *workuser;
 
 
 void
-do_verify(workuser, ask)
-struct user *workuser;
-int ask;
+do_verify (struct user *workuser, int ask)
 {
   if (ask)
     my_printf("\nVerify information for user: %s.\nAre you sure? (Y/N) -> ", workuser->name);
@@ -803,8 +787,7 @@ int ask;
 
 
 void
-show_verified(workuser)
-struct user *workuser;
+show_verified(struct user *workuser)
 {
   my_printf("\nReal name: %s\nAddress: %s\nCity: %s\nState: %s\nZIP: %s\nPhone: %s\nEmail: %s\n\n", workuser->A_real_name, workuser->A_addr1, workuser->A_city, workuser->A_state, workuser->A_zip, workuser->A_phone, workuser->A_mail);
 }
@@ -812,8 +795,7 @@ struct user *workuser;
 
 
 void
-ooptions(tuser)
-register struct user *tuser;
+ooptions(struct user *tuser)
 {
   register int answer;
 
@@ -888,8 +870,7 @@ register struct user *tuser;
 
 
 void
-foptions(tuser)
-register struct user *tuser;
+foptions(struct user *tuser)
 {
   register int answer;
 
@@ -1020,8 +1001,7 @@ register struct user *tuser;
 
 
 void
-xoptions(tuser)
-register struct user *tuser;
+xoptions(struct user *tuser)
 {
   my_printf("Options\n\nHave eXpress messages turned OFF when you first enter the BBS? -> ");
   if (yesno(tuser->f_xoff) != tuser->f_xoff)
@@ -1065,9 +1045,7 @@ register struct user *tuser;
  * Handles configuration of userlist for X message refusal/acceptance.
  */
 void
-userlist_config(tmpuser, chflag)
-register struct user *tmpuser;
-register int chflag;
+userlist_config(struct user *tmpuser, int chflag)
 {
   register int c;
   register int i, j;
@@ -1213,8 +1191,7 @@ register int chflag;
 
 
 void
-dokey(up)
-struct user *up;
+dokey(struct user *up)
 {
   char key[6], mykey[6];
   register int i;
@@ -1252,7 +1229,7 @@ struct user *up;
 
 
 struct user *
-change_user()
+change_user(void)
 {
   register struct user *tmpuser = NULL;
   register char *name;
@@ -1290,7 +1267,7 @@ change_user()
 
 
 void
-change_doing()
+change_doing(void)
 {
 char doing[50];
 
@@ -1337,9 +1314,8 @@ int count;
 }
 
 
-void assignquickx (slot, tmpuser)
-int slot;
-struct user *tmpuser;
+void
+assignquickx (int slot, struct user *tmpuser)
 {
 char *newname;
 struct user *olduser = NULL;
@@ -1380,8 +1356,7 @@ struct user *up = NULL;
 
 
 void
-do_bigzap (tmpuser)
-struct user *tmpuser;
+do_bigzap (struct user *tmpuser)
 {
 register int i;
 int c;
@@ -1436,8 +1411,7 @@ int c;
 
 
 void
-change_vanityflag (tmpuser)
-struct user *tmpuser;
+change_vanityflag (struct user *tmpuser)
 {
 char flag[50];
 
