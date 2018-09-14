@@ -143,7 +143,7 @@ int i;
       q->connectable--;
       q->qt[0].last = q->t;
       i = sizeof sa;
-      while ((x = accept(sfd, &sa, &i)) < 0)
+      while ((x = accept(sfd, (struct sockaddr*)&sa, &i)) < 0)
       {
         if (errno == EINTR)
 	  continue;

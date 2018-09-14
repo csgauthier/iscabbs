@@ -250,7 +250,7 @@ long oldmask;
   sa.sin_family = AF_INET;
   sa.sin_addr.s_addr = 0;
   sa.sin_port = htons (PORT);
-  if (bind(sfd, &sa, sizeof sa))
+  if (bind(sfd, (const struct sockaddr*)&sa, sizeof sa))
     logfatal("bind: %m");
   if (listen(sfd, SOMAXCONN))
     logfatal("listen: %m");

@@ -246,7 +246,7 @@ long mineternal;
   else
   {
     j = sizeof(sa);
-    getpeername(0, &sa, &j);
+    getpeername(0, (struct sockaddr*)&sa, &j);
     newbtmp.remaddr = sa.sin_addr.s_addr;
     newbtmp.remport = sa.sin_port;
     strcpy(newbtmp.remlogin, ARGV[1] && ARGV[2] ? ARGV[2] : "");
