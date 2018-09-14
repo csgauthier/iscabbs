@@ -8,7 +8,7 @@
 void
 locks(int which)
 {
-  register int i;
+  int i;
 
   if (lockflags)
   {
@@ -39,7 +39,7 @@ locks(int which)
 void
 unlocks(int which)
 {
-  register int i;
+  int i;
 
   if (which < 0)
   {
@@ -71,9 +71,9 @@ unlocks(int which)
 int
 add_loggedin(struct user *up)
 {
-register int i;
-register int j;
-register int p;
+int i;
+int j;
+int p;
 int count = 0;
 int btmpindex = 0;
 
@@ -182,8 +182,8 @@ int btmpindex = 0;
 void
 remove_loggedin(int p)
 {
-register int i;
-register struct btmp *btmp;
+int i;
+struct btmp *btmp;
 
   for (i = bigbtmp->users - 1; i >= 0; i--)
     if (bigbtmp->btmp[bigbtmp->index[i]].pid == p)
@@ -215,8 +215,8 @@ void
 reserve_slot(void)
 {
 struct btmp newbtmp;
-register int i;
-register int p;
+int i;
+int p;
 int j;
 struct sockaddr_in sa;
 long mineternal;
@@ -373,13 +373,13 @@ long mineternal;
 void
 validate_users(int what)
 {
-  register int c = ' ';
-  register int i;
-  register int count;
-  register int pick;
-  register time_t t;
+  int c = ' ';
+  int i;
+  int count;
+  int pick;
+  time_t t;
   time_t oldt;
-  register struct user *tuser = NULL;
+  struct user *tuser = NULL;
   struct btmp btmp;
   unsigned char skips[(MAXNEWBIES >> 3) + 1];
   short skipped = 0;
@@ -545,8 +545,8 @@ void
 logout_user(struct user *tmpuser, struct btmp *btmp, int how)
 {
   struct btmp copybtmp;
-  register int copyindex;
-  register int i;
+  int copyindex;
+  int i;
 
   if (btmp)
   {

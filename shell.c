@@ -22,11 +22,11 @@
 char   *
 get_name(char *prompt, int quit_priv)
 {
-register char *p;
-register int c;
-register int upflag;
-register int fflag;
-register int invalid = 0;
+char *p;
+int c;
+int upflag;
+int fflag;
+int invalid = 0;
 
   for (;;)
   {
@@ -130,13 +130,13 @@ register int invalid = 0;
 void
 do_login(void)
 {
-register int i;
-register int users;
-register char *name;
-register struct user *tmpuser = 0;
-register int wrong = 0;
-register int fd;
-register char *bbsname;
+int i;
+int users;
+char *name;
+struct user *tmpuser = 0;
+int wrong = 0;
+int fd;
+char *bbsname;
 char pas[9];
 char temp[128];
 char myname[MAXALIAS + 1];
@@ -302,8 +302,8 @@ char myname[MAXALIAS + 1];
 void
 profile_user(int all)
 {
-register char *name;
-register int how = PROF_REG;
+char *name;
+int how = PROF_REG;
 
   my_printf("Profile user\n\nUser to profile? %s", all ? "[FULL PROFILE] " : "");
   if (*profile_default)

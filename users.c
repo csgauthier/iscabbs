@@ -17,13 +17,13 @@ static int savelinknum;
 struct user *
 finduser(char *name, long usernum, int linknum)
 {
-  register int old;
-  register int gen;
-  register int lower;
-  register int upper;
-  register int mid;
-  register int cmp;
-  register struct userlink *linkptr;
+  int old;
+  int gen;
+  int lower;
+  int upper;
+  int mid;
+  int cmp;
+  struct userlink *linkptr;
 
   if (!name && !usernum)
     return((struct user *)(udata + 1) + linknum);
@@ -77,11 +77,11 @@ finduser(char *name, long usernum, int linknum)
 struct user *
 adduser(char *name, long usernum)
 {
-  register struct user *user;
-  register int old;
-  register int new;
-  register int free;
-  register struct userlink *linkptr;
+  struct user *user;
+  int old;
+  int new;
+  int free;
+  struct userlink *linkptr;
 
   for (;;)
   {
@@ -173,11 +173,11 @@ adduser(char *name, long usernum)
 int
 deleteuser(char *name)
 {
-  register struct user *user;
-  register int old;
-  register int new;
-  register int linknum;
-  register struct userlink *linkptr;
+  struct user *user;
+  int old;
+  int new;
+  int linknum;
+  struct userlink *linkptr;
 
   for (;;)
   {
@@ -237,7 +237,7 @@ deleteuser(char *name)
 struct user *
 getuser(char *name)
 {
-  register struct user *user;
+  struct user *user;
 
   user = finduser(name, 0, 0);
   if (user && (strcmp(name, user->name) || !user->usernum))
@@ -287,7 +287,7 @@ freeuser(struct user *tmpuser)
   if (tmpuser != ouruser)
     madvise((caddr_t)tmpuser, sizeof(struct user), MADV_DONTNEED);
 #else
-  register int index;
+  int index;
 
   if (tmpuser != ouruser && ((index = tmpuser->btmpindex) < 0 || tmpuser->usernum != bigbtmp->btmp[index].usernum) && strcmp(tmpuser->name, "Guest"))
     msync((caddr_t)tmpuser, sizeof(struct user), MS_ASYNC | MS_INVALIDATE);
@@ -304,7 +304,7 @@ freeuser(struct user *tmpuser)
 int
 openuser(void)
 {
-  register int f;
+  int f;
 
   if ((f = open(USERDATA, O_RDWR)) < 0) {
     perror ("openuser open");
@@ -329,7 +329,7 @@ openuser(void)
 struct userdata *
 copyuserdata(void)
 {
-  register struct userdata *ucopy;
+  struct userdata *ucopy;
 
   ucopy = (struct userdata *)mmap(0, sizeof(struct userdata), PROT_READ | PROT_WRITE, MAP_ANONYMOUS |  MAP_PRIVATE, -1, 0);
   if (!ucopy || ucopy == (struct userdata *)-1)
@@ -345,11 +345,11 @@ copyuserdata(void)
 int
 backupuserdata(void)
 {
-  register struct userdata *ucopy;
-  register char *zero;
-  register struct user *up;
-  register int i;
-  register int count = 0;
+  struct userdata *ucopy;
+  char *zero;
+  struct user *up;
+  int i;
+  int count = 0;
 
   zero = (char *)mmap(0, sizeof (struct user), PROT_READ | PROT_WRITE, MAP_ANONYMOUS   | MAP_PRIVATE, -1, 0);
   if (!zero || zero == (char *)-1)
@@ -393,8 +393,8 @@ backupuserdata(void)
 int
 listusers(void)
 {
-  register int i;
-  register int which;
+  int i;
+  int which;
 
   which = udata->which;
   for (i = 0; i < udata->totalusers[which]; i++)

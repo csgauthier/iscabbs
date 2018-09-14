@@ -333,7 +333,7 @@ unsigned char *tmpsave;
     }
     else if (lnlngth || chr == LF)
     {
-      register int save = lnlngth;
+      int save = lnlngth;
 
       for (; lnlngth && thisline[lnlngth] == ' '; lnlngth--)
         ;

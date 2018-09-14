@@ -9,11 +9,11 @@ displayx(long pos, int num, time_t *t, long *prev, long *next)
 {
   char nstr[12];
   char name[MAXALIAS + 1];
-  register struct xheader *xh;
-  register char *s;
-  register int sender = 1;
-  register int noshow = pos < 0;
-  register int i;
+  struct xheader *xh;
+  char *s;
+  int sender = 1;
+  int noshow = pos < 0;
+  int i;
 
   pos = pos < 0 ? -pos : pos;
   xh = (struct xheader *)(void *)(xmsg + pos);
@@ -111,8 +111,8 @@ displayx(long pos, int num, time_t *t, long *prev, long *next)
 void
 checkx(int resetnox)
 {
-  register int i;
-  register int nox = mybtmp->nox;
+  int i;
+  int nox = mybtmp->nox;
 
   if (resetnox < 0)
   {
@@ -157,11 +157,11 @@ checkx(int resetnox)
 void
 express(int which)
 {
-register int i;
-register char *name;
-register struct btmp *buser;
-register struct user *p;
-register int override = ' ';
+int i;
+char *name;
+struct btmp *buser;
+struct user *p;
+int override = ' ';
 struct btmp tuser;
 char send_string[XLENGTH][80];
 
@@ -413,13 +413,13 @@ sendx(struct btmp *buser, struct user *touser,
 {
 struct xheader xh;
 time_t t;
-register int i;
-register int j;
-register char *p;
-register long curpos;
-register struct tm *tp;
-register struct xheader *xhp;
-register int wasbusy = 0;
+int i;
+int j;
+char *p;
+long curpos;
+struct tm *tp;
+struct xheader *xhp;
+int wasbusy = 0;
 
   /* BEEPS */
   if (override == 'b')
@@ -588,13 +588,13 @@ char nstr[8];
 long prev;
 long next;
 time_t t = 0;
-register long pos;
-register long oldpos = 0;
-register int i;
-register int c = ' ';
-register int dir = BACKWARD;
-register int n = 0;
-register int savedir;
+long pos;
+long oldpos = 0;
+int i;
+int c = ' ';
+int dir = BACKWARD;
+int n = 0;
+int savedir;
 
   for (;;)
   {
@@ -722,8 +722,8 @@ get_syself_help(int cmd)
   struct btmp btmp;
   struct btmp *buser;
   struct user *p;
-  register int i;
-  register int n;
+  int i;
+  int n;
   time_t t;
   int diff, maxdiff = 0;
   int save = -1;
@@ -823,8 +823,8 @@ get_syself_help(int cmd)
 int
 syself_ok(char *name)
 {
-register struct user *up;
-register int i;
+struct user *up;
+int i;
 
   if (!(up = getuser(name)))
     return(0);
@@ -840,8 +840,8 @@ void
 xbroadcast(void)
 {
 char send_string[XLENGTH][80];
-register int i;
-register int j;
+int i;
+int j;
 char override = 'B';
 
   my_printf("\nEnter the message you wish to broadcast to ALL users...\n");
@@ -894,16 +894,16 @@ int
 xyell(struct user *up, unsigned char *p)
 {
   char nstr[8];
-  register long pos = ouruser->xmaxpos;
-  register struct xheader *xh;
-  register int i;
-  register char *s;
-  register int num = xmsgnum - 1;
-  register int sender;
-  register long usernum;
-  register time_t t = 0;
-  register int found = 0;
-  register unsigned char *savep = p;
+  long pos = ouruser->xmaxpos;
+  struct xheader *xh;
+  int i;
+  char *s;
+  int num = xmsgnum - 1;
+  int sender;
+  long usernum;
+  time_t t = 0;
+  int found = 0;
+  unsigned char *savep = p;
 
   usernum = up->usernum;
 
@@ -971,8 +971,8 @@ xinit(int reset)
 void
 clean_xconf(struct user *tmpuser)
 {
-  register int i, j;
-  register long num;
+  int i, j;
+  long num;
 
   locks(SEM_USER);
   for (i = 0; i < NXCONF && (num = tmpuser->xconf[i].usernum); i++)

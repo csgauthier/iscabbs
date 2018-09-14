@@ -13,7 +13,7 @@ countmsgs(void)
 {
 int     count = 0;
 int     new = 0;
-register int i;
+int i;
 
   for (i = 0; i < MSGSPERRM; i++)
   {
@@ -344,7 +344,7 @@ int     savenox = mybtmp->nox;
 void
 flush_input(int sec)
 {
-register int i;
+int i;
 int flush = -1;
 
   if (sec)
@@ -445,7 +445,7 @@ int i;
 void
 fr_post(int rm, long msgnum, long pos, long mmhi, struct user *tmpuser)
 {
-  register int i;
+  int i;
 
   if (rm == MAIL_RM_NBR)
     if (tmpuser)
@@ -591,7 +591,7 @@ updatels(short    *prev)
 int
 yesno(int def)
 {
-register int i;
+int i;
  
   if (def < 0)
     i = get_single_quiet("YN");
@@ -714,8 +714,8 @@ char stamp[5];
 #include <utmpx.h>
 char *gethost(void)
 {
-register struct utmpx *ut;
-register char *tp;
+struct utmpx *ut;
+char *tp;
 static char hname[MAXHOSTNAMELEN + 1];
 
   if (*hname)
@@ -757,7 +757,7 @@ static char hname[MAXHOSTNAMELEN + 1];
 char *
 mystrstr(char *haystack, char* needle)
 {
-    register char *s;
+    char *s;
 
     for (s = haystack; *s; s++)
         if ( /* *s == *needle && */ !strncasecmp(s, needle, strlen(needle)))

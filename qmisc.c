@@ -55,8 +55,8 @@ void
 do_ring(void)
 {
 char pst_data[128];
-register struct pst_dynamic *pst = (struct pst_dynamic *)(void *)pst_data;
-register int z;
+struct pst_dynamic *pst = (struct pst_dynamic *)(void *)pst_data;
+int z;
 
   f_qalarm = 0;
   q->t = time(0);
@@ -117,7 +117,7 @@ do_reread(void)
 {
 unsigned char buf[256];
 FILE *f;
-register int c;
+int c;
 int limit;
 int lockout;
 int i;
@@ -263,9 +263,9 @@ void
 checkauth(int x)
 {
 char work[80];
-register struct user *u;
-register char *p;
-register int i, j;
+struct user *u;
+char *p;
+int i, j;
 
   if (!(u = getuser(q->qt[x].name)))
   {
@@ -423,7 +423,7 @@ logfatal(char *error)
 void
 drop(int s)
 {
-register int i, j;
+int i, j;
 
   if (s > 0)
   {
@@ -451,7 +451,7 @@ register int i, j;
 int
 ssend(int s, char* msg, int len)
 {
-  register int x;
+  int x;
 
   for (;;)
   {

@@ -622,7 +622,7 @@ help(char *topic, int morehelp)
 {
 char help_str[30];
 char hfile[100];
-register int f;
+int f;
 int toast;
 
   sprintf(hfile, "%s%s", HELPDIR, topic);
@@ -667,7 +667,7 @@ int toast;
 void
 inituser(void)
 {
-register int i;
+int i;
 
   for (i = 0; i < MAXROOMS; ++i)
   {

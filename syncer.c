@@ -17,12 +17,12 @@ bbssync(int init)
   long oldcputime[9];
   time_t t;
   int flags;
-  register long curpos;
-  register FILE *fp;
-  register int f;
-  register struct tm *tm;
-  register int i;
-  register int trim;
+  long curpos;
+  FILE *fp;
+  int f;
+  struct tm *tm;
+  int i;
+  int trim;
 
   if (fork())
     _exit(0);

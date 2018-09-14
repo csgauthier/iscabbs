@@ -12,8 +12,8 @@
 void
 count_skips(void)
 {
-register int i;
-register int count;
+int i;
+int count;
 
   for (count = 0, i = 0; i < MAXROOMS; i++)
     count += skipping[i >> 3] >> (i & 7) & 1;
@@ -197,7 +197,7 @@ forgetroom(void)
 void
 loadroom(void)
 {
-  register int i, j;
+  int i, j;
 
   strcpy(room->name, msg->room[curr].name);
   room->roomaide = msg->room[curr].roomaide;
@@ -256,7 +256,7 @@ loadroom(void)
 int
 nextroom(void)
 {
-register int i;
+int i;
 
   if (checkmail(ouruser, NOISY) > 0)
   {			/* Forced into mailroom ASAP after mail arrives */
@@ -813,7 +813,7 @@ char    nbr_str[12];	/* C-defined max for longs is +/- 2,147,483,647 */
 int
 resetpos(long savedid)
 {
-register int i;
+int i;
 
   for (i = 0; i < MSGSPERRM; i++)
     if (room->num[i] >= savedid)

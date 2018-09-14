@@ -39,10 +39,10 @@ s_sigalrm2(int signo)
 void
 bbsfinger(void)
 {
-register int n;
-register int i;
-register int x;
-register char *p;
+int n;
+int i;
+int x;
+char *p;
 int size;
 fd_set rfd;
 struct fd

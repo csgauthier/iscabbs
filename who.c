@@ -21,7 +21,7 @@ struct btmp *btmp;
 struct user *tmpuser;
 int l;
 char    msg_status;
-register int     i;
+int     i;
 int     tdif,
         min,
         hour,
@@ -172,7 +172,7 @@ int whostart, whoend, whoincr;
 struct btmp *
 is_online(struct btmp *btmp, struct user *user, char *name)
 {
-register int i;
+int i;
 
   if (user)
   {
@@ -404,8 +404,8 @@ int showanon;
 char *
 mymmap(char *name, int *size, int priv)
 {
-  register int f = -1;
-  register char *p;
+  int f = -1;
+  char *p;
 
   if (name)
     if ((f = open(name, O_RDWR)) < 0)
