@@ -7,7 +7,7 @@
 int
 telrcv(int *noflush)
 {
-	register int c;
+	int c;
 
 	for (;;) {
 		if (!INPUT_LEFT())

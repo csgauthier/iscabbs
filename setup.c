@@ -12,8 +12,8 @@
 void
 change_setup(struct user *workuser)
 {
-register int c = -1;
-register int i;
+int c = -1;
+int i;
 int     chflag;
 struct user *up = NULL;
 char *name;
@@ -406,7 +406,7 @@ change_aide_info(struct user *tuser)
 void
 change_anonymous(struct user *tuser, int chflag)
 {
-  register int c;
+  int c;
 
   my_printf("\nYou have the option of hiding some or all of your personal information (name,\naddress, phone, and e-mail) from others on this BBS.\n\n");
   if (chflag)
@@ -513,7 +513,7 @@ change_pass(struct user *tuser, int noold)
 char    pas[9],
         original[9], pas2[9];
 char temp[MAXALIAS + 1];
-register int i;
+int i;
 char *cp;
 
   my_printf("\nChanging password for %s...\n", tuser->name);
@@ -592,7 +592,7 @@ void
 change_info(struct user *tuser)
 {
   char junk[5][80];
-  register int i;
+  int i;
 
   if (*tuser->desc1)
     my_printf("\nYour current info:\n %s\n", tuser->desc1);
@@ -645,12 +645,12 @@ void
 change_name(struct user *workuser)
 {
   char work[60];
-  register struct user *tmpuser;
-  register char *name;
-  register char *p;
-  register int c;
-  register int i;
-  register int j;
+  struct user *tmpuser;
+  char *name;
+  char *p;
+  int c;
+  int i;
+  int j;
 
   my_printf("\nNew name for user '%s' -> ", workuser->name);
   name = get_name("", 2);
@@ -674,7 +674,7 @@ change_name(struct user *workuser)
     flush_input(0);
     if (yesno(-1))
     {
-      register long usernum;
+      long usernum;
 
       locks(SEM_NEWBIE);
       usernum = ++msg->eternal;
@@ -797,7 +797,7 @@ show_verified(struct user *workuser)
 void
 ooptions(struct user *tuser)
 {
-  register int answer;
+  int answer;
 
 
   my_printf("\nMark yourself as a novice user? -> ");
@@ -872,7 +872,7 @@ ooptions(struct user *tuser)
 void
 foptions(struct user *tuser)
 {
-  register int answer;
+  int answer;
 
   my_printf("\nMark user as having bad address information? -> ");
   if (yesno(tuser->f_badinfo) != tuser->f_badinfo)
@@ -1047,11 +1047,11 @@ xoptions(struct user *tuser)
 void
 userlist_config(struct user *tmpuser, int chflag)
 {
-  register int c;
-  register int i, j;
-  register char *name, *tmpname;
-  register struct user *up = NULL;
-  register int which;
+  int c;
+  int i, j;
+  char *name, *tmpname;
+  struct user *up = NULL;
+  int which;
 
   clean_xconf(tmpuser);
   if (chflag && tmpuser->xconftime)
@@ -1194,7 +1194,7 @@ void
 dokey(struct user *up)
 {
   char key[6], mykey[6];
-  register int i;
+  int i;
   
 
   if (up != ouruser)
@@ -1231,8 +1231,8 @@ dokey(struct user *up)
 struct user *
 change_user(void)
 {
-  register struct user *tmpuser = NULL;
-  register char *name;
+  struct user *tmpuser = NULL;
+  char *name;
 
   if (!*profile_default)
     my_printf("\nUser -> ");
@@ -1358,7 +1358,7 @@ struct user *up = NULL;
 void
 do_bigzap (struct user *tmpuser)
 {
-register int i;
+int i;
 int c;
 
 

@@ -90,12 +90,12 @@ int     c,
 int
 new_user(void)
 {
-  register int i;
-  register int j;
-  register int c;
-  register char *p;
-  register char *name;
-  register struct user *tmpuser = NULL;
+  int i;
+  int j;
+  int c;
+  char *p;
+  char *name;
+  struct user *tmpuser = NULL;
   char pas[9];
   char pas2[14];
   char real_name[MAXNAME+1];

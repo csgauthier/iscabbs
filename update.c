@@ -67,7 +67,7 @@ int f;
 struct userinfo *
 getusers(long   *ucount)
 {
-register int i;
+int i;
 struct userinfo *start;
 struct user *up;
 struct userinfo *uinfo;
@@ -509,7 +509,7 @@ unsigned char filebuf[8192];
 int
 hack_xconf(struct user *u)
 {
-  register int i;
+  int i;
   struct xconf x[60];
 
   if ((sizeof x) != 240)
@@ -536,8 +536,8 @@ hack_xconf(struct user *u)
 int
 addxconf(struct user *u, long num, struct xconf x[60], int which)
 {
-  register char *name, *tmpname;
-  register int i, j;
+  char *name, *tmpname;
+  int i, j;
 
   name = getusername(num, 0);
   if (!name)

@@ -54,7 +54,7 @@ struct user *tmpuser = NULL;
 int     tosysop = NO;	/* message to sysop flag */
 int     len;
 struct mheader *mh;
-register int i;
+int i;
 
 
   if (curr_rm == LOBBY_RM_NBR && !ouruser->f_admin)
@@ -283,7 +283,7 @@ register int i;
   ouruser->posted++;
   if (room->num[MSGSPERRM - 1] != savedhighest)
   {
-    register long sh = savedhighest;
+    long sh = savedhighest;
 
     loadroom();
     if (ouruser->lastseen[curr] == sh && !ouruser->f_ownnew && room->num[MSGSPERRM - 2] == sh)
@@ -328,7 +328,7 @@ char    *name;
 long    mstartpos;
 int     show = 1;
 long    oldpos;
-register int i;
+int i;
 
 
   mh = (struct mheader *)(void *)p;
@@ -473,7 +473,7 @@ readmessage(
   int     new,          /* TRUE to skip new message author just wrote */
   long    msgid)        /* message id (validity check -- if 0 ignore it) */
 {
-  register int ret;
+  int ret;
 
   if (client)
   {
@@ -752,7 +752,7 @@ unsigned char *tmpsave;
       }
       else if (lnlngth || chr == LF && upload)
       {
-	register int save = lnlngth;
+	int save = lnlngth;
 
         for (; lnlngth && thisline[lnlngth] == ' '; lnlngth--)
           ;

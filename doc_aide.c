@@ -17,7 +17,7 @@
 void
 aide_menu(void)
 {
-register int chr = '?';
+int chr = '?';
 int     i;
 
   /* Can't get here unless you're at least a room aide for this room */
@@ -136,7 +136,7 @@ int     i;
 void
 createroom(void)
 {
-register int i;
+int i;
 int     found;
 char   *newroom;
 char    opt;
@@ -682,7 +682,7 @@ aide_logout(void)
 struct user *tmpuser;
 char   *uname;
 struct btmp btmp;
-register int i;
+int i;
 
   uname = get_name("Name of user to log out? ", 2);
  
@@ -706,8 +706,8 @@ register int i;
 void
 logout_all(void)
 {
-  register int i;
-  register int p;
+  int i;
+  int p;
 
   my_printf("Are you are you want to logout all users on the BBS? (Y/N) -> ");
   if (yesno(-1))

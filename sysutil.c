@@ -43,7 +43,7 @@ s_sigio(void)
 void
 s_sigusr2(void)
 {
-  register int i;
+  int i;
 
   for (i = 8; i > 0; i--)
   {
@@ -157,7 +157,7 @@ char *hp;
 unsigned char *lockoutp;
 unsigned char *p;
 int size;
-register int i;
+int i;
 struct sigaction sact;
 
 
@@ -235,8 +235,8 @@ struct sigaction sact;
 void
 logevent(char *message)
 {
-register int f;
-register struct tm *tp;
+int f;
+struct tm *tp;
 time_t t;
 char buf[120];
 
@@ -258,7 +258,7 @@ char buf[120];
 void
 my_exit(int doflush)
 {
-  register int save = f_death;
+  int save = f_death;
 
   if (lockflags)
   {
@@ -378,7 +378,7 @@ struct termios term;
 int
 inkey(void)
 {
-register int i = 257;
+int i = 257;
 int noflush = 1;
 
   while (i > DEL)
@@ -604,7 +604,7 @@ int     invalid = 0;
 int
 get_single_quiet(char   *valid_string)
 {
-register int c;
+int c;
 int invalid = 0;
 
   for (;;)
@@ -653,8 +653,8 @@ int     line;
 int size;
 unsigned char *filep;
 unsigned char *p;
-register int i;
-register int noprint;
+int i;
+int noprint;
 
   my_putchar('\n');
   size = 0;
@@ -682,7 +682,7 @@ unsigned int
 sleep(unsigned int sec)
 {
   struct timeval tv;
-  register time_t t;
+  time_t t;
 
   fflush(stdout);
   t = time(0);
@@ -715,7 +715,7 @@ va_dcl
 va_list ap;
 char s[240];
 time_t t;
-register int f;
+int f;
 
 #ifdef __STDC__
   va_start(ap, fmt);

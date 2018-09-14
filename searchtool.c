@@ -12,9 +12,9 @@
 void
 searchtool (void)
 {
-  register struct user *user;
+  struct user *user;
   char string[75];
-  register int i;
+  int i;
   int count = 0;
   int found;
 

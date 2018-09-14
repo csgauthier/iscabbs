@@ -7,7 +7,7 @@
 int
 main(int argc, char **argv)
 {
-  register int cmd = 0;
+  int cmd = 0;
   char work[80];
 
   sprintf (work, "%score/bbs", ROOT);

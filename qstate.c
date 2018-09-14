@@ -6,7 +6,7 @@
 void
 qtelrcv(int x)
 {
-	register unsigned char c;
+	unsigned char c;
 
 	while (q->qt[x].ncc > 0) {
 		if (q->qt[x].nfrontp - q->qt[x].nbackp > 9)
@@ -345,7 +345,7 @@ void
 suboption(int x)
 {
     char *cp, *varp, *valp;
-    register int c;
+    int c;
 
 
     switch (SB_GET()) {
@@ -407,7 +407,7 @@ suboption(int x)
 void
 qinit(int x)
 {
-	register int i;
+	int i;
 
 	switch (q->qt[x].initstate) {
 		case T_INIT1:
