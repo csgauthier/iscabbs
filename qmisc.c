@@ -29,7 +29,7 @@ ring(void)
     }
     else
     {
-      execl(BBSEXEC, BBSEXEC, "-q", 0);
+      execl(BBSEXEC, BBSEXEC, "-q", NULL);
     }
   }
   signal(SIGALRM, (void *)ring);
@@ -213,7 +213,7 @@ do_restart(void)
   newenv[1] = 0;
   environ = newenv;
   syslog(LOG_INFO, "Restarting process");
-  execl(BBSEXEC, BBSEXEC, "-q", 0);
+  execl(BBSEXEC, BBSEXEC, "-q", NULL);
   syslog(LOG_ERR, "exec: %m");
 }
 
@@ -415,7 +415,7 @@ logfatal(char *error)
 #if 1
   syslog(LOG_INFO, "Starting fresh queue process upon death in 15 seconds...");
   sleep(15);
-  execl(BBSEXEC, BBSEXEC, "-q", 0);
+  execl(BBSEXEC, BBSEXEC, "-q", NULL);
 #endif
   _exit(1);
 }

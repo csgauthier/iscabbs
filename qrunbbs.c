@@ -265,9 +265,9 @@ char *p;
       for (i = 0; i < 4; i++)
       {
 	  if (!client)
-            execl(BBSEXEC, BBSARG, host, remoteusername, 0);
+            execl(BBSEXEC, BBSARG, host, remoteusername, NULL);
 	  else
-	    execl(BBSEXEC, CLIENTARG, host, remoteusername, 0);
+	    execl(BBSEXEC, CLIENTARG, host, remoteusername, NULL);
         sleep(1);
       }
       send(0, BBSGONE, sizeof BBSGONE - 1, 0);
