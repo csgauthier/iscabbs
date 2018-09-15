@@ -90,7 +90,6 @@
 #include "users.h"
 #include "queue.h"
 
-extern int errno;
 extern char **environ;
 
 #define BBS             1
