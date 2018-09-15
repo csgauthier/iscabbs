@@ -1,11 +1,24 @@
 #  Makefile for ISCA BBS
-CC := gcc -std=gnu11
+CC := gcc -std=gnu11 
+CC += -m32
+
 CPPFLAGS += $(SSLINC) #   -D_SSL
 CFLAGS   += -O2
 CFLAGS   += -g
-#CFLAGS   += -Wall
-#CFLAGS   += -Wextra
+CFLAGS   += -Wall
+CFLAGS   += -Wextra
 #CFLAGS   += -Werror
+
+## These warnings should be cleaned up ASAP one by one,
+## they are listed in severity order (most severe is at the top).
+CFLAGS   += -Wno-maybe-uninitialized
+CFLAGS   += -Wno-pointer-sign
+CFLAGS   += -Wno-sign-compare
+CFLAGS   += -Wno-format-overflow
+CFLAGS   += -Wno-stringop-overflow
+CFLAGS   += -Wno-stringop-truncation
+CFLAGS   += -Wno-parentheses
+CFLAGS   += -Wno-unused
 
 LDFLAGS  +=
 LIBS    += $(SSLLIB) -lcrypt # -lnsl -lsocket
