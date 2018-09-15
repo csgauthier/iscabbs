@@ -43,7 +43,6 @@ int n;
 int i;
 int x;
 char *p;
-int size;
 fd_set rfd;
 struct fd
 {
@@ -125,7 +124,7 @@ struct fd
       struct linger linger;
 
       fd[0].conn = 0;
-      size = sizeof sa;
+      socklen_t size = sizeof sa;
       if ((i = accept(0, (struct sockaddr*)&sa, &size)) < 0)
         break;
       if (i != 1)
