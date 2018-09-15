@@ -201,7 +201,7 @@ unsigned char *tmpsave;
   }
 
   tmpp = tmpsave = tmpstart;
-  my_printf ("\n\nEnter an item description, up to %d chars.  Use ^D to end.\n\n", sizeof (vote.msg) - 1);
+  my_printf ("\n\nEnter an item description, up to %zu chars.  Use ^D to end.\n\n", sizeof (vote.msg) - 1);
 
   lnlngth = 0;
   lastspace = 0;
