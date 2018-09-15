@@ -61,8 +61,6 @@
 #define STDINBUFSIZ	256
 #define STDOUTBUFSIZ	960
 
-#define ABS(x)	((x) < 0 ? (-(x)) : (x))
-
 #ifndef MIN
 #define MIN(a, b)       ((a) < (b) ? (a) : (b))
 #endif
