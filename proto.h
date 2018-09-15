@@ -193,7 +193,7 @@ extern void
 int init (void);
 
 /* misc. */
-int askansi(void);
+void askansi(void);
 void bcdplus1encode (long number);
 void blockhost(void);
 void change_beeps(void);
