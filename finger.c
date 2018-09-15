@@ -51,7 +51,6 @@ struct fd
   short pos;
   char buf[24];
 } fd[MAXCONN];
-unsigned char bigstdoutbuf[262143];
 
   if (!getenv("INIT_STATE") && fork())
     _exit(0);
@@ -80,6 +79,7 @@ unsigned char bigstdoutbuf[262143];
 
   setup_socket();
 
+  char bigstdoutbuf[262143];
   setvbuf(stdout, bigstdoutbuf, _IOFBF, sizeof bigstdoutbuf);
 
   for (;;)
