@@ -36,9 +36,9 @@ int whostart, whoend, whoincr;
   if (level != 2 && rows != 32000)
       my_putchar('\n');
   if (bigbtmp->users > 1)
-    colorize("There are @Y%d@G users (@Y%d@G queued)", (bigbtmp->users-9) , bigbtmp->queued);
+    colorize("There are @Y%ld@G users (@Y%ld@G queued)", (bigbtmp->users-9) , bigbtmp->queued);
   else
-    colorize("There is @Y1@G user (@Y%d@G queued)", bigbtmp->queued-9);
+    colorize("There is @Y1@G user (@Y%ld@G queued)", bigbtmp->queued-9);
 
   my_printf("\n\n");
 
@@ -102,7 +102,7 @@ int whostart, whoend, whoincr;
           char work2[60];
 
           sprintf(work2, "%s%s%s", btmp->remlogin, *btmp->remlogin ? "@@" : "", btmp->remote);
-	  colorize("@Y%-19s @M%5d @M%3d @R%2d:%02d%c @C%.37s\n", btmp->name, btmp->pid, btmp->eternal, hour, min, btmp->client ? 'C' : ' ', work2);
+	  colorize("@Y%-19s @M%5d @M%3ld @R%2d:%02d%c @C%.37s\n", btmp->name, btmp->pid, btmp->eternal, hour, min, btmp->client ? 'C' : ' ', work2);
         }
 	break;
       case 3:
@@ -335,7 +335,7 @@ int showanon;
 	colorize (" until %s @Gfrom @M%.38s\n", formtime (4, tmpuser->timeoff), tmpuser->remote);
     }
 
-      colorize("@GTimes called:@M %ld @GMessages posted:@M %ld @GX messages sent:@M %ld @GUser# @M%ld@G\n", tmpuser->timescalled, tmpuser->posted, tmpuser->totalx, tmpuser->usernum);
+      colorize("@GTimes called:@M %d @GMessages posted:@M %d @GX messages sent:@M %ld @GUser# @M%ld@G\n", tmpuser->timescalled, tmpuser->posted, tmpuser->totalx, tmpuser->usernum);
 
     if (flags == PROF_ALL)
     {

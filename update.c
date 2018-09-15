@@ -178,7 +178,7 @@ char	work[80];
 
 	ltm = localtime(&up->time);
 	i = strcmp(up->A_real_name, up->real_name) || strcmp(up->A_addr1, up->addr1) || strcmp(up->A_city, up->city) || strcmp(up->A_state, up->state) || strcmp(up->A_zip, up->zip) || strcmp(up->A_phone, up->phone) || strcmp(up->A_mail, up->mail);
-	fprintf(ulog, "%s%02d%02d%02d  %02d:%02d  %5ld  %6ld  %6ld  0000  %-19s: %-20s : %-40s; %s@%s\n", i ? "** " : "   ", ltm->tm_year, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, up->timescalled, up->posted, up->totalx, up->name, up->real_name, up->mail, up->loginname, up->remote);
+	fprintf(ulog, "%s%02d%02d%02d  %02d:%02d  %5d  %6d  %6ld  0000  %-19s: %-20s : %-40s; %s@%s\n", i ? "** " : "   ", ltm->tm_year, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, up->timescalled, up->posted, up->totalx, up->name, up->real_name, up->mail, up->loginname, up->remote);
       }
 
   }
