@@ -303,7 +303,7 @@ struct bigbtmp
 
   struct qtmp
   {
-    u_long addr;		/* Peer addresses of fd's */
+    struct in_addr addr;/* Peer addresses of fd's */
     time_t conn;		/* Time connected */
     time_t last;		/* Time last data arrived */
     short qlo;			/* Lowest point of fd in queue so far */
