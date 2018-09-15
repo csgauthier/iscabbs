@@ -141,7 +141,7 @@ char *p;
 #else
       else
 	if (q->qt[i].last + 300 < q->t)
-	  syslog(LOG_INFO, "Time difference %d for %08x", q->t - q->qt[i].last, q->qt[i].addr);
+	  syslog(LOG_INFO, "Time difference %ld for %08lx", q->t - q->qt[i].last, q->qt[i].addr);
 #endif
     }
 
