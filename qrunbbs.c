@@ -16,7 +16,7 @@ char *host;
 char bbsname[28];
 char lines[9];
 int y;
-u_long addr;
+struct in_addr addr;
 u_short port;
 int client;
 char remoteusername[16];
@@ -205,7 +205,7 @@ char *p;
         setsockopt(s, SOL_SOCKET, SO_LINGER, &linger, sizeof linger);
 	fcntl(s, F_SETFL, O_NONBLOCK);
         sa.sin_family = AF_INET;
-        sa.sin_addr.s_addr = addr;
+        sa.sin_addr = addr;
         sa.sin_port = htons(113);
 	connect(s, (const struct sockaddr*)&sa, sizeof sa);
 	tv.tv_sec = 4;
@@ -232,11 +232,11 @@ char *p;
         y = -1;
 
 
-      hp = gethostbyaddr ((char*) &addr, 4, AF_INET);
+      hp = gethostbyaddr ((char*) &addr, sizeof(addr), AF_INET);
       if (hp)
         host = hp->h_name;
       else
-        host = inet_ntoa(*(struct in_addr *)&addr);
+        host = inet_ntoa(addr);
 
       if (y > 0)
       {

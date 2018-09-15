@@ -6,7 +6,7 @@
 #define DOWNFILE	ROOT"etc/down"
 #define PORT		1235
 #define MAXACTIVITY	60
-#define LOCAL(x)	((((x) >> 16) & ~0x0100) == 0x80ff)
+#define LOCAL(ADDR)	((((ADDR.s_addr) >> 16) & ~0x0100) == 0x80ff)
 
 #define DUMPFILE	ROOT"var/queuedump"
 #define BBSQUEUEDFIX	ROOT"core/bbsqueued"

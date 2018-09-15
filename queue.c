@@ -222,7 +222,7 @@ int i;
       for (i = 0; i < sizeof q->qt[0].options; i++)
         q->qt[x].options[i] = q->qt[x].do_dont_resp[i] = q->qt[x].will_wont_resp[i] = 0;
       q->qt[x].ncc = 0;
-      q->qt[x].addr = sa.sin_addr.s_addr;
+      q->qt[x].addr = sa.sin_addr;
       q->qt[x].port = sa.sin_port;
       q->qt[x].acc = 0;
       q->qt[x].login = 0;
