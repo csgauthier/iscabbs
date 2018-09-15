@@ -38,11 +38,11 @@
  */
 #define BBSFULL		"\r\nThe BBS is full at the moment.\r\n\n"
 
-#define ATFRONT		"%s (%d:%02d) You are at the front of the queue\r\n"
+#define ATFRONT		"%s (%ld:%02ld) You are at the front of the queue\r\n"
 
-#define ONEAHEAD	"%s (%d:%02d) There is 1 user queued ahead of you (%d users %d queued)\r\n"
+#define ONEAHEAD	"%s (%ld:%02ld) There is 1 user queued ahead of you (%ld users %d queued)\r\n"
 
-#define MANYAHEAD	"%s (%d:%02d) There are %d users queued ahead of you (%d users %d queued)\r\n"
+#define MANYAHEAD	"%s (%ld:%02ld) There are %d users queued ahead of you (%ld users %d queued)\r\n"
 
 #define TOOMANY		"\007\r\n\nHitting keys inside the queue only serves to increase network traffic and slow\r\ndown the system for everyone.  You can escape the queue using ctrl-C, ctrl-D,\r\nor ctrl-Z.  Please use one of those keys instead.\r\n\n"
 

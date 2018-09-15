@@ -187,9 +187,9 @@ quit(void)
 void
 do_quit(void)
 {
-  syslog(LOG_INFO, "users %d, queue %d, limit %d, lockout %d", q->forks - q->reaps, q->qp, q->limit, q->lockout);
-  syslog(LOG_INFO, "forks %d, maxqueue %d", q->forks, q->maxqp);
-  syslog(LOG_INFO, "admins %d, upgrades %d, users %d", q->aidewiz, q->upgrade, q->nonupgrade);
+  syslog(LOG_INFO, "users %ld, queue %d, limit %d, lockout %d", q->forks - q->reaps, q->qp, q->limit, q->lockout);
+  syslog(LOG_INFO, "forks %ld, maxqueue %d", q->forks, q->maxqp);
+  syslog(LOG_INFO, "admins %ld, upgrades %ld, users %ld", q->aidewiz, q->upgrade, q->nonupgrade);
   _exit(0);
 }
 
