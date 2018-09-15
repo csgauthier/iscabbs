@@ -480,6 +480,7 @@ validate_users(int what)
 
 	case 'P':
 	  my_printf("Profile\n");
+      // fall through
 	case 'p':
 	  if (!tuser && !(tuser = getuser(msg->newbies[i].name)))
 	  {
