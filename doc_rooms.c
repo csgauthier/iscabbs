@@ -596,8 +596,8 @@ int savedrows = -1;
 */
 	    break;
           }
-          /* FALL THRU if note successfully post in aide room */
-
+          /* fall through if note successfully post in aide room */
+    /* fall through */
 	case 'D':
 	  if (chr == 'D')
             my_putchar('\n');
