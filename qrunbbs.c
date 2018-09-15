@@ -25,7 +25,6 @@ struct sockaddr_in sa;
 struct linger linger;
 struct timeval tv;
 char identname[16];
-int fds;
 char *p;
 
   if (s > 0)
@@ -211,8 +210,16 @@ char *p;
 	connect(s, (const struct sockaddr*)&sa, sizeof sa);
 	tv.tv_sec = 4;
 	tv.tv_usec = 0;
-	fds = 1 << s;
-	if ((y = select(s + 1, (fd_set *)&fds, (fd_set *)&fds, 0, &tv)) > 0)
+
+    // add s to both the read set and write set.
+    fd_set rfds, wfds;
+    FD_ZERO(&rfds);
+    FD_ZERO(&wfds);
+    FD_SET(s, &rfds);
+    FD_SET(s, &wfds);
+
+    // Not sure why we are selecting on read here if the intent is to write.
+	if ((y = select(s + 1, &rfds, &wfds, 0, &tv)) > 0)
         {
 	  sprintf(str, "%d,%d\r\n", ntohs (port), PORT);
           write(s, str, strlen(str));
@@ -235,8 +242,12 @@ char *p;
       {
 	tv.tv_sec = 2;
 	tv.tv_usec = 0;
-	fds = 1 << s;
-	if (select(s + 1, (fd_set *)&fds, 0, 0, &tv) > 0)
+
+    // only select on write, not read.
+    fd_set rfds;
+    FD_ZERO(&rfds);
+    FD_SET(s, &rfds);
+	if (select(s + 1, &rfds, NULL, 0, &tv) > 0)
 	{
 	  bzero((void *)str, 80);
 	  read(s, str, 79);
