@@ -20,7 +20,7 @@ struct winsize mywin;
 }
 
 
-int
+void
 askansi(void)
 {
   my_printf ("\nAre you on an ANSI terminal? (Y/N) -> ");
