@@ -542,7 +542,7 @@ char    bueller = 0;
 	if (ouruser->f_elf && !ouruser->f_restricted && !ouruser->f_twit)
           if (mybtmp->xstat && !mybtmp->elf)
             my_printf("\n\nYou can't enable yourself as a guide while your X's are disabled.\n");
-	  else if (mybtmp->elf = !mybtmp->elf)
+	  else if ((mybtmp->elf = !mybtmp->elf))
 	    my_printf("\n\nYou are now marked as being available to help others.\n");
 	  else
 	    my_printf("\n\nYou are no longer marked as being available to help others.\n");
@@ -606,11 +606,12 @@ checkmail(struct user *tmpuser, int  quiet)
     else if (!count)
       count--;
 
-  if (!quiet)
+  if (!quiet){
     if (count == 1)
       my_printf("*** You have a new private message in Mail>\n");
     else if (count > 1)
       my_printf("*** You have %d new private messages in Mail>\n", count);
+  }
 
   return(count > 0 ? count : 0);
 }
@@ -729,7 +730,7 @@ char blockhost[125];
 
 colorize("@YHostname or IP to block (blank to quit): @G");
 get_string("", 51, bl_host, -1);
-if (!strlen(bl_host) == 1)
+if (strlen(bl_host) == 0)
 {
 colorize("@YCancel.\n@G");
 }

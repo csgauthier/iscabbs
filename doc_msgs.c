@@ -127,7 +127,7 @@ int i;
     if (curr_rm == AIDE_RM_NBR)
       curr_rm = MAIL_RM_NBR;
   }				/* end if mailroom (recipient analysis) */
-  if (*recipient)
+  if (*recipient){
     if (!(tmpuser = getuser(recipient)) || tmpuser->f_invisible)
     {
       if (tmpuser)
@@ -165,6 +165,7 @@ int i;
       }
       curr_rm = MAIL_RM_NBR;
     }
+  }
 
   if (sysopflags & SYSOP_FROM_SYSOP)
     mtype = MES_SYSOP;
