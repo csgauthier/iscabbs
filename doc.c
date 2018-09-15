@@ -236,7 +236,7 @@ char    bueller = 0;
 //        break;
 
       case 'A':
-	my_printf("Sysop commands\n", msg->room[curr].name);
+	my_printf("Sysop commands %s\n", msg->room[curr].name);
 	aide_menu();
 	break;
 
