@@ -784,7 +784,7 @@ char    nbr_str[12];	/* C-defined max for longs is +/- 2,147,483,647 */
       get_string("Find message by number -> ", 11, nbr_str, -1);
       *searchkey = atol(nbr_str);
       if (*searchkey < 0L)
-	*searchkey = ABS(*searchkey);
+	*searchkey = abs(*searchkey);
       *rm_msg_nbr = 0;		/* start searching from the beginning */
       break;
 

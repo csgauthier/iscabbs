@@ -756,7 +756,7 @@ get_syself_help(int cmd)
     for (i = 0, n = (pid + t) % MAXUSERS; i < MAXUSERS; i++, n = (n == MAXUSERS - 1) ? 0 : n + 1)
       if (bigbtmp->btmp[n].pid && bigbtmp->btmp[n].elf && !bigbtmp->btmp[n].xstat && !bigbtmp->btmp[n].nox && bigbtmp->btmp[n].pid != pid)
       {
-        diff = 121 - ABS(120 - ((t - bigbtmp->btmp[n].time) / 60));
+        diff = 121 - abs(120 - ((t - bigbtmp->btmp[n].time) / 60));
         if (((bigbtmp->btmp[n].pid + i) % diff) < diff - 15)
         {
           if (!syself_ok(bigbtmp->btmp[n].name))
