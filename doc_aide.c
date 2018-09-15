@@ -686,7 +686,7 @@ int i;
 
   uname = get_name("Name of user to log out? ", 2);
  
-  if (*uname)
+  if (*uname){
     if (!(tmpuser = getuser(uname)))
       my_printf("There is no user %s on this BBS.\n", uname);
     else
@@ -699,6 +699,7 @@ int i;
 	logout_user(tmpuser, NULL, 0);
       freeuser(tmpuser);
     }
+  }
 }
 
 
