@@ -398,9 +398,9 @@ listusers(void)
 
   which = udata->which;
   for (i = 0; i < udata->totalusers[which]; i++)
-    my_printf("%06d  %s\n", udata->link[udata->name[which][i]].usernum, udata->link[udata->name[which][i]].name);
+    my_printf("%06ld  %s\n", udata->link[udata->name[which][i]].usernum, udata->link[udata->name[which][i]].name);
   my_putchar('\n');
   for (i = 0; i < udata->totalusers[which]; i++)
-    my_printf("%06d  %s\n", udata->link[udata->num[which][i]].usernum, udata->link[udata->num[which][i]].name);
+    my_printf("%06ld  %s\n", udata->link[udata->num[which][i]].usernum, udata->link[udata->num[which][i]].name);
   return(0);
 }
