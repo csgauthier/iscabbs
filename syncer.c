@@ -51,7 +51,7 @@ bbssync(int init)
     {
       setsid();
 #if 1
-      execl(BBSEXEC, BBSEXEC, "-f", 0);
+      execl(BBSEXEC, BBSEXEC, "-f", NULL);
 #endif
       return(FINGER);
     }
@@ -61,7 +61,7 @@ bbssync(int init)
       setsid();
       sleep(60);
 #if 1
-      execl(BBSEXEC, BBSEXEC, "-q", 0);
+      execl(BBSEXEC, BBSEXEC, "-q", NULL);
 #endif
       return(QUEUE);
     }
