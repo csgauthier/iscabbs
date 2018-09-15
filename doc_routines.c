@@ -789,7 +789,7 @@ long	remainder;
 void
 version(void)
 {
-  my_printf ("#define BBSNAME		%d\n", BBSNAME);
+  my_printf ("#define BBSNAME		\"%s\"\n", BBSNAME);
   my_printf ("#define BBSUID		%d\n", BBSUID);
   my_printf ("#define BBSGID		%d\n", BBSGID);
   my_printf ("#define MAILMSGS		%d\n", MAILMSGS);
