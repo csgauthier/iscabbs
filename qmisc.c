@@ -115,7 +115,7 @@ reread(void)
 void
 do_reread(void)
 {
-unsigned char buf[256];
+char buf[256];
 FILE *f;
 int c;
 int limit;

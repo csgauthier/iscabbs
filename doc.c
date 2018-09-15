@@ -134,7 +134,7 @@ int rnd(int n)
 void
 bbsstart(void)
 {
-unsigned char stdinbuf[STDINBUFSIZ];
+char stdinbuf[STDINBUFSIZ];
 long    uglastmsg;	/* last msg seen in prev. rm */
 long    ugtemp = TWILIGHTZONE;
 short   prev_rm = TWILIGHTZONE;
