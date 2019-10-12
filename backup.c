@@ -5,7 +5,7 @@
 #include "ext.h"
 
 void
-bbsbackup(char *what)
+bbsbackup(const char *what)
 {
   if (!strcmp(what, "USERDATA"))
     backupuserdata();
