@@ -283,7 +283,6 @@ my_exit(int doflush)
   {
     int f;
     struct tm *ltm;
-    char junk[80];
 
     if (doflush)
       checkx(-1);
@@ -295,14 +294,13 @@ my_exit(int doflush)
     ouruser->timeoff = msg->t = time(0);
     ouruser->timetot = ouruser->timetot + ouruser->timeoff - ouruser->time;
 
-    strcpy(junk, ETC);
-    strcat(junk, "uselog");
-    if ((f = open(junk, O_WRONLY | O_CREAT | O_APPEND, 0640)) >= 0)
+    if ((f = open(ETC "uselog", O_WRONLY | O_CREAT | O_APPEND, 0640)) >= 0)
     {
       ltm = localtime(&ouruser->time);
-      sprintf(junk, "%02d%02d%02d:%02d%02d:%04ld:%s\n", ltm->tm_year % 100, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, (ouruser->timeoff - ouruser->time) / 60 + 1, ouruser->name);
+      char * junk = my_sprintf("%02d%02d%02d:%02d%02d:%04ld:%s\n", ltm->tm_year % 100, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, (ouruser->timeoff - ouruser->time) / 60 + 1, ouruser->name);
       write(f, junk, strlen(junk));
       close(f);
+      free(junk);
     }
 
     msync((caddr_t)ouruser, sizeof(struct user), MS_ASYNC);
