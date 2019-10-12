@@ -263,7 +263,6 @@ long oldmask;
 void
 checkauth(int x)
 {
-char work[80];
 struct user *u;
 char *p;
 int i, j;
@@ -318,8 +317,9 @@ int i, j;
     ssend(x, HASONEMAIL, sizeof HASONEMAIL - 1);
   else if (j > 1)
   {
-    sprintf(work, HASMANYMAIL, j);
-    ssend(x, work, strlen(work));
+    char * msg = my_sprintf(HASMANYMAIL, j);
+    ssend(x, msg, strlen(msg));
+    free(msg);
   }
 
   freeuser(u);
