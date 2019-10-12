@@ -19,6 +19,7 @@ CFLAGS   += -Wno-stringop-overflow
 CFLAGS   += -Wno-stringop-truncation
 CFLAGS   += -Wno-parentheses
 CFLAGS   += -Wno-unused
+CFLAGS   += -Wno-unused-result
 
 LDFLAGS  +=
 LIBS    += $(SSLLIB) -lcrypt # -lnsl -lsocket
