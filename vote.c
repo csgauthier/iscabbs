@@ -13,7 +13,6 @@ vote(void)
 {
   int err;
   struct user *user;
-  char tmp[80];
   int cmd;
   int i;
   int j;
@@ -179,7 +178,6 @@ static int
 makevotemsg(void)
 {
 struct vote vote;
-int     auth;
 int     chr = CTRL_D;
 int     cmd;
 int     i;
@@ -188,7 +186,6 @@ int     lastspace;      /* char position of last space encountered on line */
 int     cancelspace;    /* true when last character on line is a space */
 char    thisline[MARGIN + 1];   /* array to save current line */
 time_t  now;
-char    dummy[MAXALIAS + 1];
 int     invalid = 0;
 unsigned char *tmpp;
 unsigned char *tmpsave;
@@ -335,8 +332,6 @@ unsigned char *tmpsave;
     }
     else if (lnlngth || chr == LF)
     {
-      int save = lnlngth;
-
       for (; lnlngth && thisline[lnlngth] == ' '; lnlngth--)
         ;
       for (i = 1; i <= lnlngth; i++)

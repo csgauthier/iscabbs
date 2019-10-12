@@ -18,7 +18,6 @@ void
 show_online(int     level)
 {
 struct btmp *btmp;
-struct user *tmpuser;
 int l;
 char    msg_status;
 int     i;

@@ -325,9 +325,7 @@ int     linenbr;
 int     msgsize;
 int     msgpos;
 char    *name;
-long    mstartpos;
 int     show = 1;
-long    oldpos;
 int i;
 
 

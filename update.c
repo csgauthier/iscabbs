@@ -29,7 +29,6 @@ bbsupdate(void)
 {
 struct userinfo *start;
 long    ucount;
-int f;
 
   if (!(start = getusers(&ucount)))
   {

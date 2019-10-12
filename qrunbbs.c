@@ -7,7 +7,6 @@ runbbs(int s)
 {
 int len;
 int i, j;
-short sqp;
 int pick;
 char str[160];
 char date[12];

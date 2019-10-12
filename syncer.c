@@ -10,14 +10,11 @@
 int
 bbssync(int init)
 {
-  long pst_data[32];
-  struct pst_dynamic *pst = (void *)pst_data;
   long oldcputime[9];
   time_t t;
   int flags;
   long curpos;
   FILE *fp;
-  int f;
   struct tm *tm;
   int i;
   int trim;

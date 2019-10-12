@@ -54,8 +54,6 @@ dump(void)
 void
 do_ring(void)
 {
-char pst_data[128];
-struct pst_dynamic *pst = (struct pst_dynamic *)(void *)pst_data;
 int z;
 
   f_qalarm = 0;
@@ -234,7 +232,6 @@ do_setup(void)
 {
 struct sockaddr_in sa;
 int on = 1;
-long oldmask;
 
   f_quit = 0;
 /*
@@ -410,7 +407,6 @@ dologin(int c, int x)
 void
 logfatal(const char *error)
 {
-  struct timeval tv;
 
   syslog(LOG_ERR, "%s", error);
 #if 1

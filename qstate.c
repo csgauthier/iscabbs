@@ -415,8 +415,6 @@ suboption(int x)
 void
 qinit(int x)
 {
-	int i;
-
 	switch (q->qt[x].initstate) {
 		case T_INIT1:
 			send_do(TELOPT_ENVIRON, 1, x);
@@ -464,7 +462,7 @@ qinit(int x)
 			if (his_will_wont_is_changing(TELOPT_NULL3))
 				return;
 
-			i = q->qt[x].nfrontp - q->qt[x].nbackp;
+			//i = q->qt[x].nfrontp - q->qt[x].nbackp;
 			if (his_do_dont_is_changing(TELOPT_SGA))
 				dooption(TELOPT_SGA, x);
 			if (his_do_dont_is_changing(TELOPT_ECHO))

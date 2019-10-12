@@ -16,7 +16,6 @@ int c = -1;
 int i;
 int     chflag;
 struct user *up = NULL;
-char *name;
 
   if (ouruser->f_twit)
   {
@@ -657,10 +656,7 @@ change_name(struct user *workuser)
 {
   char work[60];
   struct user *tmpuser = NULL;
-  char *p;
-  int c;
   int i;
-  int j;
 
   my_printf("\nNew name for user '%s' -> ", workuser->name);
   char * name = get_name("", 2);
@@ -807,8 +803,6 @@ show_verified(struct user *workuser)
 void
 ooptions(struct user *tuser)
 {
-  int answer;
-
 
   my_printf("\nMark yourself as a novice user? -> ");
   if (yesno (tuser->f_novice) != tuser->f_novice)
@@ -1205,7 +1199,6 @@ userlist_config(struct user *tmpuser, int chflag)
 void
 dokey(struct user *up)
 {
-  char key[6], mykey[6];
   int i;
   
 
