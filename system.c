@@ -211,7 +211,8 @@ new_user(void)
 	my_printf("\nYou have to provide your name!\n");
       else if (i < j)
 	my_printf("\nThe character \"%c\" is not allowed in a name.\n", real_name[i]);
-      else if (j < 4 || !strchr(real_name, ' ') || real_name[j - 2] == ' ' || real_name[j - 3] == ' ' && real_name[j - 1] == '.')
+      else if (j < 4 || !strchr(real_name, ' ') || real_name[j - 2] == ' ' 
+              || (real_name[j - 3] == ' ' && real_name[j - 1] == '.'))
 	my_printf("\nYou must provide both your full first and last names!\n");
       else if (!strcmp(real_name, name) || !strcmp(real_name, name2))
       {

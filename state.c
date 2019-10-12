@@ -190,7 +190,7 @@ gotiac:			switch (c) {
 			break;
 
 		case TS_KILL:
-			if (numposts > 0 && c == numposts & 0xff)
+			if (numposts > 0 && c == (numposts & 0xff))
 				numposts = -numposts;
 			state = TS_DATA;
 			break;

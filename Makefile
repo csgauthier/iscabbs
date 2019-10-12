@@ -17,7 +17,6 @@ CFLAGS   += -Wno-sign-compare
 CFLAGS   += -Wno-format-overflow
 CFLAGS   += -Wno-stringop-overflow
 CFLAGS   += -Wno-stringop-truncation
-CFLAGS   += -Wno-parentheses
 CFLAGS   += -Wno-unused
 CFLAGS   += -Wno-unused-result
 

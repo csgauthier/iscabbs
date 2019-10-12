@@ -259,7 +259,7 @@ long mineternal;
   {
     bigbtmp->ghostcheck = newbtmp.time;
     for (i = 0; i < MAXUSERS; i++)
-      if (p = bigbtmp->btmp[i].pid)
+      if ((p = bigbtmp->btmp[i].pid))
 	if (kill(p, 0) < 0)
 	{
 	  errlog("Cleaned up ghost login of %s: %s", bigbtmp->btmp[i].name, strerror(errno));
@@ -551,7 +551,7 @@ logout_user(struct user *tmpuser, struct btmp *btmp, int how)
 
   if (btmp)
   {
-    if (i = btmp->pid)
+    if ((i = btmp->pid))
       kill(i, how ? SIGTERM : SIGQUIT);
     return;
   }

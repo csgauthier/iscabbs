@@ -194,7 +194,7 @@ struct sigaction sact;
 
   /* Make sure the site is not locked out */
   size = 0;
-  if (lockoutp = p = (unsigned char *)mymmap(LOCKOUT, &size, 0))
+  if ((lockoutp = p = (unsigned char *)mymmap(LOCKOUT, &size, 0)))
   {
     strncpy(myhost, gethost(), sizeof (myhost) - 1);
     for (hp = myhost; *hp; hp++)
@@ -561,12 +561,12 @@ int     invalid = 0;
     { 
       *p++ = c;
       if (!client)
+      {
         if (!hidden)
-	{
           my_putchar(c);
-	}
         else
           my_putchar('.');
+      }
     }
     else if (c < SP || line < 0 || line == limit - 1)
       continue;
@@ -667,10 +667,12 @@ int noprint;
 
   for (noprint = comments && *p == '#', line = i = 0; i < size; i++, p++)
     if ((noprint ? *p : my_putchar(*p)) == '\n')
+    {
       if (!noprint && ++line >= rows - 1 && line_more(&line, (i * 100) / size) < 0)
         break;
       else
         noprint = comments && p[1] == '#';
+    }
 
   my_putchar('\n');
   munmap((void *)filep, size);
