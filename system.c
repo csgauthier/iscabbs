@@ -105,7 +105,6 @@ new_user(void)
   char phone[21];
   char mail[MAXNAME+1];
   char name2[MAXALIAS+1];
-  char work[80];
   int anonymous;
   int salt;
   char saltc[3];

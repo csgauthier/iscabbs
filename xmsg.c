@@ -13,7 +13,6 @@ displayx(long pos, int num, time_t *t, long *prev, long *next)
   char *s;
   int sender = 1;
   int noshow = pos < 0;
-  int i;
 
   pos = pos < 0 ? -pos : pos;
   xh = (struct xheader *)(void *)(xmsg + pos);
@@ -421,7 +420,6 @@ int i;
 int j;
 char *p;
 long curpos;
-struct tm *tp;
 struct xheader *xhp;
 int wasbusy = 0;
 
@@ -447,7 +445,7 @@ int wasbusy = 0;
     }
   }
 
-  tp = localtime(&t);
+  localtime(&t);
   xh.checkbit = 1;
   xh.rnum = touser ? touser->usernum : 0;
   xh.snum = ouruser->usernum;

@@ -6,7 +6,6 @@ void
 bbsqueue(int dofork)
 {
 int x;
-int s;
 int i;
 
   //sigblock(sigmask(SIGCLD) | sigmask(SIGALRM) | sigmask(SIGHUP) | sigmask(SIGUSR2) | sigmask(SIGTERM) | sigmask(SIGQUIT));

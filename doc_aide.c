@@ -18,7 +18,6 @@ void
 aide_menu(void)
 {
 int chr = '?';
-int     i;
 
   /* Can't get here unless you're at least a room aide for this room */
 
@@ -357,18 +356,13 @@ char    confirm[7];
 void
 editdesc(void)
 {
-int     bytes;
-int    chr;
 char    choice = '0';
 int     dfd;		/* desc file descriptor */
 int     dummy;		/* readmsg() needs this: returns YES/NO */
 int     err;		/* makemessage returns this */
-time_t  now;		/* for time -- want to mark this change */
-int     old;
 char    raname[MAXALIAS+1];
 int	upload;
 char   *cp;
-int     i;
 struct mheader *mh;
 int size;
 unsigned char *infop;
@@ -693,7 +687,6 @@ aide_logout(void)
 struct user *tmpuser;
 char   *uname;
 struct btmp btmp;
-int i;
 
   uname = get_name("Name of user to log out? ", 2);
  
@@ -719,7 +712,6 @@ void
 logout_all(void)
 {
   int i;
-  int p;
 
   my_printf("Are you are you want to logout all users on the BBS? (Y/N) -> ");
   if (yesno(-1))

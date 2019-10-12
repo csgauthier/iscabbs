@@ -138,7 +138,6 @@ long    uglastmsg;	/* last msg seen in prev. rm */
 long    ugtemp = TWILIGHTZONE;
 short   prev_rm = TWILIGHTZONE;
 char    cit_cmd;
-char    bueller = 0;
 
   room = &sroom;
 

@@ -16,7 +16,6 @@ searchtool (void)
   char string[75];
   int i;
   int count = 0;
-  int found;
 
   my_printf ("Userfile search\r\n");
   my_printf ("Search the entire userbase for (case-insensitive) -> ");
