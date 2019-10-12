@@ -31,8 +31,6 @@ struct userinfo *start;
 long    ucount;
 int f;
 
-  setvbuf(stdout, stdoutbuf, _IOFBF, STDOUTBUFSIZ);
-
   if (!(start = getusers(&ucount)))
   {
     my_printf("Error reading user files\n");
@@ -86,8 +84,6 @@ int     st_nov = 0;
 int     st_ansi = 0;
 FILE   *info;
 time_t t;
-unsigned char ulogbuf[8192];
-unsigned char infobuf[8192];
 
   if (!(ucopy = copyuserdata()))
   {
@@ -111,7 +107,6 @@ unsigned char infobuf[8192];
     perror ("open userlist");
     return(NULL);
   }
-  setvbuf(ulog, ulogbuf, _IOFBF, sizeof ulogbuf);
   fprintf(ulog, "   date    time   call   post    x       priv  name                 realname               email                                     connection\n");
 
   if (!(info = fopen( ROOT "var/info" , "w")))
@@ -119,7 +114,6 @@ unsigned char infobuf[8192];
     perror ("can't open info");
     return(NULL);
   }
-  setvbuf(info, infobuf, _IOFBF, sizeof infobuf);
 
   t = time(0);
   for (d = 0; d < *ucount; d++)
@@ -404,8 +398,6 @@ int     i;
 int     rm_nbr;
 struct userinfo *u;
 int     unbr;
-unsigned char filebuf[8192];
-
 
   for (rm_nbr = 0; rm_nbr < MAXROOMS; rm_nbr++)
   {
@@ -416,7 +408,6 @@ unsigned char filebuf[8192];
 
     if (!(file = fopen(name, "w")))
       return (-1);
-    setvbuf(file, filebuf, _IOFBF, sizeof filebuf);
 
     if (!(msg->room[rm_nbr].flags & QR_INUSE))
     {

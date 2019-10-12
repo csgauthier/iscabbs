@@ -134,7 +134,6 @@ int rnd(int n)
 void
 bbsstart(void)
 {
-char stdinbuf[STDINBUFSIZ];
 long    uglastmsg;	/* last msg seen in prev. rm */
 long    ugtemp = TWILIGHTZONE;
 short   prev_rm = TWILIGHTZONE;
@@ -142,8 +141,6 @@ char    cit_cmd;
 char    bueller = 0;
 
   room = &sroom;
-  setvbuf(stdin, stdinbuf, _IOFBF, STDINBUFSIZ);
-  setvbuf(stdout, stdoutbuf, _IOFBF, STDOUTBUFSIZ);
 
   init_system();
 

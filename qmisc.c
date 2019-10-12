@@ -116,12 +116,11 @@ reread(void)
 void
 do_reread(void)
 {
-char buf[256];
 FILE *f;
 int c;
 int limit;
 int lockout;
-int i;
+int fd;
 
   f_reread = 0;
   if (!(f = fopen(DOWNFILE, "r")))
@@ -131,7 +130,6 @@ int i;
       q->down = 0;
   else
     q->down = 1;
-  setvbuf(f, buf, _IOFBF, sizeof buf);
   q->hellolen = 0;
   while (q->hellolen + 1 < sizeof q->hello)
   {
@@ -143,10 +141,12 @@ int i;
   }
   fclose(f);
 
-  if ((i = open(LIMITFILE, O_RDONLY)) < 0)
+  if ((fd = open(LIMITFILE, O_RDONLY)) < 0)
     logfatal("LIMITFILE open: %m");
-  read(i, buf, sizeof buf);
-  close(i);
+
+  char buf[256];
+  read(fd, buf, sizeof buf);
+  close(fd);
 #if 1
   if (sscanf(buf, "%d %d", &limit, &lockout) != 2)
     logfatal("scanf: bad format!");

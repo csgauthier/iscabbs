@@ -11,7 +11,6 @@ int
 bbssync(int init)
 {
   long pst_data[32];
-  unsigned char outbuf[100];
   struct pst_dynamic *pst = (void *)pst_data;
   long oldcputime[9];
   time_t t;
@@ -35,7 +34,6 @@ bbssync(int init)
 
   if (!(fp = fopen(ROOT"/var/idle", "a")))
     _exit(0);
-  setvbuf(fp, outbuf, _IOFBF, sizeof outbuf);
   flags = fcntl(fileno(fp), F_GETFL);
   flags |= O_SYNC;
   fcntl(fileno(fp), F_SETFL, flags);
