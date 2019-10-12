@@ -179,7 +179,7 @@ char myname[MAXALIAS + 1];
 
     if (strcmp(name, "New"))
     {
-      if (tmpuser = getuser(name))
+      if ((tmpuser = getuser(name)))
         freeuser(tmpuser);
       if (tmpuser && (!bbsname || tty) && strcmp(name, "Guest"))
         get_string("Password: ", -8, pas, -1);
@@ -313,18 +313,22 @@ int how = PROF_REG;
 
   name = get_name("", 2);
   if (!*name)
+  {
     if (*profile_default)
       name = profile_default;
     else
       strcpy (name, ouruser->name);
+  }
 
   if (all)
+  {
     if (ouruser->f_admin)
       how = PROF_ALL;
     else if (!strcmp(name, ouruser->name))
       how = PROF_SELF;
     else
       how = PROF_EXTRA;
+  }
 
   if (profile(name, NULL, how) < 0)
     my_printf("There is no user %s on this BBS.\n", name);

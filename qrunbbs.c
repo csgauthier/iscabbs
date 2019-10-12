@@ -101,7 +101,12 @@ char *p;
       sprintf(date, "%02d:%02d:%02d", q->ltm->tm_hour, q->ltm->tm_min, q->ltm->tm_sec);
       for (; i >= 0; i--)
       {
-        if (!s && q->qt[q->qindex[i]].qlo <= i || s < 0 && q->qindex[i] != -s || s <= 0 && q->qt[q->qindex[i]].login >= 10 || s > 0 && q->qindex[i] != s || LOCAL(q->qt[q->qindex[i]].addr) || q->qt[q->qindex[i]].login == -14)
+        if ((!s && q->qt[q->qindex[i]].qlo <= i)
+            || (s < 0 && q->qindex[i] != -s)
+            || (s <= 0 && q->qt[q->qindex[i]].login >= 10)
+            || (s > 0 && q->qindex[i] != s)
+            || LOCAL(q->qt[q->qindex[i]].addr)
+            || q->qt[q->qindex[i]].login == -14)
           continue;
         if (!i || !q->qt[q->qindex[i]].qlo)
           len = sprintf(str, ATFRONT, date, (q->t - q->qt[q->qindex[i]].conn) / 60, (q->t - q->qt[q->qindex[i]].conn) % 60);
@@ -124,7 +129,11 @@ char *p;
     {
       if (q->qt[i = q->qindex[pick]].conn && (q->qt[i].state == TS_DATA || q->qt[i].state == TS_CR) && !q->qt[i].ncc)
       {
-        if (pick >= q->qp || q->qt[i].login != -14 && !LOCAL(q->qt[i].addr) && ((q->limit >= 0 && q->limit <= q->forks - q->reaps) || q->startable <= 0))
+        if (pick >= q->qp
+            || (q->qt[i].login != -14
+                && !LOCAL(q->qt[i].addr)
+                && ((q->limit >= 0 && q->limit <= q->forks - q->reaps)
+                    || q->startable <= 0)))
           continue;
         FLUSH(i, j);
         if (q->qt[i].conn && (!q->qt[i].wasinq || !ssend(i, "\007\n", 2)))
@@ -160,8 +169,10 @@ char *p;
     newenv[2] = 0;
     environ = newenv;
 
-    if (i = fork())
+    if ((i = fork()))
+    {
       if (i < 0)
+      {
         if (errno == EAGAIN)
         {
           syslog(LOG_WARNING, "Out of processes, sleeping for 10 seconds...");
@@ -170,6 +181,7 @@ char *p;
         }
         else
           logfatal("fork: %m");
+      }
       else
       {
         drop(y);
@@ -177,6 +189,7 @@ char *p;
         q->startable--;
         q->qflag++;
       }
+    }
     else
     {
       alarm(0);
@@ -251,7 +264,7 @@ char *p;
 	{
 	  bzero((void *)str, 80);
 	  read(s, str, 79);
-	  if (p = (char *)strstr(str, "USERID"))
+	  if ((p = (char *)strstr(str, "USERID")))
 	  {
 	    for (p += 6; *p && *p++ != ':'; )
 	      ;

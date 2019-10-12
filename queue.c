@@ -115,6 +115,7 @@ int i;
     q->t = time(0);
     /* q->ltm = localtime(&q->t); */	/* segfault here... ? */
     if (i)
+    {
       if (i == EINTR)
       {
 	if (f_term)
@@ -132,6 +133,7 @@ int i;
       }
       else
         logfatal("select: %m");
+    }
 
     while (FD_ISSET(sfd, &q->fds))
     {
