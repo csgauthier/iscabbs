@@ -78,8 +78,9 @@ struct fd
 
   setup_socket();
 
-  char bigstdoutbuf[262143];
-  setvbuf(stdout, bigstdoutbuf, _IOFBF, sizeof bigstdoutbuf);
+  const size_t bigstdoutbuf_size = 262143;
+  char * bigstdoutbuf = calloc(bigstdoutbuf_size, sizeof(char));
+  setvbuf(stdout, bigstdoutbuf, _IOFBF, bigstdoutbuf_size);
 
   for (;;)
   {
@@ -142,7 +143,7 @@ struct fd
         break;
       }
 
-      size = sizeof bigstdoutbuf;
+      size = bigstdoutbuf_size;
       if (setsockopt(1, SOL_SOCKET, SO_SNDBUF, &size, sizeof size) < 0)
       {
         close(1);
@@ -210,4 +211,6 @@ struct fd
       shutdown(n, 1);
     }
   }
+
+  free(bigstdoutbuf);
 }
