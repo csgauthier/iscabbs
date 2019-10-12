@@ -88,8 +88,6 @@ FILE   *info;
 time_t t;
 unsigned char ulogbuf[8192];
 unsigned char infobuf[8192];
-char	work[80];
-
 
   if (!(ucopy = copyuserdata()))
   {
@@ -108,8 +106,7 @@ char	work[80];
   }
   start = uinfo;
 
-  sprintf (work, "%svar/userlist", ROOT);
-  if (!(ulog = fopen(work, "w")))
+  if (!(ulog = fopen( ROOT "var/userlist", "w")))
   {
     perror ("open userlist");
     return(NULL);
@@ -117,8 +114,7 @@ char	work[80];
   setvbuf(ulog, ulogbuf, _IOFBF, sizeof ulogbuf);
   fprintf(ulog, "   date    time   call   post    x       priv  name                 realname               email                                     connection\n");
 
-  sprintf (work, "%svar/info", ROOT);
-  if (!(info = fopen(work, "w")))
+  if (!(info = fopen( ROOT "var/info" , "w")))
   {
     perror ("can't open info");
     return(NULL);
