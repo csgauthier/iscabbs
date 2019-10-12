@@ -214,6 +214,19 @@ int my_printf (const char *fmt, ...) __attribute__((format(printf,1,2)));
 char* my_sprintf (const char *fmt, ...) __attribute__((format(printf,1,2)));
     // always returns a non-null malloc'd string. caller must free.
 
+int checked_snprintf_with_traceinfo (
+        const char* file, int line,
+        char* out, size_t, const char *fmt, ...) __attribute__((format(printf,5,6)));
+    // 'file' and 'line' provide tracing info.
+    // The remaining args are identical to snprintf, but will log
+    // a fatal error if the buffer would overflow.
+    // This is a stop-gap measure to detect overflows.
+    // If you hit it, it means the buffer overflow was always there, and this simply
+    // caught it.
+
+#define checked_snprintf(out, len, fmt, ...) \
+    (checked_snprintf_with_traceinfo(__FILE__, __LINE__,(out), (len), (fmt),##__VA_ARGS__))
+
 int my_putchar (int c);
 int my_putc (int c, FILE* stream);
 int my_puts (const char* s);
