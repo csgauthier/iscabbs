@@ -155,7 +155,7 @@ void bbsstart (void);
 void bbsfinger (void);
 int bbssync (int);
 void bbsupdate (void);
-void bbsbackup (char *);
+void bbsbackup (const char *);
 
 /* queue stuff */
 extern void
