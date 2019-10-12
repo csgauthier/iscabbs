@@ -107,7 +107,7 @@ char	work[80];
     return(NULL);
   }
   start = uinfo;
-    
+
   sprintf (work, "%svar/userlist", ROOT);
   if (!(ulog = fopen(work, "w")))
   {
@@ -129,7 +129,7 @@ char	work[80];
   for (d = 0; d < *ucount; d++)
   {
       zap = TRUE;
-      if (up = finduser(NULL, ucopy->link[ucopy->name[ucopy->which][d]].usernum, 0))
+      if ((up = finduser(NULL, ucopy->link[ucopy->name[ucopy->which][d]].usernum, 0)))
       {
 	zap = FALSE;
 	days_since_on = (t - up->time) / 86400;
@@ -214,7 +214,7 @@ int cmp_room_glob(                  // return lt, eq, gt for room_glob structs
   int c = 0, retval = 0;
 
   // cheap hack for comparison in 'alphabetical order'
-  
+
   do {
     if(toupper(first->roomname[c]) < toupper(second->roomname[c]))
       retval--;
@@ -227,7 +227,7 @@ int cmp_room_glob(                  // return lt, eq, gt for room_glob structs
             && !(second->roomname[c] == '\0' || second->roomname[c] == ' '));
 
   return retval;
-  
+
   //return(strcasecmp(first->roomname, second->roomname));
 }
 
@@ -265,13 +265,13 @@ bkey = &dummy;
   fprintf(af, "Sysops and Programmers\n");
 
   curruser = start;
-  
+
   // below, we loop through all users, and display their names and user
   // numbers if they're a programmer or sysop.  Eventually we'll do
   // them in alphabetical order and possibly tabbed output, but for
   // now, it's quick and dirty line by line, by user number.
 
-  for (user_number = 0; user_number < *ucount; user_number++) 
+  for (user_number = 0; user_number < *ucount; user_number++)
   {
     *tmpstr = 0;  // set null at start of string to reset for below
 
@@ -346,7 +346,7 @@ bkey = &dummy;
     curruser = start;
     curruser = start;   // assign the pointer to the start of user array
     if (roomdata[c].moderator_number)
-    {   
+    {
       bkey->usernum = roomdata[c].moderator_number;
       curruser = bsearch(bkey, start, num_elements, size, (int(*)(const void*,const void*))cmp_userinfo);
 
@@ -363,7 +363,7 @@ bkey = &dummy;
     else
     {
       strcat(roomdata[c].moderator_name, "(Sysop)");
-    } 
+    }
   }
 
   // Now we want to sort the array of filled-in room_glob structs into
@@ -373,7 +373,7 @@ bkey = &dummy;
   size = sizeof(*roomdata);
 
   qsort(roomdata, num_elements, size, (int(*)(const void*,const void*))cmp_room_glob);
-  
+
 
   // Now we display the array
 
@@ -382,7 +382,7 @@ bkey = &dummy;
   for (c = 0; c < max_display_rooms; c++)
   {
     char buff[50];
-    *buff = *tmpstr = 0; 
+    *buff = *tmpstr = 0;
 
     sprintf(tmpstr, " \"%s>\"", roomdata[c].roomname);
 
@@ -396,7 +396,7 @@ bkey = &dummy;
 
     sprintf(buff, " \"%s\"\n", roomdata[c].moderator_name);
 
-    strcat(tmpstr, buff); 
+    strcat(tmpstr, buff);
 
     fprintf(af, "%s", tmpstr);
   }
@@ -404,7 +404,7 @@ bkey = &dummy;
   {
     struct tm *fun;
     time_t *fun2, buff;
-    
+
     buff = time(NULL);
     fun2 = &buff;
     fun = localtime(fun2);
@@ -469,11 +469,10 @@ unsigned char filebuf[8192];
 
     for (unbr = 0; unbr < *ucount; unbr++)
     {
-      if (msg->room[rm_nbr].gen != u->forget[rm_nbr] &&
-	  u->generation[rm_nbr] != RODSERLING &&
-	  (!(msg->room[rm_nbr].flags & QR_PRIVATE) &&
-	   u->forget[rm_nbr] != NEWUSERFORGET ||
-	   msg->room[rm_nbr].gen == u->generation[rm_nbr]))
+      if (msg->room[rm_nbr].gen != u->forget[rm_nbr]
+          && u->generation[rm_nbr] != RODSERLING
+          && ((!(msg->room[rm_nbr].flags & QR_PRIVATE) && u->forget[rm_nbr] != NEWUSERFORGET)
+              || msg->room[rm_nbr].gen == u->generation[rm_nbr]))
       {
 	sprintf(temp, "%s (%ld)", u->name, u->usernum);
 	i = strlen(temp);

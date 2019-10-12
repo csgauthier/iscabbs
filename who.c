@@ -106,7 +106,7 @@ int whostart, whoend, whoincr;
         }
 	break;
       case 3:
-	if (msg_status = ' ')
+	if ((msg_status = ' ')) // TODO: This makes no sense. It's probably a bug.
 	  msg_status = ' ';
 
         if (btmp->elf && !btmp->xstat)
@@ -177,6 +177,7 @@ int i;
   if (user)
   {
     if ((i = user->btmpindex) >= 0)
+    {
       if (bigbtmp->btmp[i].pid && bigbtmp->btmp[i].usernum == user->usernum)
       {
         if (btmp)
@@ -190,6 +191,7 @@ int i;
           user->btmpindex = -1;
         unlocks(SEM_USER);
       }
+    }
     return(NULL);
   }
 
@@ -224,7 +226,8 @@ int showanon;
     tmpuser = tuser;
   else if (*name)
   {
-    if (!(tmpuser = getuser(name)) || tmpuser->f_invisible && flags != PROF_ALL)
+    if (!(tmpuser = getuser(name))
+        || (tmpuser->f_invisible && flags != PROF_ALL))
     {
       if (tmpuser)
 	freeuser(tmpuser);
@@ -371,11 +374,12 @@ int showanon;
       my_printf ("\n");
 
     if (online && rows != 32000)
+    {
       if (userstat.xstat)
         colorize("@R[eXpress messages DISABLED]\n");
-      else
-        if (userstat.elf)
+      else if (userstat.elf)
           colorize("@R[This user can be eXpressed if you need help with the system]\n");
+    }
   }
 
   colorize("@G");
@@ -408,10 +412,12 @@ mymmap(char *name, int *size, int priv)
   char *p;
 
   if (name)
+  {
     if ((f = open(name, O_RDWR)) < 0)
       return(NULL);
     else if (size && !*size)
       *size = lseek(f, 0L, SEEK_END);
+  }
 
   p = (char *)mmap(0, *size ? *size : 1, PROT_READ | PROT_WRITE, (f == -1 ? MAP_ANONYMOUS : MAP_FILE) /* | MAP_VARIABLE */ | (priv ? MAP_PRIVATE : MAP_SHARED), f, 0);
   if (f >= 0)

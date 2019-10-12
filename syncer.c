@@ -114,31 +114,41 @@ bbssync(int init)
     trim = 4;
     curpos = msg->xcurpos & ~4095;
     if (curpos - trim*1024*1024 >= 0)
+    {
       if (curpos + 256*1024 >= msg->xmsgsize) 
         msync((caddr_t)xmsg + (curpos + 256*1024 - msg->xmsgsize), curpos - trim*1024*1024 - (curpos + 256*1024 - msg->xmsgsize), MS_INVALIDATE);
       else
         msync((caddr_t)xmsg, curpos - trim*1024*1024, MS_INVALIDATE);
+    }
     if (curpos + 256*1024 < msg->xmsgsize)
+    {
       if (trim*1024*1024 - curpos >= 0)
         msync((caddr_t)xmsg + curpos + 256*1024, msg->xmsgsize - curpos - 256*1024 - (trim*1024*1024 - curpos), MS_INVALIDATE);
       else
         msync((caddr_t)xmsg + curpos + 256*1024, msg->xmsgsize - curpos - 256*1024, MS_INVALIDATE);
+    }
 
     if (tm->tm_min % 15 == 0)
       trim = 8;
     else
       trim = 16;
+
     curpos = msg->curpos & ~4095;
     if (curpos - trim*1024*1024 >= 0)
+    {
       if (curpos + 256*1024 >= 61036*4096)
         msync((caddr_t)msgstart + (curpos + 256*1024 - 61036*4096), curpos - trim*1024*1024 - (curpos + 256*1024 - 61036*4096), MS_INVALIDATE);
       else
         msync((caddr_t)msgstart, curpos - trim*1024*1024, MS_INVALIDATE);
+    }
+
     if (curpos + 256*1024 < 61036*4096)
+    {
       if (trim*1024*1024 - curpos >= 0)
         msync((caddr_t)msgstart + curpos + 256*1024, 61036*4096 - curpos - 256*1024 - (trim*1024*1024 - curpos), MS_INVALIDATE);
       else
         msync((caddr_t)msgstart + curpos + 256*1024, 61036*4096 - curpos - 256*1024, MS_INVALIDATE);
+    }
 
     sprintf(s, ROOT"/core/bbs/core-%02d%02d%02d%02d", tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min);
     rename("/bbs/core/bbs/bbs.core", s);

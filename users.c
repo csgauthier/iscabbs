@@ -118,7 +118,8 @@ adduser(char *name, long usernum)
     udata->free[new] = linkptr->free;
 
     /* Check if username currently exists */
-    if (user = finduser(name, 0, 0))
+    if ((user = finduser(name, 0, 0)))
+    {
       if (user->usernum || time(0) < user->timeoff + (30*60))
       {
         errlog("Found user %s with name '%s' num %d timeoff %d time %d", name, user->name, user->usernum, user->timeoff, time(0));
@@ -131,6 +132,7 @@ adduser(char *name, long usernum)
         deleteuser(name);
         continue;
       }
+    }
 
     memcpy((void *)&udata->name[new][0], (void *)&udata->name[old][0], saveindex * sizeof(int));
     udata->name[new][saveindex] = free;

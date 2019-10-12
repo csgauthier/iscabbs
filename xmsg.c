@@ -64,15 +64,19 @@ displayx(long pos, int num, time_t *t, long *prev, long *next)
     *t = xh->time;
 
   if (next)
+  {
     if (sender)
       *next = xh->snext;
     else
       *next = xh->rnext;
-  if (prev)
+  }
+
+  if (prev){
     if (sender)
       *prev = xh->sprev;
     else
       *prev = xh->rprev;
+  }
   else if (sender > 0)
     return(1);
 
@@ -286,7 +290,7 @@ char send_string[XLENGTH][80];
   for (i = 0; i < NXCONF && (p->xconf[i].usernum != ouruser->usernum || !p->xconf[i].which); i++)
     ;
 
-  if (i < NXCONF || ouruser->f_admin && p->f_admin)
+  if (i < NXCONF || (ouruser->f_admin && p->f_admin))
     override = 'w';
 
   if (tuser.xstat && !(p->f_twit))
@@ -615,6 +619,7 @@ int savedir;
     if (c)
     {
       if (!pos || displayx(n ? -pos : pos, i < 0 ? 0 : i, dir == BACKWARD ? &t : NULL, &prev, &next))
+      {
         if (!n)
           return;
         else
@@ -623,8 +628,10 @@ int savedir;
           pos = oldpos;
           dir = savedir;
         }
+      }
 
       if (n)
+      {
         if (n == i)
         {
           n = -1;
@@ -641,6 +648,7 @@ int savedir;
             pos = prev;
           continue;
         }
+      }
     }
 
     my_printf("\nOld X message review  <N>ext (%s) <B>ack <S>top <#> -> ", dir == BACKWARD ? "backward" : "forward");
@@ -875,14 +883,14 @@ char override = 'B';
   {
     sendx(NULL, NULL, send_string, override);
     for (i = 0; i < MAXUSERS; i++)
-      if (j = bigbtmp->btmp[i].pid)
+      if ((j = bigbtmp->btmp[i].pid))
         kill(j, SIGIO);
     my_printf("Message broadcast.\n");
   }
   else if (override == 'b')
   {
     for (i = 0; i < MAXUSERS; i++)
-      if (j = bigbtmp->btmp[i].pid)
+      if ((j = bigbtmp->btmp[i].pid))
         kill (j, SIGUSR2);
     my_printf ("Everyone has been beeped.  I hope you're happy now.\r\n");
   }

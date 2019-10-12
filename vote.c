@@ -299,6 +299,7 @@ unsigned char *tmpsave;
       lnlngth--;
     }
     else if (lnlngth == MARGIN)
+    {
       if (lastspace > MARGIN / 2)
       {
         for (lnlngth--; lnlngth > lastspace; lnlngth--)
@@ -325,6 +326,7 @@ unsigned char *tmpsave;
         lastspace = 0;
         lnlngth = 1;
       }
+    }
 
     if (chr != CTRL_D && chr != LF)
     {
