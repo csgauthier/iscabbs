@@ -57,6 +57,36 @@ my_sprintf (const char *fmt, ...)
     return buf;
 }
 
+int checked_snprintf_with_traceinfo (
+        const char* file, int line,
+        char* out, size_t len, const char *fmt, ...)
+{
+    va_list ap;
+    va_start (ap, fmt);
+    errno = 0;
+    const int n = vsnprintf (out, len, fmt, ap);
+    const int saved_errno = errno;
+    va_end (ap);
+
+    if (n < 0){
+        // error: I/O or system error.
+        char * emsg = my_sprintf(
+                "FATAL: vsnprintf system or I/O error. "
+                "Called at file '%s':%d "
+                " errno said: %s",
+                file, line, strerror(saved_errno));
+        logfatal(emsg);
+    }
+    else if (n >= len){
+        // error: buffer overflow
+        char * emsg = my_sprintf(
+                "FATAL: buffer overflow at file '%s':%d",
+                file, line);
+        logfatal(emsg);
+    }
+    return n;
+}
+
 int
 my_puts (const char* s)
 {
