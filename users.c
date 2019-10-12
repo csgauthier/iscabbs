@@ -15,25 +15,22 @@ static int savelinknum;
  * pointer to the user struct on success, NULL on failure.
  */
 struct user *
-finduser(char *name, long usernum, int linknum)
+finduser(const char *name, long usernum, int linknum)
 {
-  int old;
-  int gen;
   int lower;
   int upper;
   int mid;
   int cmp;
-  struct userlink *linkptr;
 
   if (!name && !usernum)
     return((struct user *)(udata + 1) + linknum);
 
-  for (gen = -1; gen != udata->gen; )
+  for (int gen = -1; gen != udata->gen; )
   {
     if (gen >= 0)
       udata->retries++;
     gen = udata->gen;
-    old = udata->which;
+    int old = udata->which;
     if (gen != udata->gen)
       continue;
 
@@ -42,7 +39,7 @@ finduser(char *name, long usernum, int linknum)
     {
       mid = (lower + upper) >> 1;
       linknum = name ? udata->name[old][mid] : udata->num[old][mid];
-      linkptr = &udata->link[linknum];
+      struct userlink * linkptr = &udata->link[linknum];
       cmp = name ? strcmp(name, linkptr->name) : (usernum - linkptr->usernum);
 
       if (cmp < 0)
@@ -75,7 +72,7 @@ finduser(char *name, long usernum, int linknum)
  * NULL on failure.
  */
 struct user *
-adduser(char *name, long usernum)
+adduser(const char *name, long usernum)
 {
   struct user *user;
   int old;
@@ -173,7 +170,7 @@ adduser(char *name, long usernum)
  * on success, -1 on failure.
  */
 int
-deleteuser(char *name)
+deleteuser(const char *name)
 {
   struct user *user;
   int old;
@@ -237,7 +234,7 @@ deleteuser(char *name)
  * Returns a pointer to the user struct on success, NULL on failure.
  */
 struct user *
-getuser(char *name)
+getuser(const char *name)
 {
   struct user *user;
 

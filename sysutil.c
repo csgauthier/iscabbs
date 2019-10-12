@@ -233,7 +233,7 @@ struct sigaction sact;
 
 
 void
-logevent(char *message)
+logevent(const char *message)
 {
 int f;
 struct tm *tp;
@@ -440,12 +440,12 @@ int noflush = 1;
 
 
 void
-printdate(char* s)
+printdate(const char* fmt)
 {
-time_t  t;
+  time_t  t;
 
   t = msg->t = time(0);
-  my_printf(s, ctime(&t));
+  my_printf(fmt, ctime(&t));
 }
 
 
@@ -460,14 +460,14 @@ time_t  t;
  */
 
 void
-get_string(char *prompt, int length, char *result, int line)
+get_string(const char *prompt, int length, char *result, int line)
 {
      get_new_string(prompt, length, result, line, 5);
 }
 
 void
 get_new_string(
-  char   *prompt,
+  const char   *prompt,
   int     length,
   char   *result,
   int     line, 
@@ -602,7 +602,7 @@ int     invalid = 0;
 
 
 int
-get_single_quiet(char   *valid_string)
+get_single_quiet(const char   *valid_string)
 {
 int c;
 int invalid = 0;
@@ -647,7 +647,7 @@ hit_return_now(void)
  */
 
 void
-more(char   *filename, int comments)
+more(const char   *filename, int comments)
 {
 int     line;
 int size;

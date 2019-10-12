@@ -14,10 +14,9 @@
  */
 
 struct user *
-login_user(char   *name, char   *passwd)
+login_user(const char   *name, const char   *passwd)
 {
 struct user *up;
-char   *cp;
 
   guest = !strcmp(name, "Guest");
   if (!(up = getuser(name)))
@@ -36,7 +35,7 @@ char   *cp;
 
   if (!getenv("BBSNAME"))
   {
-    cp = (char *)crypt(passwd, up->passwd);
+    const char* cp = crypt(passwd, up->passwd);
     if (strncmp(up->passwd, cp, 13))
     {
       freeuser(up);
@@ -54,7 +53,7 @@ char   *cp;
  */
 
 void
-change_password(struct user *up, char*old, char* new, int noold)
+change_password(struct user *up, const char*old, const char* new, int noold)
 {
 time_t  salt;
 char    saltc[4];
@@ -341,7 +340,7 @@ new_user(void)
     saltc[i] = c;
   }
   saltc[2] = 0;
-  strcpy(pas2, (char *)crypt(pas, saltc));
+  strcpy(pas2, crypt(pas, saltc));
 
   locks(SEM_NEWBIE);
   usernum = ++msg->eternal;
@@ -407,7 +406,7 @@ new_user(void)
 
 
 void
-check_quit(char *s)
+check_quit(const char *s)
 {
   if (!strcasecmp(s, "exit") || !strcasecmp(s, "quit") || !strcasecmp(s, "logout"))
   {

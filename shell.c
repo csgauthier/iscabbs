@@ -20,7 +20,7 @@
  */
 
 char   *
-get_name(char *prompt, int quit_priv)
+get_name(const char *prompt, int quit_priv)
 {
 char *p;
 int c;

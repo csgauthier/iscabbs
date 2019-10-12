@@ -619,7 +619,7 @@ checkmail(struct user *tmpuser, int  quiet)
 
 
 void
-help(char *topic, int morehelp)
+help(const char *topic, int morehelp)
 {
 char help_str[30];
 char hfile[100];

@@ -829,7 +829,7 @@ get_syself_help(int cmd)
 
 
 int
-syself_ok(char *name)
+syself_ok(const char *name)
 {
 struct user *up;
 int i;

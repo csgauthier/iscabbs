@@ -170,7 +170,7 @@ int whostart, whoend, whoincr;
  */
 
 struct btmp *
-is_online(struct btmp *btmp, struct user *user, char *name)
+is_online(struct btmp *btmp, struct user *user, const char *name)
 {
 int i;
 
@@ -215,7 +215,7 @@ int i;
  */
 
 int
-profile(char   *name, struct user *tuser, int flags)
+profile(const char   *name, struct user *tuser, int flags)
 {
 struct user *tmpuser;
 struct btmp userstat;
@@ -406,7 +406,7 @@ int showanon;
 
 
 char *
-mymmap(char *name, int *size, int priv)
+mymmap(const char *name, int *size, int priv)
 {
   int f = -1;
   char *p;
