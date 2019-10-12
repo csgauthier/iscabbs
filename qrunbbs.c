@@ -161,9 +161,9 @@ char *p;
     port = q->qt[y].port;
     client = q->qt[y].client;
     strcpy(remoteusername, q->qt[y].remoteusername);
-    sprintf(newenv[0] = lines, "ROWS=%d", q->qt[y].rows);
+    checked_snprintf(newenv[0] = lines, sizeof(lines), "ROWS=%d", q->qt[y].rows);
     if (q->qt[y].login < 0)
-      sprintf(newenv[1] = bbsname, "BBSNAME=%s", q->qt[y].name);
+      checked_snprintf(newenv[1] = bbsname, sizeof(bbsname), "BBSNAME=%s", q->qt[y].name);
     else
       newenv[1] = 0;
     newenv[2] = 0;

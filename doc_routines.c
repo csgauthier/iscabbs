@@ -726,7 +726,7 @@ static char hname[MAXHOSTNAMELEN + 1];
 
   /* Take our argument's word over anyone else's */
   if (ARGV[1])
-    strncpy (hname, ARGV[1], sizeof (hname) - 1);
+    checked_snprintf (hname, sizeof(hname), "%s", ARGV[1]);
   else
   {
     if ((tp = ttyname (0)) == NULL)
@@ -735,7 +735,7 @@ static char hname[MAXHOSTNAMELEN + 1];
     /* So outside buttheads don't 'talk bbs' */
     chmod (tp, 0600);
     tp = (char *) index (tp, '/') + 5;
-    strncpy (hname, tp, sizeof (hname) - 1);
+    checked_snprintf(hname, sizeof(hname), "%s", tp);
 
     /* Not all systems have this, so you may have to roll your own... */
 
@@ -744,7 +744,7 @@ static char hname[MAXHOSTNAMELEN + 1];
       if (  !strcmp (hname, ut->ut_line) 
             && ut->ut_pid == pid && *ut->ut_host  )
       {
-        strncpy (hname, ut->ut_host, sizeof (hname) - 1);
+        checked_snprintf(hname, sizeof(hname), "%s", ut->ut_host);
 	break;
       }
     endutxent();

@@ -1441,7 +1441,8 @@ char flag[50];
   if (*flag)
   {
     locks (SEM_USER);
-    strncpy (tmpuser->vanityflag, flag, sizeof (tmpuser->vanityflag) - 1);
+    checked_snprintf(tmpuser->vanityflag,
+        sizeof (tmpuser->vanityflag), "%s", flag);
     unlocks (SEM_USER);
   }
 
