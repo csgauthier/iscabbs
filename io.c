@@ -1,26 +1,39 @@
 /* Routines for character input and output to the BBS */
 
+#include <stdio.h>
+#include <stdarg.h>
+
 #include "defs.h"
 #include "ext.h"
 
 #ifndef BBS
 int ansi = 0;
-#endif 
-
-
+#endif
 
 /* A standard printf -- no color code recognition. */
 /* works best if output is not fflushed */
 int
 my_printf (const char *fmt, ...)
 {
-    char string [1024];
     va_list ap;
 
+    // call once to get buffer size
     va_start (ap, fmt);
-    (void) vsprintf (string, fmt, ap);
+    int n = vsnprintf (NULL, 0, fmt, ap);
     va_end (ap);
-    return my_puts (string);
+    if (n <= 0)
+        return 0; // TODO: handle err.
+
+    // alloc buffer and call again
+    char * buf = (char*) calloc(n+1, sizeof(char));
+    va_start (ap, fmt);
+    vsnprintf (buf, n+1, fmt, ap);
+    va_end (ap);
+    // TODO: handle err
+
+    int r = my_puts (buf);
+    free(buf);
+    return r;
 }
 
 
@@ -50,7 +63,7 @@ colorize (const char *fmt, ...)
     va_start (ap, fmt);
     (void)  vsprintf (string, fmt, ap);
     va_end (ap);
-    return my_cputs (string); 
+    return my_cputs (string);
 }
 
 
@@ -106,7 +119,7 @@ my_cputs (char *s)
 	    output ("\033[1m\033[33m");
 	    break;
 	}
-      else if (*s == '@') 
+      else if (*s == '@')
 	count = count + (my_putchar (*s) != EOF);
     } else
       count = count + (my_putchar (*s) != EOF);
