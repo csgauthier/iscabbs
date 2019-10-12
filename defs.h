@@ -124,7 +124,8 @@ extern char **environ;
 #ifdef _IO_file_flags
 #define INPUT_LEFT()   ((stdin)->_IO_read_ptr < (stdin)->_IO_read_end)
 #else
-#define INPUT_LEFT()   ((stdin)->_gptr < (stdin)->_egptr)
+//#define INPUT_LEFT()   ((stdin)->_gptr < (stdin)->_egptr)
+#define INPUT_LEFT()   ((stdin)->_IO_read_ptr < (stdin)->_IO_read_end)
 #endif
 #else
 #if (BSD >= 44) || defined(bsdi)
