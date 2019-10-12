@@ -254,6 +254,7 @@ int     savenox = mybtmp->nox;
       chr = get_single_quiet("0123456789NpPqQSvxY/? \n");
 
     if (strchr("0123456789QxpP?/", chr))
+    {
       if (!ouruser)
 	continue;
       else if (guest)
@@ -263,6 +264,7 @@ int     savenox = mybtmp->nox;
       }
       else
         mybtmp->nox = 1;
+    }
 
     switch (chr)
     {

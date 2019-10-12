@@ -715,7 +715,7 @@ int savedrows = -1;
           if (ouruser->f_elf && !ouruser->f_restricted && !ouruser->f_twit)
             if (mybtmp->xstat && !mybtmp->elf)
               my_printf("\n\nYou can't enable yourself as a guide while your X's are disabled.\n");
-            else if (mybtmp->elf = !mybtmp->elf)
+            else if ((mybtmp->elf = !mybtmp->elf))
               my_printf("\n\nYou are now marked as being available to help others.\n");
             else
               my_printf("\n\nYou are no longer marked as being available to help others.\n");

@@ -186,7 +186,7 @@ char *name;
 
       case 'U':
 	my_printf("Change user\n");
-	if (workuser = change_user())
+	if ((workuser = change_user()))
 	  chflag = 1;
 	else
 	{
@@ -645,15 +645,14 @@ void
 change_name(struct user *workuser)
 {
   char work[60];
-  struct user *tmpuser;
-  char *name;
+  struct user *tmpuser = NULL;
   char *p;
   int c;
   int i;
   int j;
 
   my_printf("\nNew name for user '%s' -> ", workuser->name);
-  name = get_name("", 2);
+  char * name = get_name("", 2);
   if (!*name)
     return;
   else if (!strcmp(workuser->name, name))
@@ -1129,6 +1128,7 @@ userlist_config(struct user *tmpuser, int chflag)
 	{
 	  j = tmpuser->xconf[i].usernum;
 	  if (!j || (tmpname = getusername(j, 0)))
+          {
 	    if (!j || strcmp(name, tmpname) < 0)
 	    {
 	      for (j = NXCONF - 1; j > i; j--)
@@ -1146,6 +1146,7 @@ userlist_config(struct user *tmpuser, int chflag)
 	      my_printf("\n%s is already in enable/disable list.\n", name);
 	      break;
 	    }
+          }
 	}
 
 	if (i == NXCONF)

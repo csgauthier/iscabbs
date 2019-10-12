@@ -412,7 +412,7 @@ int i;
     {
       if (mh->mtype == MES_SYSOP)
         sysopflags |= SYSOP_MSG;
-      sprintf(work, "@G from @C%s%s%s", name, mh->mtype == MES_FM ? " (Forum Moderator)" : "", (mh->mtype == MES_SYSOP && (!mh->mail || (*auth && ouruser->f_aide || !*auth && !ouruser->f_aide))) ? " (Sysop)" : "");
+      sprintf(work, "@G from @C%s%s%s", name, mh->mtype == MES_FM ? " (Forum Moderator)" : "", (mh->mtype == MES_SYSOP && (!mh->mail || ((*auth && ouruser->f_aide) || (!*auth && !ouruser->f_aide)))) ? " (Sysop)" : "");
       strcat(title, work);
     }
     else
@@ -433,7 +433,7 @@ int i;
     if (mh->mtype == MES_NORMAL && ouruser->usernum != mh->ext.mail.recipient && curr == MAIL_RM_NBR && !*auth)
       return(MNFERR);
     name = getusername(mh->ext.mail.recipient, 1);
-    sprintf(work, "@G to @C%s%s", name, (mh->mtype == MES_SYSOP && (*auth && !ouruser->f_aide || !*auth && ouruser->f_aide)) ? " (Sysop)" : "");
+    sprintf(work, "@G to @C%s%s", name, (mh->mtype == MES_SYSOP && ((*auth && !ouruser->f_aide) || (!*auth && ouruser->f_aide))) ? " (Sysop)" : "");
     strcat(title, work);
   }
   else if (mh->quotedx)
@@ -449,9 +449,9 @@ int i;
     my_putchar('\n');
 
   if (show || mh->mtype == MES_DESC )
-     colorize(title);
+     colorize("%s", title);
   else
-     colorize(authfield);
+     colorize("%s", authfield);
   colorize("@G\n");
 
   p += mh->hlen;
@@ -610,7 +610,7 @@ unsigned char *tmpsave;
         lnlngth++;
         continue;
       }
-      else if (chr == LF || chr == CTRL_D || chr == TAB && lnlngth >= MARGIN - 8)
+      else if (chr == LF || chr == CTRL_D || (chr == TAB && lnlngth >= MARGIN - 8))
       {
 	for (; lnlngth && tmpp[-1] == SP; tmpp--, lnlngth--)
 	  ;
@@ -722,6 +722,7 @@ unsigned char *tmpsave;
 	lnlngth--;
       }
       else if (lnlngth == MARGIN)
+      {
         if (lastspace > MARGIN / 2)
         {
           for (lnlngth--; lnlngth > lastspace; lnlngth--)
@@ -748,13 +749,14 @@ unsigned char *tmpsave;
           lastspace = 0;
           lnlngth = 1;
         }
+      }
   
       if (chr != CTRL_D && chr != LF)
       {
         thisline[lnlngth] = my_putchar(chr);
 	continue;
       }
-      else if (lnlngth || chr == LF && upload)
+      else if (lnlngth || (chr == LF && upload))
       {
 	int save = lnlngth;
 

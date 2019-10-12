@@ -377,7 +377,7 @@ bkey = &dummy;
 
   // Now we display the array
 
-  fprintf(af, "Forum Moderators\n\n");
+  fprintf(af, "%s", "Forum Moderators\n\n");
 
   for (c = 0; c < max_display_rooms; c++)
   {
@@ -398,7 +398,7 @@ bkey = &dummy;
 
     strcat(tmpstr, buff); 
 
-    fprintf(af, tmpstr);
+    fprintf(af, "%s", tmpstr);
   }
 
   {

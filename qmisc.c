@@ -62,7 +62,8 @@ int z;
   q->t = time(0);
   for (z = 3; z < MAXQ; z++)
     if (q->qt[z].conn || q->qt[z].state < 0)
-      if (q->qt[z].initstate && q->qt[z].last + 300 < q->t || q->qt[z].state < 0 && q->qt[z].last + 9 < q->t)
+      if ((q->qt[z].initstate && q->qt[z].last + 300 < q->t)
+          || (q->qt[z].state < 0 && q->qt[z].last + 9 < q->t))
         drop(z);
   if (q->qt[0].last + 300 < q->t)
     setup();
@@ -411,7 +412,7 @@ logfatal(char *error)
 {
   struct timeval tv;
 
-  syslog(LOG_ERR, error);
+  syslog(LOG_ERR, "%s", error);
 #if 1
   syslog(LOG_INFO, "Starting fresh queue process upon death in 15 seconds...");
   sleep(15);
@@ -459,6 +460,7 @@ ssend(int s, char* msg, int len)
     if (x == len)
       return(0);
     if (x < 0)
+    {
       if (errno == EINTR)
         continue;
       else
@@ -466,6 +468,7 @@ ssend(int s, char* msg, int len)
         drop(s);
         return(-1);
       }
+    }
     msg += x;
     len -= x;
     continue;

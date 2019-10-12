@@ -48,10 +48,12 @@ qtelrcv(int x)
 				return;
 			}
 			if (q->qt[x].login >= 0 && q->qt[x].login < 5 && !q->qt[x].initstate)
+                        {
 				if (c == 'L')
 					q->qt[x].login++;
 				else
 					q->qt[x].login = 0;
+                        }
 			if (q->qt[x].login >= 5)
 			{
 				dologin(c, x);
@@ -194,8 +196,8 @@ void
 send_do(int option, int init, int x)
 {
 	if (init) {
-		if (!q->qt[x].do_dont_resp[option] && his_state_is_will(option) ||
-		    his_want_state_is_will(option))
+		if ((!q->qt[x].do_dont_resp[option] && his_state_is_will(option))
+                    || his_want_state_is_will(option))
 			return;
 		set_his_want_state_will(option);
 		q->qt[x].do_dont_resp[option]++;
@@ -218,7 +220,9 @@ willoption(int option, int x)
 			q->qt[x].do_dont_resp[option]--;
 	}
 	if (!q->qt[x].do_dont_resp[option])
+        {
 	    if (his_want_state_is_wont(option))
+            {
 		if (option == TELOPT_NAWS || option == TELOPT_ENVIRON ||
 		    option == TELOPT_SGA) {
 			set_his_want_state_will(option);
@@ -227,9 +231,11 @@ willoption(int option, int x)
 			q->qt[x].do_dont_resp[option]++;
 			send_dont(option, 0, x);
 		}
+            }
 	    else
 		if (option == TELOPT_ECHO)
 			send_dont(option, 1, x);
+        }
 	set_his_state_will(option);
 }
 
@@ -237,8 +243,8 @@ void
 send_dont(int option, int init, int x)
 {
 	if (init) {
-		if (!q->qt[x].do_dont_resp[option] && his_state_is_wont(option) ||
-		    his_want_state_is_wont(option))
+		if ((!q->qt[x].do_dont_resp[option] && his_state_is_wont(option))
+                    || his_want_state_is_wont(option))
 			return;
 		set_his_want_state_wont(option);
 		q->qt[x].do_dont_resp[option]++;
@@ -270,8 +276,8 @@ void
 send_will(int option, int init, int x)
 {
 	if (init) {
-		if (!q->qt[x].will_wont_resp[option] && my_state_is_will(option) ||
-		    my_want_state_is_will(option))
+		if ((!q->qt[x].will_wont_resp[option] && my_state_is_will(option))
+                    || my_want_state_is_will(option))
 			return;
 		set_my_want_state_will(option);
 		q->qt[x].will_wont_resp[option]++;
@@ -294,6 +300,7 @@ dooption(int option, int x)
 			q->qt[x].will_wont_resp[option]--;
 	}
 	if (!q->qt[x].will_wont_resp[option] && my_want_state_is_wont(option))
+        {
 		if (option == TELOPT_SGA || option == TELOPT_ECHO) {
 			set_my_want_state_will(option);
 			send_will(option, 0, x);
@@ -301,6 +308,7 @@ dooption(int option, int x)
 			q->qt[x].will_wont_resp[option]++;
 			send_wont(option, 0, x);
 		}
+        }
 	set_my_state_will(option);
 }
 
@@ -308,8 +316,8 @@ void
 send_wont(int option, int init, int x)
 {
 	if (init) {
-		if (!q->qt[x].will_wont_resp[option] && my_state_is_wont(option) ||
-		    my_want_state_is_wont(option))
+		if ((!q->qt[x].will_wont_resp[option] && my_state_is_wont(option))
+                    || my_want_state_is_wont(option))
 			return;
 		set_my_want_state_wont(option);
 		q->qt[x].will_wont_resp[option]++;
