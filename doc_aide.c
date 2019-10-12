@@ -750,10 +750,9 @@ logout_all(void)
 void
 whoknows(void)
 {
-char    filename[100];
-
-  sprintf(filename, "%srm%d", WHODIR, curr);
+  char * filename = my_sprintf("%srm%d", WHODIR, curr);
   more(filename, 0);
+  free(filename);
 }
 
 
