@@ -439,7 +439,6 @@ char    bueller = 0;
 
       case 'T':
 	my_printf("OMG DEY CUT OFF MAH TWEETER!\n");
-        //twitter();
 	break;
 
       case 'u':
@@ -450,7 +449,6 @@ char    bueller = 0;
 
       case 'U':
         my_printf("Update Facebook Status, coming soon...\n");
-        //system("/home/bbs/bin/bbsfb.sh");
 	break;
 
       case 'v':
@@ -770,28 +768,6 @@ blockhost (void)
 //sprintf(blockhost, "echo \"/home/bbs/bin/blockip.sh %s\"> /tmp/test", bl_host);
 //system(blockhost);
     }
-}
-
-void
-twitter(void)
-{
-char twname[32];
-char twpass[16];
-char twinput[126];
-char tweetpost[200];
-char *tweet = malloc(strlen(twinput) +3);
-colorize("@YTwitter\n");
-colorize("@YYour Twitter username: @G");
-get_string("", 29, twname, -1);
-colorize("@YYour Twitter password: @G");
-get_string("", 16, twpass, -1);
-colorize("@YYour Tweet: @G");
-get_string("", 70, twinput, -1);
-
-sprintf(tweetpost, "/home/bbs/bin/bbstw.sh %s %s \'%s\'", twname, twpass, twinput);
-
-system(tweetpost);
-
 }
 
 void
