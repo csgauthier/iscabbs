@@ -142,7 +142,6 @@ char   *newroom;
 char    opt;
 int     rm_nbr;
 int    qpos;
-char filename[80];
 char pas[11];
 
   if (ouruser->f_novice)
@@ -226,12 +225,19 @@ char pas[11];
   
   /* delete & zero room info & whoknows files if they exist */
   /* NOTE: Need exclusive access here! */
-  sprintf(filename, "%sroom%d", DESCDIR, qpos);
-  unlink(filename);
-  open(filename, O_WRONLY | O_CREAT, 0640);
-  sprintf(filename, "%srm%d", WHODIR, qpos);
-  unlink(filename);
-  open(filename, O_WRONLY | O_CREAT, 0640);
+  // TODO: there's a better way to do this.
+  {
+      char * filename = my_sprintf("%sroom%d", DESCDIR, qpos);
+      unlink(filename);
+      open(filename, O_WRONLY | O_CREAT, 0640);
+      free(filename);
+  }
+  {
+      char * filename = my_sprintf("%srm%d", WHODIR, qpos);
+      unlink(filename);
+      open(filename, O_WRONLY | O_CREAT, 0640);
+      free(filename);
+  }
 
   locks(SEM_MSG);
 
