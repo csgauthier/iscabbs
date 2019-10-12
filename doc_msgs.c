@@ -42,7 +42,7 @@ deletemessage(long delnum, int quiet)
 **********************************************************************/
 int
 entermessage(int     troom,
-  char   *recipient,
+  const char   *recipient,
   int     upload)
 {
 int     curr_rm = troom;

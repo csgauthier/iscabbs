@@ -408,7 +408,7 @@ dologin(int c, int x)
 
 
 void
-logfatal(char *error)
+logfatal(const char *error)
 {
   struct timeval tv;
 
@@ -450,7 +450,7 @@ int i, j;
 
 
 int
-ssend(int s, char* msg, int len)
+ssend(int s, const char* msg, int len)
 {
   int x;
 

@@ -38,17 +38,16 @@ my_printf (const char *fmt, ...)
 
 
 int
-my_puts (char* s)
+my_puts (const char* s)
 {
-  int count;
+  int count = 0;
 
-  count = 0;
   while (*s) {
-    count = count + (my_putchar (*s) != EOF);
-    s++;
+    count += (my_putchar (*s) != EOF);
+    ++s;
   }
 
-  return (count);
+  return count;
 }
 
 
@@ -70,11 +69,10 @@ colorize (const char *fmt, ...)
 /* check for color codes and \r\n translation.  Return the number of characters
    (not including color codes) printed. */
 int
-my_cputs (char *s)
+my_cputs (const char *s)
 {
-  int count;
+  int count = 0;
 
-  count = 0;
   while (*s) {
 
     if (*s == '@') {
@@ -120,10 +118,10 @@ my_cputs (char *s)
 	    break;
 	}
       else if (*s == '@')
-	count = count + (my_putchar (*s) != EOF);
+	count += (my_putchar (*s) != EOF);
     } else
-      count = count + (my_putchar (*s) != EOF);
-    s++;
+      count += (my_putchar (*s) != EOF);
+    ++s;
   }
 
   return count;
@@ -131,11 +129,11 @@ my_cputs (char *s)
 
 
 int
-output (char *s)
+output (const char *s)
 {
   while (*s) {
     my_putchar (*s);
-    s++;
+    ++s;
   }
   return 0;
 }

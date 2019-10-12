@@ -1294,14 +1294,13 @@ char doing[50];
 
 
 void
-doingchange (char *doing)
+doingchange (const char *doing)
 {
-char *p;
 int size;
 int count;
 
   size = count = 0;
-  p = doing;
+  const char* p = doing;
   while (*p && count < 27)	/* 27 spaces in the wholist */
   {
     if (*p == '@' || *(p - 1) == '@')

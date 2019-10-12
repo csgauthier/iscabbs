@@ -759,18 +759,26 @@ static char hname[MAXHOSTNAMELEN + 1];
 /*
  * a case insensitive strstr().
  */
-char *
-mystrstr(char *haystack, char* needle)
+const char *
+mystrstr(const char *haystack, const char* needle)
 {
-    char *s;
+    const size_t nlen = strlen(needle);
 
+    const char *s;
     for (s = haystack; *s; s++)
-        if ( /* *s == *needle && */ !strncasecmp(s, needle, strlen(needle)))
+        if ( /* *s == *needle && */ !strncasecmp(s, needle, nlen))
             break;
+
     if (!*s)
-        return ((char *) NULL);
+        return (char *) NULL;
     else
-        return (s);
+        return s;
+}
+
+char *
+mystrstr_nonconst(char *haystack, const char* needle)
+{
+    return (char*)mystrstr(haystack, needle);
 }
 
 void
