@@ -1,8 +1,10 @@
 /*
  * doc_routines.c - General message system code.
  */
+#include <stdio_ext.h>
 #include "defs.h"
 #include "ext.h"
+
 
 
 /**********************************************************************
@@ -351,8 +353,9 @@ int flush = -1;
     sleep(sec);
   if (tty)
   {
-    while (INPUT_LEFT())
-      (void)getchar();
+    //while (INPUT_LEFT())
+    //  (void)getchar();
+    __fpurge(stdin);
     tcflush(0, TCIFLUSH);
   }
   else
