@@ -233,21 +233,20 @@ struct sigaction sact;
 
 
 void
-logevent(const char *message)
+logevent (const char *message)
 {
-int f;
-struct tm *tp;
-time_t t;
-char buf[120];
+    int     f;
 
-  if ((f = open(LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0640)) >= 0)
-  {
-    t = msg->t = time(0);
-    tp = localtime(&t);
-    sprintf(buf, "%02d%02d%02d:%02d%02d %s : %s\n", tp->tm_year % 100, tp->tm_mon + 1, tp->tm_mday, tp->tm_hour, tp->tm_min, ouruser ? ouruser->name : "_NEWUSER_", message);
-    write(f, buf, strlen(buf));
-    close(f);
-  }
+    if ((f = open (LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0640)) >= 0) {
+        time_t  t = msg->t = time (0);
+        struct tm *tp = localtime (&t);
+        char   *buf =
+            my_sprintf ("%02d%02d%02d:%02d%02d %s : %s\n", tp->tm_year % 100, tp->tm_mon + 1, tp->tm_mday,
+                        tp->tm_hour, tp->tm_min, ouruser ? ouruser->name : "_NEWUSER_", message);
+        write (f, buf, strlen (buf));
+        close (f);
+        free (buf);
+    }
 }
 
 
