@@ -238,7 +238,6 @@ FILE   *af;
 //int     nameflag = NO;
 int     room_number;
 char    tmpstr[100];
-char    name[100];
 struct userinfo *curruser, *bkey, dummy;
 long    user_number;
 unsigned char afbuf[8192];
@@ -253,7 +252,7 @@ size_t num_elements, size;
 bkey = &dummy;
 
 
-  sprintf(name, "%s.NEW", AIDELIST);
+  const char  * const name = AIDELIST ".NEW";
   if (!(af = fopen(name, "w")))
     return (-1);
   setvbuf(af, afbuf, _IOFBF, sizeof afbuf);
