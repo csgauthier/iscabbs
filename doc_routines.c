@@ -653,7 +653,7 @@ formtime (int how, time_t timetoform)
 static char tstring[80];
 struct tm *tm;
 int hr;		/* AM/PM conversion */
-char stamp[5];
+const char * stamp = "";
 
   tm = localtime (&timetoform);
 
@@ -661,13 +661,10 @@ char stamp[5];
   {
     hr = !tm->tm_hour ? 12 :
     	 tm->tm_hour > 12 ? tm->tm_hour - 12 : tm->tm_hour;
-    strcpy (stamp, tm->tm_hour >= 12 ? " PM" : " AM");
+    stamp = tm->tm_hour >= 12 ? " PM" : " AM";
   }
   else
-  {
     hr = tm->tm_hour;
-    strcpy (stamp, "");
-  }
 
   switch (how)
   {
