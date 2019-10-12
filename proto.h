@@ -165,7 +165,6 @@ extern void
         dontoption (int, int),
         drop (int),
         qinit (int),
-        logfatal (const char *),
         send_do (int, int, int),
         send_dont (int, int, int),
         send_will (int, int, int),
@@ -187,6 +186,8 @@ extern void
         segfault (void),
         do_ring (void),
         bbsqueue (int);
+
+extern void logfatal (const char *) __attribute__((noreturn));
 
 /* more */
 int init (void);
