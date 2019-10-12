@@ -520,20 +520,21 @@ void
 readdesc(void)
 {
 int     dummy;
-char    file[100];
 char    name[MAXALIAS + 1];
 unsigned char *p;
 int size;
 
-  sprintf(file, "%sroom%d", DESCDIR, curr);
+  char * file = my_sprintf("%sroom%d", DESCDIR, curr);
   size = 0;
   if (!(p = (unsigned char *)mymmap(file, &size, 0)) || !size)
   {
     colorize("@RNo Forum Info is available\n");
     if (p)
       munmap((void *)p, size);
+    free(file);
     return;
   }
+  free(file);
 
   readmessage(p, &dummy, name, FALSE, 0);
 
