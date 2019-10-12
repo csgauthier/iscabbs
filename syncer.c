@@ -12,7 +12,6 @@ bbssync(int init)
 {
   long pst_data[32];
   unsigned char outbuf[100];
-  char s[100];
   struct pst_dynamic *pst = (void *)pst_data;
   long oldcputime[9];
   time_t t;

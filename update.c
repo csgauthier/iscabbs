@@ -237,10 +237,8 @@ update_aides(struct userinfo *start, long   *ucount)
 FILE   *af;
 //int     nameflag = NO;
 int     room_number;
-char    tmpstr[100];
 struct userinfo *curruser, *bkey, dummy;
 long    user_number;
-unsigned char afbuf[8192];
 
 struct room_glob roomdata[MAXROOMS];
 
@@ -255,7 +253,6 @@ bkey = &dummy;
   const char  * const name = AIDELIST ".NEW";
   if (!(af = fopen(name, "w")))
     return (-1);
-  setvbuf(af, afbuf, _IOFBF, sizeof afbuf);
 
   fprintf(af, "Sysops and Programmers\n");
 
@@ -268,20 +265,12 @@ bkey = &dummy;
 
   for (user_number = 0; user_number < *ucount; user_number++)
   {
-    *tmpstr = 0;  // set null at start of string to reset for below
-
-    if (curruser->f_admin)
-    {
-      sprintf(tmpstr, "\n %s(%ld) ", curruser->name, curruser->usernum);
-
-      if (curruser->f_prog)
-        strcat(tmpstr, "*Programmer* ");
-      if (curruser->f_aide)
-        strcat(tmpstr, "*Sysop*");
-
-      fprintf(af, "%s", tmpstr);   // write the string to file
+    if (curruser->f_admin){
+      fprintf(af, "\n %s(%ld) %s%s", curruser->name, curruser->usernum,
+          (curruser->f_prog ? "*Programmer* " : ""),
+          (curruser->f_aide ? "*Sysop*" : ""));
     }
-  curruser++;  // increment pointer
+      curruser++;  // increment pointer
   }
 
   fprintf(af, "\n\n");
@@ -376,24 +365,12 @@ bkey = &dummy;
 
   for (c = 0; c < max_display_rooms; c++)
   {
-    char buff[50];
-    *buff = *tmpstr = 0;
+    int len = fprintf(af, " \"%s>\"", roomdata[c].roomname);
 
-    sprintf(tmpstr, " \"%s>\"", roomdata[c].roomname);
+    while (len < (MAXNAME + 6))
+        len += fprintf(af, " ");
 
-    while (strlen(tmpstr) < (MAXNAME + 6))
-    {
-      if (strlen(tmpstr) % 2)
-        strcat(tmpstr, " ");
-      else
-        strcat(tmpstr, " ");
-    }
-
-    sprintf(buff, " \"%s\"\n", roomdata[c].moderator_name);
-
-    strcat(tmpstr, buff);
-
-    fprintf(af, "%s", tmpstr);
+    fprintf(af, " \"%s\"\n", roomdata[c].moderator_name);
   }
 
   {
