@@ -727,54 +727,49 @@ wanttoyell(int cmd)
 }
 
 void
-blockhost(void)
+blockhost (void)
 {
-char bl_host[51];
-char blockhost[125];
+    char    bl_host[51];
 
-colorize("@YHostname or IP to block (blank to quit): @G");
-get_string("", 51, bl_host, -1);
-if (strlen(bl_host) == 0)
-{
-colorize("@YCancel.\n@G");
-}
-else
-{
+    colorize ("@YHostname or IP to block (blank to quit): @G");
+    get_string ("", 51, bl_host, -1);
+    if (strlen (bl_host) == 0)
+        colorize ("@YCancel.\n@G");
+    else {
 //printf("Hmm.  Can't block %s", bl_host);
-printf("Are you sure you want to block %s(Y/n)? ", bl_host);
-switch (get_single_quiet("YyNn\n"))
-  {
+        printf ("Are you sure you want to block %s(Y/n)? ", bl_host);
+        switch (get_single_quiet ("YyNn\n")) {
 //    case 'y':
-//	printf("\n");
- //       sprintf(blockhost, "/home/bbs/bin/blockip.sh %s", bl_host);
- //       system(blockhost);
-//	printf("%s blocked\n", bl_host);
- //     break;
+//  printf("\n");
+            //       sprintf(blockhost, "/home/bbs/bin/blockip.sh %s", bl_host);
+            //       system(blockhost);
+//  printf("%s blocked\n", bl_host);
+            //     break;
 
-    case 'Y':
-        printf("\n");
-	sprintf(blockhost, "/home/bbs/bin/blockip.sh %s", bl_host);
-	system(blockhost);
-        colorize("@R\n%s blocked\n@G", bl_host);
-      break;
+        case 'Y': {
+            printf ("\n");
+            char * blockhost = my_sprintf ("/home/bbs/bin/blockip.sh %s", bl_host);
+            system (blockhost);
+            free(blockhost);
+            colorize ("@R\n%s blocked\n@G", bl_host);
+            } break;
 
-    case 'N':
-colorize("@RCanceled.\n");
-      break;
-    case 'n':
-colorize("@RCanceled.\n");
-      break;
+        case 'N':
+            colorize ("@RCanceled.\n");
+            break;
+        case 'n':
+            colorize ("@RCanceled.\n");
+            break;
 
 
-    default:
-colorize("@RCanceled.\n");
-      break;
+        default:
+            colorize ("@RCanceled.\n");
+            break;
 
-}
+        }
 //sprintf(blockhost, "echo \"/home/bbs/bin/blockip.sh %s\"> /tmp/test", bl_host);
 //system(blockhost);
-//}
-}
+    }
 }
 
 void
