@@ -382,8 +382,15 @@ new_user(void)
   ouruser->firstcall = ouruser->time = mybtmp->time;
   strcpy(ouruser->loginname, ARGV[1] && ARGV[2] ? ARGV[2] : "");
   add_loggedin(ouruser);
-  sprintf(work, "NEWUSER %s%s%s", ouruser->loginname, *ouruser->loginname ? "@" : "", ouruser->remote);
-  logevent(work);
+
+  {
+      char * logmsg = my_sprintf("NEWUSER %s%s%s",
+                      ouruser->loginname,
+                      *ouruser->loginname ? "@" : "",
+                      ouruser->remote);
+      logevent(logmsg);
+      free(logmsg);
+  }
 
   my_printf("\n\nYour account has been created.\n\n");
 
