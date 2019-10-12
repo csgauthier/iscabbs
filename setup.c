@@ -280,21 +280,21 @@ char *name;
 void
 change_addr(struct user *tuser, int chflag)
 {
-  char work[81], answer[41];
-
+  char answer[41];
 
   my_printf("\nEnter your address information.  To leave a entry alone, just hit return.\n\n");
 
   if (chflag)
   {
-    sprintf(work, "Name [%s]: ", tuser->real_name);
-    get_string(work, 40, answer, -1);
+    char * name = my_sprintf("Name [%s]: ", tuser->real_name);
+    get_string(name, 40, answer, -1);
     if (*answer)
     {
       locks(SEM_USER);
       strcpy(tuser->real_name, answer);
       unlocks(SEM_USER);
     }
+    free(name);
   }
   else
   {
@@ -303,17 +303,20 @@ change_addr(struct user *tuser, int chflag)
       return;
   }
 
-  sprintf(work, "Street & house/apt# [%s]: ", tuser->addr1);
-  get_string(work, 40, answer, -1);
+  // addr1
+  char * addr1 = my_sprintf("Street & house/apt# [%s]: ", tuser->addr1);
+  get_string(addr1, 40, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->addr1, answer);
     unlocks(SEM_USER);
   }
+  free(addr1);
 
-  sprintf (work, "                    [%s]: ", tuser->addr2);
-  get_string (work, 40, answer, -1);
+  // addr2
+  char * addr2 = my_sprintf ("                    [%s]: ", tuser->addr2);
+  get_string (addr2, 40, answer, -1);
   if (*answer)
   {
     if (!strcmp (answer, "NONE"))
@@ -322,36 +325,41 @@ change_addr(struct user *tuser, int chflag)
     strcpy (tuser->addr2, answer);
     unlocks (SEM_USER);
   }
+  free(addr2);
 
-  sprintf(work, "City [%s]: ", tuser->city);
-  get_string(work, 20, answer, -1);
+  // city
+  char * city = my_sprintf("City [%s]: ", tuser->city);
+  get_string(city, 20, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->city, answer);
     unlocks(SEM_USER);
   }
+  free(city);
 
-  sprintf(work, "State or country [%s]: ", tuser->state);
-  get_string(work, 20, answer, -1);
+  char * state = my_sprintf("State or country [%s]: ", tuser->state);
+  get_string(state, 20, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->state, answer);
     unlocks(SEM_USER);
   }
+  free(state);
 
-  sprintf(work, "ZIP or mail code [%s]: ", tuser->zip);
-  get_string(work, 10, answer, -1);
+  char * zip = my_sprintf("ZIP or mail code [%s]: ", tuser->zip);
+  get_string(zip, 10, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->zip, answer);
     unlocks(SEM_USER);
   }
+  free(zip);
 
-  sprintf(work, "Phone number (including all prefixes!) [%s]: ", tuser->phone);
-  get_string(work, 20, answer, -1);
+  char * phone = my_sprintf("Phone number (including all prefixes!) [%s]: ", tuser->phone);
+  get_string(phone, 20, answer, -1);
   if (*answer)
   {
     if (!strcmp(answer, "NONE"))
@@ -360,18 +368,20 @@ change_addr(struct user *tuser, int chflag)
     strcpy(tuser->phone, answer);
     unlocks(SEM_USER);
   }
+  free(phone);
 
-  sprintf(work, "Internet e-mail address [%s]: ", tuser->mail);
-  get_string(work, 40, answer, -1);
+  char * email = my_sprintf("Internet e-mail address [%s]: ", tuser->mail);
+  get_string(email, 40, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->mail, answer);
     unlocks(SEM_USER);
   }
+  free(email);
 
-  sprintf(work, "WWW address [%s]: ", tuser->www);
-  get_string(work, 59, answer, -1);
+  char * www = my_sprintf("WWW address [%s]: ", tuser->www);
+  get_string(www, 59, answer, -1);
   if (*answer)
   {
     if (!strcmp(answer, "NONE"))
@@ -380,6 +390,7 @@ change_addr(struct user *tuser, int chflag)
     strcpy(tuser->www, answer);
     unlocks(SEM_USER);
   }
+  free(www);
 }
 
 
