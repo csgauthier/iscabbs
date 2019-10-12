@@ -622,12 +622,15 @@ void
 help(const char *topic, int morehelp)
 {
 char help_str[30];
-char hfile[100];
 int f;
 int toast;
 
-  sprintf(hfile, "%s%s", HELPDIR, topic);
+  {
+  char * hfile = my_sprintf("%s%s", HELPDIR, topic);
   more(hfile, 1);
+  free(hfile);
+  hfile=NULL;
+  }
   if (!morehelp)
     return;
 
@@ -645,7 +648,7 @@ int toast;
       help_str[toast] = tolower(help_str[toast]);
     }
 //    *help_str = tolower(*help_str);
-    sprintf(hfile, "%s%s%s", HELPDIR, "topics.", help_str);
+    char * hfile = my_sprintf("%s%s%s", HELPDIR, "topics.", help_str);
 
 //    colorize("\n@WDebug: %s@G\n", hfile);
 
@@ -656,6 +659,7 @@ int toast;
       close(f);
       more(hfile, 1);
     }
+    free(hfile);
   }
 }
 
