@@ -8,10 +8,8 @@ int
 main(int argc, char **argv)
 {
   int cmd = 0;
-  char work[80];
 
-  sprintf (work, "%score/bbs", ROOT);
-  chdir(work);
+  chdir( ROOT "core/bbs" );
   umask(027);
 
   if (openfiles() < 0)
