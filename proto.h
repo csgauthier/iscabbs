@@ -209,6 +209,10 @@ int my_cputs (const char *s);
 const char * mystrstr(const char *haystack, const char* needle);
 char * mystrstr_nonconst(char *haystack, const char* needle);
 int my_printf (const char *fmt, ...) __attribute__((format(printf,1,2)));
+
+char* my_sprintf (const char *fmt, ...) __attribute__((format(printf,1,2)));
+    // always returns a non-null malloc'd string. caller must free.
+
 int my_putchar (int c);
 int my_putc (int c, FILE* stream);
 int my_puts (const char* s);

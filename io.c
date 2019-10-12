@@ -36,6 +36,26 @@ my_printf (const char *fmt, ...)
     return r;
 }
 
+char*
+my_sprintf (const char *fmt, ...)
+{
+    va_list ap;
+
+    // call once to get buffer size
+    va_start (ap, fmt);
+    int n = vsnprintf (NULL, 0, fmt, ap);
+    va_end (ap);
+    if (n <= 0)
+        return calloc(1,sizeof(char)); // TODO: handle err.
+
+    // alloc buffer and call again
+    char * buf = (char*) calloc(n+1, sizeof(char));
+    va_start (ap, fmt);
+    vsnprintf (buf, n+1, fmt, ap);
+    va_end (ap);
+    // TODO: handle err
+    return buf;
+}
 
 int
 my_puts (const char* s)
