@@ -101,7 +101,7 @@ int whostart, whoend, whoincr;
         {
           char work2[60];
 
-          sprintf(work2, "%s%s%s", btmp->remlogin, *btmp->remlogin ? "@@" : "", btmp->remote);
+          checked_snprintf(work2,sizeof(work2), "%s%s%s", btmp->remlogin, *btmp->remlogin ? "@@" : "", btmp->remote);
 	  colorize("@Y%-19s @M%5d @M%3ld @R%2d:%02d%c @C%.37s\n", btmp->name, btmp->pid, btmp->eternal, hour, min, btmp->client ? 'C' : ' ', work2);
         }
 	break;
@@ -112,9 +112,9 @@ int whostart, whoend, whoincr;
         if (btmp->elf && !btmp->xstat)
           msg_status = '%';
         if (pos == 3)
-          sprintf(work, "%c%s", msg_status, btmp->name);
+          checked_snprintf(work,sizeof(work), "%c%s", msg_status, btmp->name);
         else
-          sprintf(work, "%c%-19s", msg_status, btmp->name);
+          checked_snprintf(work,sizeof(work), "%c%-19s", msg_status, btmp->name);
 	break;
       case 0:
       case 2:

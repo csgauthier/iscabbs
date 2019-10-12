@@ -89,7 +89,7 @@ int     rm_nbr;
 	      || (msg->room[rm_nbr].gen == tmpuser->generation[rm_nbr])))
       {
 
-	sprintf(tmpstr, " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
+	checked_snprintf(tmpstr, sizeof(tmpstr), " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
 	while (strlen(tmpstr) % limit)
 	  strcat(tmpstr, " ");
 
@@ -140,7 +140,7 @@ int     rm_nbr;
               || (msg->room[rm_nbr].gen == tmpuser->generation[rm_nbr])))
       {
 
-	sprintf(tmpstr, " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
+	checked_snprintf(tmpstr, sizeof(tmpstr), " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
 	while (strlen(tmpstr) % limit)
 	  strcat(tmpstr, " ");
 	newlength = oldlength + strlen(tmpstr);
@@ -186,7 +186,7 @@ int     rm_nbr;
             || (msg->room[rm_nbr].gen == tmpuser->generation[rm_nbr])))
     {
 
-      sprintf(tmpstr, " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
+      checked_snprintf(tmpstr, sizeof(tmpstr), " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
       while (strlen(tmpstr) % limit)
 	strcat(tmpstr, " ");
       newlength = oldlength + strlen(tmpstr);
@@ -670,38 +670,38 @@ const char * stamp = "";
   {
     case 1:
       /* Mon Jan 1, 2000  1:23 PM */
-      sprintf (tstring, "%s %s %d, %d %d:%02d%s",
+      checked_snprintf (tstring, sizeof(tstring), "%s %s %d, %d %d:%02d%s",
       	days[tm->tm_wday], months[tm->tm_mon], tm->tm_mday,
       	1900 + tm->tm_year, hr, tm->tm_min, stamp);
       break;
 
     case 2:
       /* Jan 1, 2000  1:23 PM */
-      sprintf (tstring, "%s %d, %d %d:%02d%s",
+      checked_snprintf (tstring, sizeof(tstring), "%s %d, %d %d:%02d%s",
 	months[tm->tm_mon], tm->tm_mday, 1900 + tm->tm_year,
 	hr, tm->tm_min, stamp);
       break;
 
     case 3:
       /* 1/1/00  1:23 PM */
-      sprintf (tstring, "%d/%d/%02d %d:%02d%s",
+      checked_snprintf (tstring, sizeof(tstring), "%d/%d/%02d %d:%02d%s",
 	tm->tm_mon + 1, tm->tm_mday, tm->tm_year % 100,
 	hr, tm->tm_min, stamp);
       break;
 
     case 4:
       /* 1:23 PM */
-      sprintf (tstring, "%d:%02d%s", hr, tm->tm_min, stamp);
+      checked_snprintf (tstring, sizeof(tstring), "%d:%02d%s", hr, tm->tm_min, stamp);
       break;
 
     case 5:
       /* Jan 1, 2000 */
-      sprintf (tstring, "%s %d, %d",
+      checked_snprintf (tstring, sizeof(tstring), "%s %d, %d",
 	months[tm->tm_mon], tm->tm_mday, 1900 + tm->tm_year);
       break;
 
     case 6:		/* X message */
-      sprintf (tstring, "%d:%02d%s on %s %d, %d",
+      checked_snprintf (tstring, sizeof(tstring), "%d:%02d%s on %s %d, %d",
 	hr, tm->tm_min, stamp, months[tm->tm_mon], tm->tm_mday,
 	1900 + tm->tm_year);
       break;

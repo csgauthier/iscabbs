@@ -320,7 +320,6 @@ newreadmessage(
 {
 struct mheader *mh;
 char    title[120];	/* This used to be 70.  Caused seg faults.  Bad -JB */
-char    work[70];
 char    authfield[20];
 int     linenbr;
 int     msgsize;
@@ -368,15 +367,17 @@ int i;
     *title = 0;
   strcpy(authfield, title);
 
-  sprintf(work, "@M%s", formtime (2, mh->ptime));
+  char    work[70];
+  checked_snprintf(work, sizeof(work), "@M%s", formtime (2, mh->ptime));
   // sprintf(work, "@M%s %d, %d %02d:%02d", months[mh->month], mh->day, 1900 + mh->year, mh->hour, mh->minute);
   strcat(title, work);
 
   name = getusername(mh->poster, 1);
   if (mh->mtype == MES_DESC)
   {
-    sprintf(work, "@G by @C%s", name);
+    checked_snprintf(work, sizeof(work), "@G by @C%s", name);
     strcat(title, work);
+
 // neuro edit
 // don't fucking ask me how half this shit works, it appears the forum info
 // gets rewritten every time somebody reads it (?!) but this works once every
@@ -412,7 +413,7 @@ int i;
     {
       if (mh->mtype == MES_SYSOP)
         sysopflags |= SYSOP_MSG;
-      sprintf(work, "@G from @C%s%s%s", name, mh->mtype == MES_FM ? " (Forum Moderator)" : "", (mh->mtype == MES_SYSOP && (!mh->mail || ((*auth && ouruser->f_aide) || (!*auth && !ouruser->f_aide)))) ? " (Sysop)" : "");
+      checked_snprintf(work, sizeof(work), "@G from @C%s%s%s", name, mh->mtype == MES_FM ? " (Forum Moderator)" : "", (mh->mtype == MES_SYSOP && (!mh->mail || ((*auth && ouruser->f_aide) || (!*auth && !ouruser->f_aide)))) ? " (Sysop)" : "");
       strcat(title, work);
     }
     else
@@ -423,7 +424,7 @@ int i;
       }
       else if (*auth)
       {
-        sprintf(work, "@G from @C%s", name);
+        checked_snprintf(work, sizeof(work), "@G from @C%s", name);
         strcat(title, work);
       }
   }
@@ -433,7 +434,7 @@ int i;
     if (mh->mtype == MES_NORMAL && ouruser->usernum != mh->ext.mail.recipient && curr == MAIL_RM_NBR && !*auth)
       return(MNFERR);
     name = getusername(mh->ext.mail.recipient, 1);
-    sprintf(work, "@G to @C%s%s", name, (mh->mtype == MES_SYSOP && ((*auth && !ouruser->f_aide) || (!*auth && ouruser->f_aide))) ? " (Sysop)" : "");
+    checked_snprintf(work, sizeof(work), "@G to @C%s%s", name, (mh->mtype == MES_SYSOP && ((*auth && !ouruser->f_aide) || (!*auth && ouruser->f_aide))) ? " (Sysop)" : "");
     strcat(title, work);
   }
   else if (mh->quotedx)
@@ -441,7 +442,7 @@ int i;
 
   if (curr != MAIL_RM_NBR && mh->mtype != MES_DESC && curr != mh->forum && curr != AIDE_RM_NBR)
   {
-    sprintf(work, "@G in @Y%s>", msg->room[mh->forum].name);
+    checked_snprintf(work, sizeof(work), "@G in @Y%s>", msg->room[mh->forum].name);
     strcat(title, work);
   }
 
