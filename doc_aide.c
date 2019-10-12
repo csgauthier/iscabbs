@@ -312,7 +312,6 @@ char pas[11];
 void
 deleteroom(void)
 {
-char    filename[100];
 char    confirm[7];
 
   if (curr <= AIDE_RM_NBR)
@@ -330,10 +329,14 @@ char    confirm[7];
 
   locks(-1);
   msg->room[curr].flags = 0;
-  sprintf(filename, "%sroom%d", DESCDIR, curr);
+
+  char * filename = my_sprintf("%sroom%d", DESCDIR, curr);
   unlink(filename);
-  sprintf(filename, "%srm%d", WHODIR, curr);
+  free(filename);
+
+  filename = my_sprintf("%srm%d", WHODIR, curr);
   unlink(filename);
+  free(filename);
   unlocks(-1);
 
   /* you just nuked the room, need to go somewhere! */
