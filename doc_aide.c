@@ -360,8 +360,6 @@ editdesc(void)
 int     bytes;
 int    chr;
 char    choice = '0';
-char    descfile[100];
-char    newdescfile[100];
 int     dfd;		/* desc file descriptor */
 int     dummy;		/* readmsg() needs this: returns YES/NO */
 int     err;		/* makemessage returns this */
@@ -376,8 +374,8 @@ int size;
 unsigned char *infop;
 struct user *tmpuser;
 
-  sprintf(descfile, "%sroom%d", DESCDIR, curr);
-  sprintf(newdescfile, "%sroom%d.NEW", DESCDIR, curr);
+  char * descfile = my_sprintf("%sroom%d", DESCDIR, curr);
+  char * newdescfile = my_sprintf("%sroom%d.NEW", DESCDIR, curr);
 
   size = 0;
   if (!(infop = (unsigned char *)mymmap(descfile, &size, 0)) || !size)
@@ -399,13 +397,13 @@ struct user *tmpuser;
     my_putchar('\n');
   }
   if (choice == 'Q' || choice == ' ' || choice == '\n')
-    return;
+    goto Return;
 
   if (choice == 'B' || choice == 'F')
   {
     cp = get_name("\nEnter 'Sysop' for default administrator moderation.\nNew forum moderator -> ", 2);
     if (!*cp)
-      return;
+      goto Return;
 
     if (!strcmp(cp, "Sysop"))
       msg->room[curr].roomaide = 0;
@@ -415,7 +413,7 @@ struct user *tmpuser;
 	if (tmpuser)
 	  freeuser(tmpuser);
 	my_printf("\nThere is no user %s on this BBS.\n", cp);
-        return;
+        goto Return;
       }
       else
       {
@@ -424,7 +422,7 @@ struct user *tmpuser;
       }
 
     if (choice == 'F')
-      return;
+      goto Return;
   }
 
   my_printf("\nHit Y to upload a description or N to enter it normally (Y/N) -> ");
@@ -455,6 +453,10 @@ struct user *tmpuser;
     if (yesno(-1))
       msg->room[curr].descupdate = msg->room[curr].highest;
   }
+
+Return:; // free the mallocs
+    free(descfile);
+    free(newdescfile);
 }
 
 
