@@ -448,7 +448,10 @@ int i;
   if (new)
     my_putchar('\n');
 
-  colorize(show || mh->mtype == MES_DESC ? title : authfield);
+  if (show || mh->mtype == MES_DESC )
+     colorize(title);
+  else
+     colorize(authfield);
   colorize("@G\n");
 
   p += mh->hlen;
