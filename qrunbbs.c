@@ -94,11 +94,11 @@ char *p;
 	q->qt[s].wasinq = 1;
         if (!q->qt[s].client)
         {
-          len = sprintf(str, IFYOUHADCLIENT, q->qt[s].wouldbe);
+          len = checked_snprintf(str,sizeof(str), IFYOUHADCLIENT, q->qt[s].wouldbe);
           ssend(s, str, len);
         }
       }
-      sprintf(date, "%02d:%02d:%02d", q->ltm->tm_hour, q->ltm->tm_min, q->ltm->tm_sec);
+      checked_snprintf(date,sizeof(date), "%02d:%02d:%02d", q->ltm->tm_hour, q->ltm->tm_min, q->ltm->tm_sec);
       for (; i >= 0; i--)
       {
         if ((!s && q->qt[q->qindex[i]].qlo <= i)
@@ -109,11 +109,11 @@ char *p;
             || q->qt[q->qindex[i]].login == -14)
           continue;
         if (!i || !q->qt[q->qindex[i]].qlo)
-          len = sprintf(str, ATFRONT, date, (q->t - q->qt[q->qindex[i]].conn) / 60, (q->t - q->qt[q->qindex[i]].conn) % 60);
+          len = checked_snprintf(str,sizeof(str), ATFRONT, date, (q->t - q->qt[q->qindex[i]].conn) / 60, (q->t - q->qt[q->qindex[i]].conn) % 60);
         else if (i == 1 || q->qt[q->qindex[i]].qlo == 1)
-          len = sprintf(str, ONEAHEAD, date, (q->t - q->qt[q->qindex[i]].conn) / 60, (q->t - q->qt[q->qindex[i]].conn) % 60, bigbtmp->users, q->qp);
+          len = checked_snprintf(str,sizeof(str), ONEAHEAD, date, (q->t - q->qt[q->qindex[i]].conn) / 60, (q->t - q->qt[q->qindex[i]].conn) % 60, bigbtmp->users, q->qp);
         else
-          len = sprintf(str, MANYAHEAD, date, (q->t - q->qt[q->qindex[i]].conn) / 60, (q->t - q->qt[q->qindex[i]].conn) % 60, i <= q->qt[q->qindex[i]].qlo ? i : q->qt[q->qindex[i]].qlo, bigbtmp->users, q->qp);
+          len = checked_snprintf(str,sizeof(str), MANYAHEAD, date, (q->t - q->qt[q->qindex[i]].conn) / 60, (q->t - q->qt[q->qindex[i]].conn) % 60, i <= q->qt[q->qindex[i]].qlo ? i : q->qt[q->qindex[i]].qlo, bigbtmp->users, q->qp);
         if (i < q->qt[q->qindex[i]].qlo)
           q->qt[q->qindex[i]].qlo = i;
         ssend(q->qindex[i], str, len);
@@ -234,7 +234,7 @@ char *p;
     // Not sure why we are selecting on read here if the intent is to write.
 	if ((y = select(s + 1, &rfds, &wfds, 0, &tv)) > 0)
         {
-	  sprintf(str, "%d,%d\r\n", ntohs (port), PORT);
+	  checked_snprintf(str,sizeof(str), "%d,%d\r\n", ntohs (port), PORT);
           write(s, str, strlen(str));
 	  shutdown(s, 1);
 	}

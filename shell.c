@@ -243,7 +243,7 @@ char myname[MAXALIAS + 1];
 	  my_exit(10);
 	}
 
-	sprintf(temp, "%s %s%s%s/%d", client ? "CLIENT" : "LOGIN", ARGV[1] && ARGV[2] ? ARGV[2] : "", ARGV[1] && ARGV[2] ? "@" : "", ouruser->remote, mybtmp->remport);
+	checked_snprintf(temp,sizeof(temp), "%s %s%s%s/%d", client ? "CLIENT" : "LOGIN", ARGV[1] && ARGV[2] ? ARGV[2] : "", ARGV[1] && ARGV[2] ? "@" : "", ouruser->remote, mybtmp->remport);
 	logevent(temp);
 
 	++ouruser->timescalled;

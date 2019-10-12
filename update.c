@@ -334,8 +334,9 @@ bkey = &dummy;
         strcat(roomdata[c].moderator_name, curruser->name);
       } else {
         // we shouldn't ever get here now that code has been debugged
-        sprintf(roomdata[c].moderator_name, "User %ld",
-          roomdata[c].moderator_number);
+        checked_snprintf(roomdata[c].moderator_name,
+            sizeof(roomdata[c].moderator_name),
+            "User %ld", roomdata[c].moderator_number);
       }
     }
     else
@@ -403,8 +404,8 @@ int     unbr;
   {
     u = start;
 
-    sprintf(name, "%srm%d.NEW", WHODIR, rm_nbr);
-    sprintf(newname, "%srm%d", WHODIR, rm_nbr);
+    checked_snprintf(name,sizeof(name), "%srm%d.NEW", WHODIR, rm_nbr);
+    checked_snprintf(newname,sizeof(newname), "%srm%d", WHODIR, rm_nbr);
 
     if (!(file = fopen(name, "w")))
       return (-1);
@@ -417,7 +418,7 @@ int     unbr;
     }
 
     /* make a heading in the whoknows file for this room */
-    sprintf(filestr, "\nWho knows \"%s\"\n\n", msg->room[rm_nbr].name);
+    checked_snprintf(filestr,sizeof(filestr), "\nWho knows \"%s\"\n\n", msg->room[rm_nbr].name);
 
     if (rm_nbr < 2)
     {
@@ -437,7 +438,7 @@ int     unbr;
           && ((!(msg->room[rm_nbr].flags & QR_PRIVATE) && u->forget[rm_nbr] != NEWUSERFORGET)
               || msg->room[rm_nbr].gen == u->generation[rm_nbr]))
       {
-	sprintf(temp, "%s (%ld)", u->name, u->usernum);
+	checked_snprintf(temp,sizeof(temp), "%s (%ld)", u->name, u->usernum);
 	i = strlen(temp);
 	strcat(temp, "                             " + i);
 	if (!*filestr)

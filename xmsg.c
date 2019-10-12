@@ -84,7 +84,7 @@ displayx(long pos, int num, time_t *t, long *prev, long *next)
     return(0);
 
   if (num)
-    sprintf(nstr, "(#%d) ", num);
+    checked_snprintf(nstr,sizeof(nstr), "(#%d) ", num);
   else
     strcpy(nstr, "(old) ");
 
@@ -939,7 +939,7 @@ xyell(struct user *up, unsigned char *p)
 
     found = 1;
     if (num > 0)
-      sprintf(nstr, "#%d", num);
+      checked_snprintf(nstr,sizeof(nstr), "#%d", num);
     else
       strcpy(nstr, "old");
     p += sprintf((char *)p, "\n%s %s (%s) from %s to %s at %s %s\n", sender ? "---" : (xh->type == X_QUESTION ? "%%%" : "***"), xh->type == X_QUESTION ? "Question" : "Message", nstr, getusername(xh->snum, 1), getusername(xh->rnum, 1), formtime (6, xh->time), sender ? "---" : (xh->type == X_QUESTION ? "%%%" : "***"));

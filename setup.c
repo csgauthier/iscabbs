@@ -748,7 +748,7 @@ change_name(struct user *workuser)
 
       msync((void *)tmpuser, sizeof(struct user), MS_SYNC);
 
-      sprintf(work, "NAMECHANGE: %s to %s", workuser->name, name);
+      checked_snprintf(work,sizeof(work), "NAMECHANGE: %s to %s", workuser->name, name);
       logevent(work);
 
       locks(SEM_USER);
