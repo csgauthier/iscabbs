@@ -130,7 +130,6 @@ int displayx (long, int, time_t *, long *, long *);
 void checkx (int);
 void xbroadcast (void);
 void express (int);
-void sendx (struct btmp *, struct user *, char [][80], int);
 void change_express (int);
 void old_express (void);
 void get_syself_help (int);
