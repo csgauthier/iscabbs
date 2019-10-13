@@ -126,7 +126,6 @@ int profile (const char *, struct user *, int);
 
 void final_exit (void);
 
-int displayx (long, int, time_t *, long *, long *);
 void checkx (int);
 void xbroadcast (void);
 void express (int);
