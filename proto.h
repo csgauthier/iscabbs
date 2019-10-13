@@ -69,7 +69,6 @@ int openfiles (void);
 char *mymmap (const char *, int *, int);
 int errlog (const char * fmt,...) __attribute__((format(printf,1,2)));
 unsigned int sleep (unsigned int);
-int strcasecmp (const char *, const char *);
 
 void termset (void);
 
