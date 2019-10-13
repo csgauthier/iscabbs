@@ -3,6 +3,9 @@
  */
 #include "defs.h"
 #include "ext.h"
+static void blockhost (void);
+static void inituser (void);
+
 /*char fun_stuff[][80] = {
 	"IM IN UR LOBBY!! EATIN UR PROMPTZ!!!",
 	"Aliens are attacking, log off now.",
@@ -663,7 +666,7 @@ int toast;
  * Flag rooms a user no longer belongs to so generation numbers are kept
  * consistent.  Also resets any pointers that might have gotten out of range.
  */
-void
+static void
 inituser(void)
 {
 int i;
@@ -720,7 +723,7 @@ wanttoyell(int cmd)
   return(0);
 }
 
-void
+static void
 blockhost (void)
 {
     char    bl_host[51];
