@@ -693,42 +693,36 @@ sleep(unsigned int sec)
   return(0);
 }
 
-
-
 int
-#ifdef __STDC__
-errlog(const char *fmt, ...)
-#else
-errlog(fmt, va_alist)
-char *fmt;
-va_dcl
-#endif
+errlog (const char *fmt, ...)
 {
-va_list ap;
-char s[240];
-time_t t;
-int f;
+    int     fd;
 
-#ifdef __STDC__
-  va_start(ap, fmt);
-#else         
-  va_start(ap);
-#endif
-  if ((f = open(ERRLOG, O_WRONLY | O_CREAT | O_APPEND, 0640)) < 0)
-    return(-1);
-  t = time(0);
-  strcpy(s, ctime(&t));
-  s[strlen(s) - 1] = ' ';
-  if (ouruser)
-    strcat(s, ouruser->name);
-  else
-    strcat(s, "__NONE__");
-  strcat(s, "  ");
-  vsprintf(s + strlen(s), fmt, ap);
-  strcat(s, "\n");
-  write(f, s, strlen(s));
-  va_end(ap);
-  return(0);
+    if ((fd = open (ERRLOG, O_WRONLY | O_CREAT | O_APPEND, 0640)) < 0)
+        return (-1);
+
+    // write ctime to buffer
+    time_t t = time (0);
+    char* buf = my_sprintf(NULL, "%s ", ctime (&t));
+
+    // append name
+    buf = my_sprintf(buf, "%s ", ouruser ?  ouruser->name : "__NONE__");
+
+    // append formatted args
+    va_list ap;
+    va_start (ap, fmt);
+    buf = my_vsprintf(buf, fmt, ap);
+    va_end(ap);
+
+    // append newline
+    buf = my_sprintf(buf, "%s", "\n");
+
+    write (fd, buf, strlen (buf));// TODO: check return
+    close(fd);
+
+    free(buf);
+
+    return 0;
 }
 
 
