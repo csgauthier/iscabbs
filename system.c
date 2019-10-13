@@ -384,7 +384,7 @@ new_user(void)
   add_loggedin(ouruser);
 
   {
-      char * logmsg = my_sprintf("NEWUSER %s%s%s",
+      char * logmsg = my_sprintf(NULL,"NEWUSER %s%s%s",
                       ouruser->loginname,
                       *ouruser->loginname ? "@" : "",
                       ouruser->remote);

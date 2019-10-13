@@ -299,7 +299,7 @@ change_addr(struct user *tuser, int chflag)
 
   if (chflag)
   {
-    char * name = my_sprintf("Name [%s]: ", tuser->real_name);
+    char * name = my_sprintf(NULL,"Name [%s]: ", tuser->real_name);
     get_string(name, 40, answer, -1);
     if (*answer)
     {
@@ -317,7 +317,7 @@ change_addr(struct user *tuser, int chflag)
   }
 
   // addr1
-  char * addr1 = my_sprintf("Street & house/apt# [%s]: ", tuser->addr1);
+  char * addr1 = my_sprintf(NULL,"Street & house/apt# [%s]: ", tuser->addr1);
   get_string(addr1, 40, answer, -1);
   if (*answer)
   {
@@ -328,7 +328,7 @@ change_addr(struct user *tuser, int chflag)
   free(addr1);
 
   // addr2
-  char * addr2 = my_sprintf ("                    [%s]: ", tuser->addr2);
+  char * addr2 = my_sprintf(NULL,"                    [%s]: ", tuser->addr2);
   get_string (addr2, 40, answer, -1);
   if (*answer)
   {
@@ -341,7 +341,7 @@ change_addr(struct user *tuser, int chflag)
   free(addr2);
 
   // city
-  char * city = my_sprintf("City [%s]: ", tuser->city);
+  char * city = my_sprintf(NULL,"City [%s]: ", tuser->city);
   get_string(city, 20, answer, -1);
   if (*answer)
   {
@@ -351,7 +351,7 @@ change_addr(struct user *tuser, int chflag)
   }
   free(city);
 
-  char * state = my_sprintf("State or country [%s]: ", tuser->state);
+  char * state = my_sprintf(NULL,"State or country [%s]: ", tuser->state);
   get_string(state, 20, answer, -1);
   if (*answer)
   {
@@ -361,7 +361,7 @@ change_addr(struct user *tuser, int chflag)
   }
   free(state);
 
-  char * zip = my_sprintf("ZIP or mail code [%s]: ", tuser->zip);
+  char * zip = my_sprintf(NULL,"ZIP or mail code [%s]: ", tuser->zip);
   get_string(zip, 10, answer, -1);
   if (*answer)
   {
@@ -371,7 +371,7 @@ change_addr(struct user *tuser, int chflag)
   }
   free(zip);
 
-  char * phone = my_sprintf("Phone number (including all prefixes!) [%s]: ", tuser->phone);
+  char * phone = my_sprintf(NULL,"Phone number (including all prefixes!) [%s]: ", tuser->phone);
   get_string(phone, 20, answer, -1);
   if (*answer)
   {
@@ -383,7 +383,7 @@ change_addr(struct user *tuser, int chflag)
   }
   free(phone);
 
-  char * email = my_sprintf("Internet e-mail address [%s]: ", tuser->mail);
+  char * email = my_sprintf(NULL,"Internet e-mail address [%s]: ", tuser->mail);
   get_string(email, 40, answer, -1);
   if (*answer)
   {
@@ -393,7 +393,7 @@ change_addr(struct user *tuser, int chflag)
   }
   free(email);
 
-  char * www = my_sprintf("WWW address [%s]: ", tuser->www);
+  char * www = my_sprintf(NULL,"WWW address [%s]: ", tuser->www);
   get_string(www, 59, answer, -1);
   if (*answer)
   {

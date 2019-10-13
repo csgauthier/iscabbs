@@ -623,7 +623,7 @@ int f;
 int toast;
 
   {
-  char * hfile = my_sprintf("%s%s", HELPDIR, topic);
+  char * hfile = my_sprintf(NULL, "%s%s", HELPDIR, topic);
   more(hfile, 1);
   free(hfile);
   hfile=NULL;
@@ -645,7 +645,7 @@ int toast;
       help_str[toast] = tolower(help_str[toast]);
     }
 //    *help_str = tolower(*help_str);
-    char * hfile = my_sprintf("%s%s%s", HELPDIR, "topics.", help_str);
+    char * hfile = my_sprintf(NULL, "%s%s%s", HELPDIR, "topics.", help_str);
 
 //    colorize("\n@WDebug: %s@G\n", hfile);
 
@@ -745,7 +745,7 @@ blockhost (void)
 
         case 'Y': {
             printf ("\n");
-            char * blockhost = my_sprintf ("/home/bbs/bin/blockip.sh %s", bl_host);
+            char * blockhost = my_sprintf (NULL, "/home/bbs/bin/blockip.sh %s", bl_host);
             system (blockhost);
             free(blockhost);
             colorize ("@R\n%s blocked\n@G", bl_host);

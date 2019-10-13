@@ -235,7 +235,7 @@ logevent (const char *message)
         time_t  t = msg->t = time (0);
         struct tm *tp = localtime (&t);
         char   *buf =
-            my_sprintf ("%02d%02d%02d:%02d%02d %s : %s\n", tp->tm_year % 100, tp->tm_mon + 1, tp->tm_mday,
+            my_sprintf(NULL,"%02d%02d%02d:%02d%02d %s : %s\n", tp->tm_year % 100, tp->tm_mon + 1, tp->tm_mday,
                         tp->tm_hour, tp->tm_min, ouruser ? ouruser->name : "_NEWUSER_", message);
         write (f, buf, strlen (buf));
         close (f);
@@ -291,7 +291,7 @@ my_exit(int doflush)
     if ((f = open(ETC "uselog", O_WRONLY | O_CREAT | O_APPEND, 0640)) >= 0)
     {
       ltm = localtime(&ouruser->time);
-      char * junk = my_sprintf("%02d%02d%02d:%02d%02d:%04ld:%s\n", ltm->tm_year % 100, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, (ouruser->timeoff - ouruser->time) / 60 + 1, ouruser->name);
+      char * junk = my_sprintf(NULL,"%02d%02d%02d:%02d%02d:%04ld:%s\n", ltm->tm_year % 100, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, (ouruser->timeoff - ouruser->time) / 60 + 1, ouruser->name);
       write(f, junk, strlen(junk));
       close(f);
       free(junk);
