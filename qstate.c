@@ -2,6 +2,14 @@
 #include "defs.h"
 #include "ext.h"
 
+static void dontoption(int option, int x);
+static void dooption(int option, int x);
+static void send_do(int option, int init, int x);
+static void send_dont(int option, int init, int x);
+static void send_wont(int option, int init, int x);
+static void suboption(int x);
+static void willoption(int option, int x);
+static void wontoption(int option, int x);
 
 void
 qtelrcv(int x)
@@ -191,8 +199,7 @@ gotiac:			switch (c) {
 	}
 }
 
-
-void
+static void
 send_do(int option, int init, int x)
 {
 	if (init) {
@@ -207,7 +214,7 @@ send_do(int option, int init, int x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-void
+static void
 willoption(int option, int x)
 {
 	if (option >= 64) {
@@ -239,7 +246,7 @@ willoption(int option, int x)
 	set_his_state_will(option);
 }
 
-void
+static void
 send_dont(int option, int init, int x)
 {
 	if (init) {
@@ -254,7 +261,7 @@ send_dont(int option, int init, int x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-void
+static void
 wontoption(int option, int x)
 {
 	if (option >= 64)
@@ -272,7 +279,7 @@ wontoption(int option, int x)
 	set_his_state_wont(option);
 }
 
-void
+static void
 send_will(int option, int init, int x)
 {
 	if (init) {
@@ -287,7 +294,7 @@ send_will(int option, int init, int x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-void
+static void
 dooption(int option, int x)
 {
 	if (option >= 64) {
@@ -312,7 +319,7 @@ dooption(int option, int x)
 	set_my_state_will(option);
 }
 
-void
+static void
 send_wont(int option, int init, int x)
 {
 	if (init) {
@@ -327,7 +334,7 @@ send_wont(int option, int init, int x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-void
+static void
 dontoption(int option, int x)
 {
 	if (option >= 64)
@@ -349,7 +356,7 @@ dontoption(int option, int x)
 	set_my_state_wont(option);
 }
 
-void
+static void
 suboption(int x)
 {
     char *cp, *varp, *valp;

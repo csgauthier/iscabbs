@@ -143,21 +143,11 @@ void bbsbackup (const char *);
 /* queue stuff */
 extern void
         runbbs (int),
-        checkauth (int),
         dologin (int, int),
-        dooption (int, int),
-        dontoption (int, int),
         drop (int),
         qinit (int),
-        send_do (int, int, int),
-        send_dont (int, int, int),
-        send_will (int, int, int),
-        send_wont (int, int, int),
         setup (void),
-        suboption (int),
         qtelrcv (int),
-        willoption (int, int),
-        wontoption (int, int),
         quit (void),
         do_quit (void),
         reap (void),
@@ -189,7 +179,6 @@ int colorize (const char *fmt, ...) __attribute__((format(printf,1,2)));
 int msem_init (int *sem, int val);
 int msem_lock (int *which, int unused);
 int msem_unlock (int *which, int unused);
-int my_cputs (const char *s);
 const char * mystrstr(const char *haystack, const char* needle);
 char * mystrstr_nonconst(char *haystack, const char* needle);
 int my_printf (const char *fmt, ...) __attribute__((format(printf,1,2)));
@@ -212,7 +201,6 @@ int checked_snprintf_with_traceinfo (
 
 int my_putchar (int c);
 int my_putc (int c, FILE* stream);
-int my_puts (const char* s);
 int output (const char *s);
 void printdate(const char* fmt);
 void searchtool (void);

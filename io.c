@@ -10,6 +10,9 @@
 int ansi = 0;
 #endif
 
+static int my_cputs (const char *s);
+static int my_puts (const char* s);
+
 /* A standard printf -- no color code recognition. */
 /* works best if output is not fflushed */
 int
@@ -87,7 +90,7 @@ int checked_snprintf_with_traceinfo (
     return n;
 }
 
-int
+static int
 my_puts (const char* s)
 {
   int count = 0;
@@ -130,7 +133,7 @@ colorize (const char *fmt, ...)
 
 /* check for color codes and \r\n translation.  Return the number of characters
    (not including color codes) printed. */
-int
+static int
 my_cputs (const char *s)
 {
   int count = 0;
