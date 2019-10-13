@@ -1,0 +1,22 @@
+## Developer notes. Mostly likely incorrect.
+
+Oct 2019 [John Public]
+
+* Compilation: the Makefile works. It has two targets.
+  'bbs' is the server. 
+  'setupbbs' is the setup program.
+
+* Configure the ROOT dir, UID, GID in 'bbs.h'.
+  For testing, I used '/tmp/whatever', and my own UID/GID.
+  Re-compile everything since these are hard-coded in the headers.
+
+* Create the dir structure under the ROOT.
+  mkdir -p ROOT/{data,etc,etc/who,help,message,message/desc}
+
+* Run bbsetup. Use strace if it fails. It failed for me because
+  of missing the dir structure created in the previous step.
+
+* Run bbs -i. I think this initializes things. I don't know.
+
+* Run bbs. Type `New` to create a new user.
+
