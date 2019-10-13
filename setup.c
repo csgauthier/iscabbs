@@ -1158,7 +1158,7 @@ userlist_config(struct user *tmpuser, int chflag)
 	if (i == NXCONF)
 	{
 	  unlocks(SEM_USER);
-	  errlog("SNH %s %s", __FILE__, __LINE__);
+	  errlog("SNH %s %d", __FILE__, __LINE__);
 	}
       }
 
