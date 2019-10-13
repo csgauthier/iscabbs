@@ -4,6 +4,15 @@
 #include "defs.h"
 #include "ext.h"
 
+static void aide_logout(void);
+static void createroom(void);
+static void deleteroom(void);
+static void editdesc(void);
+static void editroom(void);
+static void invite(void);
+static void kickout (void);
+static void logout_all (void);
+static void whoknows(void);
 
 
 /**********************************************************************
@@ -132,7 +141,7 @@ int chr = '?';
 /**********************************************************************
 * createroom
 **********************************************************************/
-void
+static void
 createroom(void)
 {
 int i;
@@ -308,7 +317,7 @@ char pas[11];
 /**********************************************************************
 * deleteroom
 **********************************************************************/
-void
+static void
 deleteroom(void)
 {
 char    confirm[7];
@@ -353,7 +362,7 @@ char    confirm[7];
 * If a new aide is chosen, read his/her user file and assign ->usernum
 * to be roomaide.
 **********************************************************************/
-void
+static void
 editdesc(void)
 {
 char    choice = '0';
@@ -458,7 +467,7 @@ Return:; // free the mallocs
 * editroom
 * <E>dit room in aide menu
 **********************************************************************/
-void
+static void
 editroom(void)
 {
 char    anon_opt;
@@ -594,7 +603,7 @@ int     gen;
 * Modifies the user's generation and forget numbers to make a member
 * of the room.
 **********************************************************************/
-void
+static void
 invite(void)
 {
 struct user *tmpuser;
@@ -634,7 +643,7 @@ char   *uname;
 * kickout
 * Edit a user's generation number for a room so (s)he can't get to it.
 **********************************************************************/
-void
+static void
 kickout(void)
 {
 struct user *tmpuser;
@@ -681,7 +690,7 @@ char   *uname;
 }
 
 
-void
+static void
 aide_logout(void)
 {
 struct user *tmpuser;
@@ -706,9 +715,7 @@ struct btmp btmp;
   }
 }
 
-
-
-void
+static void
 logout_all(void)
 {
   int i;
@@ -739,7 +746,7 @@ logout_all(void)
 * Simply mores the whoknows list for current room
 * update aide list is called after an aide change
 **********************************************************************/
-void
+static void
 whoknows(void)
 {
   char * filename = my_sprintf("%srm%d", WHODIR, curr);
