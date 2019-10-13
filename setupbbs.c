@@ -13,7 +13,7 @@ tick (void)
     write (1, ".", 1);
 }
 
-void 
+static void
 setupbtmp(void)
 {
   int fd;
@@ -24,14 +24,14 @@ setupbtmp(void)
     perror ("can't open tmpdata");
     return;
   }
-  
+
   bzero (&bigbtmp, sizeof (struct bigbtmp));
   write (fd, (char *)&bigbtmp, sizeof (struct bigbtmp));
   close (fd);
   printf ("btmp setup complete\n");
 }
 
-void
+static void
 setupmsgmain(void)
 {
   int fd;
@@ -59,7 +59,7 @@ setupmsgmain(void)
 }
 
 
-void
+static void
 setupmsgdata(void)
 {
   int fd;
@@ -69,7 +69,7 @@ setupmsgdata(void)
     perror ("can't open msgdata");
     return;
   }
-  
+
   bzero ((char *) &msg, sizeof (struct msg));
   msg.xmsgsize = XMSGSIZE;
   write (fd, (char *)&msg, sizeof (struct msg));
@@ -78,7 +78,7 @@ setupmsgdata(void)
 }
 
 
-void
+static void
 setupuserdata(void)
 {
   int fd;
@@ -108,7 +108,7 @@ setupuserdata(void)
 }
 
 
-void
+static void
 setupxmsgdata(void)
 {
   int fd;
@@ -119,7 +119,7 @@ setupxmsgdata(void)
     perror ("can'topen xmsgdata");
     return;
   }
-  
+
   i = XMSGSIZE;
   while (i > 0) {
     size_t res;
@@ -137,7 +137,7 @@ setupxmsgdata(void)
   printf ("xmsgdata done\n");
 }
 
-void 
+static void
 setupvoteinfo(void)
 {
   struct voteinfo voteinfo;
@@ -156,8 +156,8 @@ setupvoteinfo(void)
 }
 
 
-void
-main(int argc, char **argv)
+int
+main(int argc, char *argv[])
 {
   if ((zerobuf = calloc (zerobuflen, 1)) == NULL) {
     perror ("Couldn't allocate zero buffer");
@@ -169,5 +169,6 @@ main(int argc, char **argv)
   setupuserdata();
   setupxmsgdata();
   setupvoteinfo();
+  return 0;
 }
 

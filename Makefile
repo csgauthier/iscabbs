@@ -67,13 +67,24 @@ bbs_headers := \
 
 bbs_objects := $(bbs_sources:.c=.o)
 
+setupbbs_sources := \
+	setupbbs.c
+
+setupbbs_objects := $(setupbbs_sources:.c=.o)
+
 .PHONY: all
-all: bbs
+all: bbs setupbbs
 
 bbs: $(bbs_objects)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 $(bbs_objects): %.o : %.c $(bbs_headers)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+setupbbs: $(setupbbs_objects)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+$(setupbbs_objects): %.o : %.c $(bbs_headers)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
