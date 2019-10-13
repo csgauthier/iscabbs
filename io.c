@@ -106,13 +106,25 @@ my_puts (const char* s)
 int
 colorize (const char *fmt, ...)
 {
-    char string [1024];
     va_list ap;
 
+    // call once to get buffer size
     va_start (ap, fmt);
-    (void)  vsprintf (string, fmt, ap);
+    int n = vsnprintf (NULL, 0, fmt, ap);
     va_end (ap);
-    return my_cputs (string);
+    if (n <= 0)
+        return 0; // TODO: handle err. what is the return code here?
+
+    // alloc buffer and call again
+    char * buf = (char*) calloc(n+1, sizeof(char));
+    va_start (ap, fmt);
+    vsnprintf (buf, n+1, fmt, ap);
+    va_end (ap);
+
+    // write it
+    int rc = my_cputs (buf);
+    free(buf);
+    return rc;
 }
 
 
