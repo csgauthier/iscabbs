@@ -162,7 +162,7 @@ express(int which)
 {
 int i;
 char *name;
-struct btmp *buser;
+struct btmp *buser = NULL;
 struct user *p;
 int override = ' ';
 struct btmp tuser;
@@ -497,6 +497,7 @@ int wasbusy = 0;
   p = (char *)xmsg + curpos;
   bcopy((char *)&xh, p, sizeof xh);
   p += sizeof xh;
+  // BUG? `j` is strlen, but we copy `j+2` bytes.
   for (i = 0; i < XLENGTH && (j = strlen(send_string[i])); i++, p += j + 1)
     strncpy(p, send_string[i], j + 2);
   msg->xcurpos = ((unsigned char *)p + sizeof(long) - xmsg) & ~(sizeof(long) - 1);
@@ -596,7 +597,7 @@ int i;
 int c = ' ';
 int dir = BACKWARD;
 int n = 0;
-int savedir;
+int savedir=0;
 
   for (;;)
   {
@@ -726,7 +727,7 @@ get_syself_help(int cmd)
 {
   char send_string[XLENGTH][80];
   struct btmp btmp;
-  struct btmp *buser;
+  struct btmp *buser = NULL;
   struct user *p;
   int i;
   int n;

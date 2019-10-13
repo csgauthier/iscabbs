@@ -216,7 +216,7 @@ reserve_slot(void)
 {
 struct btmp newbtmp;
 int i;
-int p;
+pid_t p;
 int j;
 struct sockaddr_in sa;
 long mineternal;
