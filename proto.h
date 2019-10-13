@@ -232,4 +232,3 @@ void printdate(const char* fmt);
 void searchtool (void);
 int ssend(int s, const char* msg, int len);
 void version(void);
-void vote(void);
