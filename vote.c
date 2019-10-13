@@ -8,8 +8,9 @@
 
 static int makevotemsg(void);
 
+// TODO: this function isn't used.
 void
-vote(void)
+vote_unused_(void)
 {
   int err;
   struct user *user;
