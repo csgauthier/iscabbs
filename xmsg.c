@@ -3,6 +3,9 @@
 
 #define XLENGTH 20
 
+static void
+sendx(struct btmp *buser, struct user *touser,
+        char send_string[][80], int override);
 
 int
 displayx(long pos, int num, time_t *t, long *prev, long *next)
@@ -408,9 +411,7 @@ char send_string[XLENGTH][80];
   freeuser(p);
 }
 
-
-
-void
+static void
 sendx(struct btmp *buser, struct user *touser,
         char send_string[][80], int override)
 {
