@@ -4,12 +4,14 @@
 #include "defs.h"
 #include "ext.h"
 
+static void set_read_params(int cit_cmd, int *dir, int *rm_msg_nbr, long *searchkey);
+static int resetpos(long savedid);
 
 /**********************************************************************
 * count_skips
 * Count how many rooms were skipped, notify user, and reset skipping array.
 **********************************************************************/
-void
+static void
 count_skips(void)
 {
 int i;
@@ -762,7 +764,7 @@ int savedrows = -1;
 * in the switch statement.  
 * search by FRchron added 4-23-91 -dn  (added searchkey)
 **********************************************************************/
-void
+static void
 set_read_params(int cit_cmd, int *dir, int *rm_msg_nbr, long *searchkey)
 {
 
@@ -809,8 +811,7 @@ char    nbr_str[12];	/* C-defined max for longs is +/- 2,147,483,647 */
   return;
 }
 
-
-int
+static int
 resetpos(long savedid)
 {
 int i;
