@@ -263,7 +263,7 @@ char *p;
 	{
 	  bzero((void *)str, 80);
 	  read(s, str, 79);
-	  if ((p = (char *)strstr(str, "USERID")))
+	  if ((p = strstr(str, "USERID")))
 	  {
 	    for (p += 6; *p && *p++ != ':'; )
 	      ;
