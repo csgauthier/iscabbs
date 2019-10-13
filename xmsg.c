@@ -9,7 +9,7 @@ sendx(struct btmp *buser, struct user *touser,
 
 static int syself_ok(const char *name);
 
-int
+static int
 displayx(long pos, int num, time_t *t, long *prev, long *next)
 {
   char nstr[12];
