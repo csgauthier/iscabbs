@@ -8,6 +8,9 @@
 #undef MARGIN
 #define MARGIN 54
 
+static int addxconf(struct user *u, long num, struct xconf x[60], int which);
+static int hack_xconf(struct user *u);
+
 
 struct userinfo
 {
@@ -20,7 +23,7 @@ struct userinfo
   unsigned int f_aide:1;
 };
 
-struct userinfo * getusers(long* ucount);
+static struct userinfo * getusers(long* ucount);
 static int update_aides(struct userinfo *start, long *ucount);
 static int update_whoknows(struct userinfo *start, long *ucount);
 
@@ -59,9 +62,7 @@ long    ucount;
   fflush(stdout);
 }
 
-
-
-struct userinfo *
+static struct userinfo *
 getusers(long   *ucount)
 {
 int i;
@@ -468,7 +469,7 @@ int     unbr;
     unsigned int usernum:24;            /* Username to enable/disable*/
   };
 
-int
+static int
 hack_xconf(struct user *u)
 {
   int i;
@@ -494,8 +495,7 @@ hack_xconf(struct user *u)
   return 0;
 }
 
-
-int
+static int
 addxconf(struct user *u, long num, struct xconf x[60], int which)
 {
   char *name, *tmpname;

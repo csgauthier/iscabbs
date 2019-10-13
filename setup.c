@@ -4,6 +4,22 @@
 #include "defs.h"
 #include "ext.h"
 
+static void assignquickx (int slot, struct user *tmpuser);
+static void change_addr(struct user *tuser, int chflag);
+static void change_aide_info(struct user *tuser);
+static void change_anonymous(struct user *tuser, int chflag);
+static void change_info(struct user *tuser);
+static void change_name(struct user *workuser);
+static void change_pass(struct user *tuser, int noold);
+static void change_reminder(struct user *tuser);
+static struct user * change_user(void);
+static void change_vanityflag (struct user *tmpuser);
+static void do_bigzap (struct user *tmpuser);
+static void foptions(struct user *tuser);
+static void ooptions(struct user *tuser);
+static void show_verified(struct user *workuser);
+static void userlist_config(struct user *tmpuser, int chflag);
+static void xoptions(struct user *tuser);
 
 /*
  * Setup Menu. 
@@ -274,9 +290,7 @@ struct user *up = NULL;
   }
 }
 
-
-
-void
+static void
 change_addr(struct user *tuser, int chflag)
 {
   char answer[41];
@@ -392,8 +406,7 @@ change_addr(struct user *tuser, int chflag)
   free(www);
 }
 
-
-void
+static void
 change_aide_info(struct user *tuser)
 {
   char junk[80];
@@ -412,8 +425,7 @@ change_aide_info(struct user *tuser)
   }
 }
 
-
-void
+static void
 change_anonymous(struct user *tuser, int chflag)
 {
   int c;
@@ -516,7 +528,7 @@ change_anonymous(struct user *tuser, int chflag)
   }
 }
 
-void
+static void
 change_pass(struct user *tuser, int noold)
 {
 
@@ -572,8 +584,7 @@ char *cp;
   my_printf("\nSo be it.\n");
 }
 
-
-void
+static void
 change_reminder(struct user *tuser)
 {
   char junk[80];
@@ -598,7 +609,7 @@ change_reminder(struct user *tuser)
  * Allow the user to change the description part of his/her profile. 
  */
 
-void
+static void
 change_info(struct user *tuser)
 {
   char junk[5][80];
@@ -649,9 +660,7 @@ change_info(struct user *tuser)
   unlocks(SEM_USER);
 }
 
-
-
-void
+static void
 change_name(struct user *workuser)
 {
   char work[60];
@@ -791,16 +800,13 @@ do_verify (struct user *workuser, int ask)
   }
 }
 
-
-void
+static void
 show_verified(struct user *workuser)
 {
   my_printf("\nReal name: %s\nAddress: %s\nCity: %s\nState: %s\nZIP: %s\nPhone: %s\nEmail: %s\n\n", workuser->A_real_name, workuser->A_addr1, workuser->A_city, workuser->A_state, workuser->A_zip, workuser->A_phone, workuser->A_mail);
 }
 
-
-
-void
+static void
 ooptions(struct user *tuser)
 {
 
@@ -867,13 +873,9 @@ ooptions(struct user *tuser)
     tuser->f_revwho ^= 1;
     unlocks (SEM_USER);
   }
-
-
-
 }
 
-
-void
+static void
 foptions(struct user *tuser)
 {
   int answer;
@@ -1003,8 +1005,7 @@ foptions(struct user *tuser)
   }
 }
 
-
-void
+static void
 xoptions(struct user *tuser)
 {
   my_printf("Options\n\nHave eXpress messages turned OFF when you first enter the BBS? -> ");
@@ -1048,7 +1049,7 @@ xoptions(struct user *tuser)
 /*
  * Handles configuration of userlist for X message refusal/acceptance.
  */
-void
+static void
 userlist_config(struct user *tmpuser, int chflag)
 {
   int c;
@@ -1231,9 +1232,7 @@ dokey(struct user *up)
     errlog("Newbie list full");
 }
 
-
-
-struct user *
+static struct user *
 change_user(void)
 {
   struct user *tmpuser = NULL;
@@ -1318,7 +1317,7 @@ int count;
 }
 
 
-void
+static void
 assignquickx (int slot, struct user *tmpuser)
 {
 char *newname;
@@ -1358,8 +1357,7 @@ struct user *up = NULL;
   }
 }
 
-
-void
+static void
 do_bigzap (struct user *tmpuser)
 {
 int i;
@@ -1413,8 +1411,7 @@ int c;
   unlocks (SEM_USER);
 }
 
-
-void
+static void
 change_vanityflag (struct user *tmpuser)
 {
 char flag[50];

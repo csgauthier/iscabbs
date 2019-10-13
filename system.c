@@ -4,6 +4,7 @@
 #include "defs.h"
 #include "ext.h"
 
+static void check_quit(const char *s);
 
 /*
  * login_user (name, passwd, time_sys, laston); 
@@ -410,8 +411,7 @@ new_user(void)
   return(1);
 }
 
-
-void
+static void
 check_quit(const char *s)
 {
   if (!strcasecmp(s, "exit") || !strcasecmp(s, "quit") || !strcasecmp(s, "logout"))
