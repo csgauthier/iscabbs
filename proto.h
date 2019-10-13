@@ -133,7 +133,6 @@ void express (int);
 void change_express (int);
 void old_express (void);
 void get_syself_help (int);
-int syself_ok (const char *);
 int xyell (struct user *, unsigned char *);
 void xinit (int);
 void clean_xconf (struct user *);

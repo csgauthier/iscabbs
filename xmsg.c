@@ -7,6 +7,8 @@ static void
 sendx(struct btmp *buser, struct user *touser,
         char send_string[][80], int override);
 
+static int syself_ok(const char *name);
+
 int
 displayx(long pos, int num, time_t *t, long *prev, long *next)
 {
@@ -826,9 +828,7 @@ get_syself_help(int cmd)
   }
 }
 
-
-
-int
+static int
 syself_ok(const char *name)
 {
 struct user *up;
