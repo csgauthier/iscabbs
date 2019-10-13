@@ -8,15 +8,6 @@ int wanttoyell (int);
 void dologout (void);
 
 void aide_menu (void);
-void createroom (void);
-void deleteroom (void);
-void editdesc (void);
-void editroom (void);
-void invite (void);
-void kickout (void);
-void aide_logout (void);
-void logout_all (void);
-void whoknows (void);
 
 void deletemessage (long, int);
 int entermessage (int, const char *, int);
