@@ -310,7 +310,7 @@ int i;
 /*
  *   Copy the POST_E POST_S stuff from readmessage()'s wrapper
  */
-int
+static int
 newreadmessage(
   unsigned char *p,
   int    *auth,         /* set this parameter to YES if author */
