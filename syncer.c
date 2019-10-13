@@ -145,14 +145,14 @@ bbssync(int init)
     }
 
     {
-    char * corepath = my_sprintf(ROOT"/core/bbs/core-%02d%02d%02d%02d",
+    char * corepath = my_sprintf(NULL,ROOT"/core/bbs/core-%02d%02d%02d%02d",
                       tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min);
     rename("/bbs/core/bbs/bbs.core", corepath);
     free(corepath);
     }
 
     {
-    char * corepath = my_sprintf(ROOT"/core/bbsqueued/core-%02d%02d%02d%02d",
+    char * corepath = my_sprintf(NULL,ROOT"/core/bbsqueued/core-%02d%02d%02d%02d",
                       tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min);
     rename("/bbs/core/bbsqueued/bbs.core", corepath);
     free(corepath);

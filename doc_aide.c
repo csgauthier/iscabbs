@@ -235,13 +235,13 @@ char pas[11];
   /* NOTE: Need exclusive access here! */
   // TODO: there's a better way to do this.
   {
-      char * filename = my_sprintf("%sroom%d", DESCDIR, qpos);
+      char * filename = my_sprintf(NULL,"%sroom%d", DESCDIR, qpos);
       unlink(filename);
       open(filename, O_WRONLY | O_CREAT, 0640);
       free(filename);
   }
   {
-      char * filename = my_sprintf("%srm%d", WHODIR, qpos);
+      char * filename = my_sprintf(NULL,"%srm%d", WHODIR, qpos);
       unlink(filename);
       open(filename, O_WRONLY | O_CREAT, 0640);
       free(filename);
@@ -338,11 +338,11 @@ char    confirm[7];
   locks(-1);
   msg->room[curr].flags = 0;
 
-  char * filename = my_sprintf("%sroom%d", DESCDIR, curr);
+  char * filename = my_sprintf(NULL,"%sroom%d", DESCDIR, curr);
   unlink(filename);
   free(filename);
 
-  filename = my_sprintf("%srm%d", WHODIR, curr);
+  filename = my_sprintf(NULL,"%srm%d", WHODIR, curr);
   unlink(filename);
   free(filename);
   unlocks(-1);
@@ -377,8 +377,8 @@ int size;
 unsigned char *infop;
 struct user *tmpuser;
 
-  char * descfile = my_sprintf("%sroom%d", DESCDIR, curr);
-  char * newdescfile = my_sprintf("%sroom%d.NEW", DESCDIR, curr);
+  char * descfile = my_sprintf(NULL,"%sroom%d", DESCDIR, curr);
+  char * newdescfile = my_sprintf(NULL,"%sroom%d.NEW", DESCDIR, curr);
 
   size = 0;
   if (!(infop = (unsigned char *)mymmap(descfile, &size, 0)) || !size)
@@ -749,7 +749,7 @@ logout_all(void)
 static void
 whoknows(void)
 {
-  char * filename = my_sprintf("%srm%d", WHODIR, curr);
+  char * filename = my_sprintf(NULL,"%srm%d", WHODIR, curr);
   more(filename, 0);
   free(filename);
 }

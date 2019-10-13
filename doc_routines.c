@@ -524,7 +524,7 @@ char    name[MAXALIAS + 1];
 unsigned char *p;
 int size;
 
-  char * file = my_sprintf("%sroom%d", DESCDIR, curr);
+  char * file = my_sprintf(NULL,"%sroom%d", DESCDIR, curr);
   size = 0;
   if (!(p = (unsigned char *)mymmap(file, &size, 0)) || !size)
   {

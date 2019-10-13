@@ -299,7 +299,7 @@ int i, j;
     ssend(x, HASONEMAIL, sizeof HASONEMAIL - 1);
   else if (j > 1)
   {
-    char * msg = my_sprintf(HASMANYMAIL, j);
+    char * msg = my_sprintf(NULL,HASMANYMAIL, j);
     ssend(x, msg, strlen(msg));
     free(msg);
   }

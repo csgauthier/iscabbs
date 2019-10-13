@@ -160,11 +160,17 @@ const char * mystrstr(const char *haystack, const char* needle);
 char * mystrstr_nonconst(char *haystack, const char* needle);
 int my_printf (const char *fmt, ...) __attribute__((format(printf,1,2)));
 
-char* my_vsprintf (const char *fmt, va_list ap);
-    // always returns a non-null malloc'd string. caller must free.
+char* my_vsprintf (char* prefix, const char *fmt, va_list ap);
+    // return a new buffer that is the concatenation of 'prefix' + the formatted args.
+    // prefix may be null, in which case it is ignored.
+    // prefix will be free'd by this call and should not be used when the call returns.
+    // This always returns a non-null malloc'd string. caller must free.
 
-char* my_sprintf (const char *fmt, ...) __attribute__((format(printf,1,2)));
-    // always returns a non-null malloc'd string. caller must free.
+char* my_sprintf (char* prefix, const char *fmt, ...) __attribute__((format(printf,2,3)));
+    // return a new buffer that is the concatenation of 'prefix' + the formatted args.
+    // prefix may be null, in which case it is ignored.
+    // prefix will be free'd by this call and should not be used when the call returns.
+    // This always returns a non-null malloc'd string. caller must free.
 
 int checked_snprintf_with_traceinfo (
         const char* file, int line,

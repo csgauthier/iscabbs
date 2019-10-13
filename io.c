@@ -21,7 +21,7 @@ my_printf (const char *fmt, ...)
     // delegate to my_vsprintf
     va_list ap;
     va_start(ap, fmt);
-    char * buf = my_vsprintf(fmt, ap);
+    char * buf = my_vsprintf(NULL, fmt, ap);
     va_end(ap);
 
     // output, then discard the buffer
@@ -31,7 +31,7 @@ my_printf (const char *fmt, ...)
 }
 
 char*
-my_vsprintf (const char *fmt, va_list ap)
+my_vsprintf (char* prefix, const char *fmt, va_list ap)
 {
     // call once to get buffer size
     // We need to 'va_copy'` here because we can't restart it.
@@ -42,19 +42,24 @@ my_vsprintf (const char *fmt, va_list ap)
     if (n <= 0)
         return calloc(1,sizeof(char)); // TODO: handle err.
 
+    if (prefix)
+        n += strlen(prefix);
+
     // alloc buffer and call again
     char * buf = (char*) calloc(n+1, sizeof(char));
     vsnprintf (buf, n+1, fmt, ap);
+    if (prefix)
+        free(prefix);
     return buf;
 }
 
 char*
-my_sprintf (const char *fmt, ...)
+my_sprintf (char* prefix, const char *fmt, ...)
 {
     // delegate to my_vsprintf
     va_list ap;
     va_start(ap, fmt);
-    char * buf = my_vsprintf(fmt, ap);
+    char * buf = my_vsprintf(prefix, fmt, ap);
     va_end(ap);
     return buf;
 }
@@ -72,7 +77,7 @@ int checked_snprintf_with_traceinfo (
 
     if (n < 0){
         // error: I/O or system error.
-        char * emsg = my_sprintf(
+        char * emsg = my_sprintf(NULL,
                 "FATAL: vsnprintf system or I/O error. "
                 "Called at file '%s':%d "
                 " errno said: %s",
@@ -81,7 +86,7 @@ int checked_snprintf_with_traceinfo (
     }
     else if (n >= len){
         // error: buffer overflow
-        char * emsg = my_sprintf(
+        char * emsg = my_sprintf(NULL,
                 "FATAL: buffer overflow at file '%s':%d",
                 file, line);
         logfatal(emsg);
@@ -109,7 +114,7 @@ colorize (const char *fmt, ...)
     // delegate to my_vsprintf
     va_list ap;
     va_start(ap, fmt);
-    char * buf = my_vsprintf(fmt, ap);
+    char * buf = my_vsprintf(NULL, fmt, ap);
     va_end(ap);
 
     // write it
