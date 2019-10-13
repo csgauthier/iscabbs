@@ -1,7 +1,6 @@
 #include "defs.h"
 #include "ext.h"
 
-
 void
 reap(void)
 {
@@ -13,8 +12,6 @@ reap(void)
     q->reaps++;
   signal(SIGCLD, (void *)reap);
 }
-
-
 
 void
 ring(void)
@@ -35,8 +32,6 @@ ring(void)
   signal(SIGALRM, (void *)ring);
   alarm(30);
 }
-
-
 
 void
 dump(void)
@@ -172,16 +167,12 @@ int fd;
     signal(SIGCLD, SIG_IGN);
 }
 
-
-
 void
 quit(void)
 {
   f_term = 1;
   signal(SIGTERM, (void *)quit);
 }
-
-
 
 void
 do_quit(void)
@@ -191,8 +182,6 @@ do_quit(void)
   syslog(LOG_INFO, "admins %ld, upgrades %ld, users %ld", q->aidewiz, q->upgrade, q->nonupgrade);
   _exit(0);
 }
-
-
 
 void
 restart(void)
@@ -216,16 +205,12 @@ do_restart(void)
   syslog(LOG_ERR, "exec: %m");
 }
 
-
-
 void
 setup(void)
 {
   f_quit = 1;
   signal(SIGQUIT, (void *)setup);
 }
-
-
 
 void
 do_setup(void)
@@ -257,7 +242,7 @@ int on = 1;
 
 
 
-void
+static void
 checkauth(int x)
 {
 struct user *u;
