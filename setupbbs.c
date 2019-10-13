@@ -7,7 +7,7 @@
 char *zerobuf;
 size_t zerobuflen = 1048576;
 
-void
+static void
 tick (void)
 {
     write (1, ".", 1);

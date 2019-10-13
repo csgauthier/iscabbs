@@ -387,9 +387,8 @@ backupuserdata(void)
   return(0);
 }
 
-
-
-int
+// TODO: never called
+static int
 listusers(void)
 {
   int i;

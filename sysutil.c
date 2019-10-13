@@ -1,8 +1,9 @@
 #include "defs.h"
 #include "ext.h"
 
+static void myecho(int     mode);
 
-void
+static void
 s_sigdie()
 {
   if (tty)
@@ -15,8 +16,7 @@ s_sigdie()
   }
 }
 
-
-void
+static void
 s_sigquit()
 {
   if (!tty)
@@ -28,8 +28,7 @@ s_sigquit()
   //errlog ("SIGQUIT while lock on %d", lockflags);
 }
 
-
-void
+static void
 s_sigio(void)
 {
   /* Force-check */
@@ -39,8 +38,7 @@ s_sigio(void)
   signal(SIGIO, (void *)s_sigio);
 }
 
-
-void
+static void
 s_sigusr2(void)
 {
   int i;
@@ -54,11 +52,7 @@ s_sigusr2(void)
   signal (SIGUSR2, (void *)s_sigusr2);
 }
 
-
-
-
-
-void
+static void
 s_sigalrm(void)
 {
   signal(SIGALRM, (void *)s_sigalrm);
@@ -340,8 +334,7 @@ my_exit(int doflush)
   _exit(0);
 }
 
-
-void
+static void
 myecho(int     mode)
 {
 struct termios term;

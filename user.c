@@ -4,6 +4,7 @@
 #include "defs.h"
 #include "ext.h"
 
+static void newmaxnewbie(int num);
 
 void
 locks(int which)
@@ -519,9 +520,7 @@ validate_users(int what)
   }
 }
 
-
-
-void
+static void
 newmaxnewbie(int num)
 {
   locks(SEM_NEWBIE);
