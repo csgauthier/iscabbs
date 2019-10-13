@@ -119,7 +119,7 @@ adduser(const char *name, long usernum)
     {
       if (user->usernum || time(0) < user->timeoff + (30*60))
       {
-        errlog("Found user %s with name '%s' num %d timeoff %d time %d", name, user->name, user->usernum, user->timeoff, time(0));
+        errlog("Found user %s with name '%s' num %ld timeoff %ld time %ld", name, user->name, user->usernum, user->timeoff, time(0));
         user = NULL;
         break;
       }
@@ -139,7 +139,7 @@ adduser(const char *name, long usernum)
     if (finduser(NULL, usernum, 0))
     {
       /* This could happen after a crash unless usernum eternal always syncd */
-      errlog("Found old usernum %d (%s) in adduser", usernum, udata->link[udata->name[old][saveindex]].name);
+      errlog("Found old usernum %ld (%s) in adduser", usernum, udata->link[udata->name[old][saveindex]].name);
       break;
     }
 
@@ -206,7 +206,7 @@ deleteuser(const char *name)
 
     if (!finduser(NULL, linkptr->usernum, 0))
     {
-      errlog("Failed to find user %s by usernum %d (should not happen)", name, linkptr->usernum);
+      errlog("Failed to find user %s by usernum %ld (should not happen)", name, linkptr->usernum);
       break;
     }
     memcpy((void *)&udata->num[new][0], (void *)&udata->num[old][0], saveindex * sizeof(int));
@@ -365,11 +365,11 @@ backupuserdata(void)
     {
       up = finduser(ucopy->link[i].name, 0, 0);
       if (!up)
-        errlog("backupuserdata(): Couldn't find user name %s (num %d) in slot %d", ucopy->link[i].name, ucopy->link[i].usernum, i);
+        errlog("backupuserdata(): Couldn't find user name %s (num %ld) in slot %d", ucopy->link[i].name, ucopy->link[i].usernum, i);
       else if (up != finduser(NULL, ucopy->link[i].usernum, 0))
-        errlog("backupuserdata(): Couldn't find user num %d (name %s) in slot %d", ucopy->link[i].usernum, ucopy->link[i].name, i);
+        errlog("backupuserdata(): Couldn't find user num %ld (name %s) in slot %d", ucopy->link[i].usernum, ucopy->link[i].name, i);
       else if (up->usernum != ucopy->link[i].usernum || strcmp(up->name, ucopy->link[i].name))
-        errlog("backupuserdata(): Mismatch for user %s num %d in slot %d ('%s'/%d)", ucopy->link[i].name, ucopy->link[i].usernum, i, up->name, up->usernum);
+        errlog("backupuserdata(): Mismatch for user %s num %ld in slot %d ('%s'/%ld)", ucopy->link[i].name, ucopy->link[i].usernum, i, up->name, up->usernum);
       else
       {
         write(1, up, sizeof(struct user));
