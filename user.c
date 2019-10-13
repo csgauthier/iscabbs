@@ -252,7 +252,7 @@ long mineternal;
   /* used to check user limits here...now just check for file overflow */
   if (bigbtmp->users >= MAXUSERS - 1)
   {
-    errlog("Who list overflow at %d users", bigbtmp->users);
+    errlog("Who list overflow at %ld users", bigbtmp->users);
     my_exit(0);
   }
 
@@ -294,7 +294,7 @@ long mineternal;
       bigbtmp->index[bigbtmp->users] = p;
       if (++bigbtmp->users > msg->maxusers)
         msg->maxusers = bigbtmp->users;
-      errlog("Reserving btmp slot %d for pid %d (eternal %d)", p, bigbtmp->btmp[p].pid, bigbtmp->eternal);
+      errlog("Reserving btmp slot %d for pid %d (eternal %ld)", p, bigbtmp->btmp[p].pid, bigbtmp->eternal);
       unlocks(SEM_BTMP);
       break;
     }

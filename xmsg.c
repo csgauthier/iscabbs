@@ -24,7 +24,7 @@ displayx(long pos, int num, time_t *t, long *prev, long *next)
 
   if (msg->xcurpos + (msg->xmsgsize >> 6) > (pos < msg->xcurpos ? pos + msg->xmsgsize : pos))
   {
-    errlog("X database scrollover pos is %08x, curpos is %08x", pos, msg->xcurpos);
+    errlog("X database scrollover pos is %08lx, curpos is %08lx", pos, msg->xcurpos);
     return(1);
   }
 
@@ -51,7 +51,7 @@ displayx(long pos, int num, time_t *t, long *prev, long *next)
     sender = 0;
     if (xh->rnum != ouruser->usernum)
     {
-      errlog("X database user not send/recv, got %08x and %08x", xh->snum, xh->rnum);
+      errlog("X database user not send/recv, got %08lx and %08lx", xh->snum, xh->rnum);
       return(-1);
     }
   }
@@ -61,7 +61,7 @@ displayx(long pos, int num, time_t *t, long *prev, long *next)
   /* Catch wraparound when pointing to old X for user */
   if (t && *t && xh->time > *t + 300)
   {
-    errlog("X time sequence invalid, got %08x wanted %08x, args were %08x, %d, %08x, %08x", xh->time, *t, pos, num, prev ? *prev : -1, next ? *next : -1);
+    errlog("X time sequence invalid, got %08lx wanted %08lx, args were %08lx, %d, %08lx, %08lx", xh->time, *t, pos, num, prev ? *prev : -1, next ? *next : -1);
     return(1);
   }
   else if (t)
