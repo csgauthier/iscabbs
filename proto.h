@@ -160,6 +160,9 @@ const char * mystrstr(const char *haystack, const char* needle);
 char * mystrstr_nonconst(char *haystack, const char* needle);
 int my_printf (const char *fmt, ...) __attribute__((format(printf,1,2)));
 
+char* my_vsprintf (const char *fmt, va_list ap);
+    // always returns a non-null malloc'd string. caller must free.
+
 char* my_sprintf (const char *fmt, ...) __attribute__((format(printf,1,2)));
     // always returns a non-null malloc'd string. caller must free.
 

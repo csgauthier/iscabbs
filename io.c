@@ -18,45 +18,44 @@ static int my_puts (const char* s);
 int
 my_printf (const char *fmt, ...)
 {
+    // delegate to my_vsprintf
     va_list ap;
+    va_start(ap, fmt);
+    char * buf = my_vsprintf(fmt, ap);
+    va_end(ap);
 
-    // call once to get buffer size
-    va_start (ap, fmt);
-    int n = vsnprintf (NULL, 0, fmt, ap);
-    va_end (ap);
-    if (n <= 0)
-        return 0; // TODO: handle err.
-
-    // alloc buffer and call again
-    char * buf = (char*) calloc(n+1, sizeof(char));
-    va_start (ap, fmt);
-    vsnprintf (buf, n+1, fmt, ap);
-    va_end (ap);
-    // TODO: handle err
-
+    // output, then discard the buffer
     int r = my_puts (buf);
     free(buf);
     return r;
 }
 
 char*
-my_sprintf (const char *fmt, ...)
+my_vsprintf (const char *fmt, va_list ap)
 {
-    va_list ap;
-
     // call once to get buffer size
-    va_start (ap, fmt);
-    int n = vsnprintf (NULL, 0, fmt, ap);
-    va_end (ap);
+    // We need to 'va_copy'` here because we can't restart it.
+    va_list tmpArgs;
+    va_copy(tmpArgs, ap);
+    int n = vsnprintf (NULL, 0, fmt, tmpArgs);
+    va_end (tmpArgs);
     if (n <= 0)
         return calloc(1,sizeof(char)); // TODO: handle err.
 
     // alloc buffer and call again
     char * buf = (char*) calloc(n+1, sizeof(char));
-    va_start (ap, fmt);
     vsnprintf (buf, n+1, fmt, ap);
-    va_end (ap);
-    // TODO: handle err
+    return buf;
+}
+
+char*
+my_sprintf (const char *fmt, ...)
+{
+    // delegate to my_vsprintf
+    va_list ap;
+    va_start(ap, fmt);
+    char * buf = my_vsprintf(fmt, ap);
+    va_end(ap);
     return buf;
 }
 
@@ -103,33 +102,21 @@ my_puts (const char* s)
   return count;
 }
 
-
-
 /* A simple printf that recognizes color codes */
 int
 colorize (const char *fmt, ...)
 {
+    // delegate to my_vsprintf
     va_list ap;
-
-    // call once to get buffer size
-    va_start (ap, fmt);
-    int n = vsnprintf (NULL, 0, fmt, ap);
-    va_end (ap);
-    if (n <= 0)
-        return 0; // TODO: handle err. what is the return code here?
-
-    // alloc buffer and call again
-    char * buf = (char*) calloc(n+1, sizeof(char));
-    va_start (ap, fmt);
-    vsnprintf (buf, n+1, fmt, ap);
-    va_end (ap);
+    va_start(ap, fmt);
+    char * buf = my_vsprintf(fmt, ap);
+    va_end(ap);
 
     // write it
     int rc = my_cputs (buf);
     free(buf);
     return rc;
 }
-
 
 /* check for color codes and \r\n translation.  Return the number of characters
    (not including color codes) printed. */
@@ -228,3 +215,4 @@ my_putc (int c, FILE* stream)
 {
     return putc (c, stream);
 }
+
