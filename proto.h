@@ -13,15 +13,12 @@ int entermessage (int, const char *, int);
 int makemessage (struct user *, int, int);
 int readmessage (unsigned char *, int *, char *, int, long);
 
-void count_skips (void);
 int findroom (void);
 int forgetroom (void);
 void loadroom (void);
 int nextroom (void);
 void openroom (void);
 void readroom (int);
-void set_read_params (int, int *, int *, long *);
-int resetpos (long);
 
 int countmsgs (void);
 void debug (void);
