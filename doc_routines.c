@@ -797,7 +797,8 @@ long	remainder;
   my_putc (digit, stdout);
 }
 
-void
+// TODO: this function is never called
+static void
 version(void)
 {
   my_printf ("#define BBSNAME		\"%s\"\n", BBSNAME);
