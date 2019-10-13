@@ -3,7 +3,6 @@
  * proto.h - Prototypes of BBS functions.
  */
 int checkmail (struct user *, int);
-void inituser (void);
 int wanttoyell (int);
 void dologout (void);
 
@@ -183,7 +182,6 @@ int init (void);
 /* misc. */
 void askansi(void);
 void bcdplus1encode (long number);
-void blockhost(void);
 void change_beeps(void);
 void change_doing(void);
 void do_fortune(void);
