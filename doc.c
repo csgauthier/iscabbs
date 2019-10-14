@@ -101,20 +101,6 @@ static void inituser (void);
 };
 int fun_len = sizeof(fun_stuff) / sizeof(char[80]);
 */
-/*
- * getseed 
- *    get a seed (just 32 bits) for the pseudorandom generator, using
- *    the simplest possible thing (time returned by gettimeofday()).
- */
-static long getseed(void)
-{
-    struct timeval tp; 
-    struct timezone tzp;
-    if (gettimeofday(&tp, &tzp)) { 
-       return 0;
-    }
-    return tp.tv_usec;
-}
 
 void
 bbsstart(void)

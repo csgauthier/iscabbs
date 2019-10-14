@@ -8,8 +8,10 @@
 #undef MARGIN
 #define MARGIN 54
 
+#ifdef _UPDATEHACK
 static int addxconf(struct user *u, long num, struct xconf x[60], int which);
 static int hack_xconf(struct user *u);
+#endif
 
 
 struct userinfo

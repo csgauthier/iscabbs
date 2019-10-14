@@ -797,18 +797,3 @@ long	remainder;
   my_putc (digit, stdout);
 }
 
-// TODO: this function is never called
-static void
-version(void)
-{
-  my_printf ("#define BBSNAME		\"%s\"\n", BBSNAME);
-  my_printf ("#define BBSUID		%d\n", BBSUID);
-  my_printf ("#define BBSGID		%d\n", BBSGID);
-  my_printf ("#define MAILMSGS		%d\n", MAILMSGS);
-  my_printf ("#define MSGSPERRM		%d\n", MSGSPERRM);
-  my_printf ("#define MAXROOMS		%d\n", MAXROOMS);
-  my_printf ("#define MM_FILELEN	%d\n", MM_FILELEN);
-  my_printf ("#define ROOT		%s\n", ROOT);
-  my_printf ("#define MAXTOTALUSERS	%d\n", MAXTOTALUSERS);
-}
-

@@ -386,19 +386,3 @@ backupuserdata(void)
 
   return(0);
 }
-
-// TODO: never called
-static int
-listusers(void)
-{
-  int i;
-  int which;
-
-  which = udata->which;
-  for (i = 0; i < udata->totalusers[which]; i++)
-    my_printf("%06ld  %s\n", udata->link[udata->name[which][i]].usernum, udata->link[udata->name[which][i]].name);
-  my_putchar('\n');
-  for (i = 0; i < udata->totalusers[which]; i++)
-    my_printf("%06ld  %s\n", udata->link[udata->num[which][i]].usernum, udata->link[udata->num[which][i]].name);
-  return(0);
-}
