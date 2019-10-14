@@ -318,18 +318,11 @@ newreadmessage(
   int     new,          /* TRUE to skip new message author just wrote */
   long    msgid)        /* message id (validity check -- if 0 ignore it) */
 {
-struct mheader *mh;
-char    title[120];	/* This used to be 70.  Caused seg faults.  Bad -JB */
-char    authfield[20];
-int     linenbr;
-int     msgsize;
-int     msgpos;
-char    *name;
-int     show = 1;
-int i;
+    int     show = 1;
+    char * title = NULL;
 
 
-  mh = (struct mheader *)(void *)p;
+    struct mheader *mh = (struct mheader *)(void *)p;
 
   if (!mh)
   {
@@ -357,24 +350,23 @@ int i;
   if (msgid)
     sysopflags &= ~SYSOP_MSG;
 
+
   if (mh->mtype == MES_ANON)
-    strcpy(title, "@Y  ***********  ");
+    title = my_sprintf(title, "%s", "@Y  ***********  ");
   else if (mh->mtype == MES_AN2)
-    strcpy(title, "@Y  -anonymous-  ");
+    title = my_sprintf(title, "%s", "@Y  -anonymous-  ");
   else
-    *title = 0;
-  strcpy(authfield, title);
+    title = my_sprintf(NULL, "%s", "");
 
-  char    work[70];
-  checked_snprintf(work, sizeof(work), "@M%s", formtime (2, mh->ptime));
+  char * authfield = strdup(title);
+
+  title = my_sprintf(title, "@M%s", formtime (2, mh->ptime));
   // sprintf(work, "@M%s %d, %d %02d:%02d", months[mh->month], mh->day, 1900 + mh->year, mh->hour, mh->minute);
-  strcat(title, work);
 
-  name = getusername(mh->poster, 1);
+  char * name = getusername(mh->poster, 1);
   if (mh->mtype == MES_DESC)
   {
-    checked_snprintf(work, sizeof(work), "@G by @C%s", name);
-    strcat(title, work);
+    title = my_sprintf(title, "@G by @C%s", name);
 
 // neuro edit
 // don't fucking ask me how half this shit works, it appears the forum info
@@ -391,7 +383,8 @@ int i;
 // end neuro edit
     strcpy(aname, name);
     colorize("@G\nForum moderator is @C%s@G.  Total messages:@R %ld\n@GForum info last updated ", name, msg->room[curr].posted);
-    strcat(title, "\n");
+
+    title = my_sprintf(title, "\n");
   }
   else
   {
@@ -411,8 +404,7 @@ int i;
     {
       if (mh->mtype == MES_SYSOP)
         sysopflags |= SYSOP_MSG;
-      checked_snprintf(work, sizeof(work), "@G from @C%s%s%s", name, mh->mtype == MES_FM ? " (Forum Moderator)" : "", (mh->mtype == MES_SYSOP && (!mh->mail || ((*auth && ouruser->f_aide) || (!*auth && !ouruser->f_aide)))) ? " (Sysop)" : "");
-      strcat(title, work);
+      title = my_sprintf(title, "@G from @C%s%s%s", name, mh->mtype == MES_FM ? " (Forum Moderator)" : "", (mh->mtype == MES_SYSOP && (!mh->mail || ((*auth && ouruser->f_aide) || (!*auth && !ouruser->f_aide)))) ? " (Sysop)" : "");
     }
     else
       if (!*auth && !ouruser->f_prog && ouruser->usernum != msg->room[curr].roomaide)
@@ -422,8 +414,7 @@ int i;
       }
       else if (*auth)
       {
-        checked_snprintf(work, sizeof(work), "@G from @C%s", name);
-        strcat(title, work);
+        title = my_sprintf (title, "@G from @C%s", name);
       }
   }
 
@@ -432,17 +423,14 @@ int i;
     if (mh->mtype == MES_NORMAL && ouruser->usernum != mh->ext.mail.recipient && curr == MAIL_RM_NBR && !*auth)
       return(MNFERR);
     name = getusername(mh->ext.mail.recipient, 1);
-    checked_snprintf(work, sizeof(work), "@G to @C%s%s", name, (mh->mtype == MES_SYSOP && ((*auth && !ouruser->f_aide) || (!*auth && ouruser->f_aide))) ? " (Sysop)" : "");
-    strcat(title, work);
+
+    title = my_sprintf(title, "@G to @C%s%s", name, (mh->mtype == MES_SYSOP && ((*auth && !ouruser->f_aide) || (!*auth && ouruser->f_aide))) ? " (Sysop)" : "");
   }
   else if (mh->quotedx)
-    strcat(title, " @C(Quoted X's)");
+    title = my_sprintf(title, " @C(Quoted X's)");
 
   if (curr != MAIL_RM_NBR && mh->mtype != MES_DESC && curr != mh->forum && curr != AIDE_RM_NBR)
-  {
-    checked_snprintf(work, sizeof(work), "@G in @Y%s>", msg->room[mh->forum].name);
-    strcat(title, work);
-  }
+    title = my_sprintf(title, "@G in @Y%s>", msg->room[mh->forum].name);
 
   if (new)
     my_putchar('\n');
@@ -454,14 +442,16 @@ int i;
   colorize("@G\n");
 
   p += mh->hlen;
-  msgsize = mh->len;
-  msgpos = 0;
-  linenbr = mh->mtype == MES_DESC ? 3 : 1;
+  int msgsize = mh->len;
+  int msgpos = 0;
+  int linenbr = mh->mtype == MES_DESC ? 3 : 1;
 
-  for (;;)
+  for (int i;;)
     if (!(i = *p++) || ((++msgpos, my_putchar(i)) == '\n' && ++linenbr >= rows - 1 && line_more(&linenbr, (msgpos * 100) / msgsize) < 0))
       break;
 
+  free(authfield);
+  free(title);
   return(0);
 }
 
