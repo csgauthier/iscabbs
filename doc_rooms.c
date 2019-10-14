@@ -14,13 +14,12 @@ static int resetpos(long savedid);
 static void
 count_skips(void)
 {
-int i;
-int count;
+  int count = 0;
 
-  for (count = 0, i = 0; i < MAXROOMS; i++)
+  for (int i = 0; i < MAXROOMS; ++i)
     count += skipping[i >> 3] >> (i & 7) & 1;
 
-  if (curr == LOBBY_RM_NBR && count)
+  if (curr == LOBBY_RM_NBR && count > 0)
   {
     bzero((void *)skipping, sizeof skipping);
     my_printf("---> You have skipped %d forum(s)\n", count);
@@ -40,12 +39,10 @@ int count;
 int 
 findroom(void)
 {
-int     i;
-char   *rname;
 int     rmnum = -1;
 
 
-  rname = get_name("forum name/number? -> ", 3);
+  char * rname = get_name("forum name/number? -> ", 3);
 
   if (!*rname)
     return (NO);
@@ -53,7 +50,7 @@ int     rmnum = -1;
   if (*rname >= '0' && *rname <= '9')
     rmnum = atoi(rname);
 
-  for (i = 0; i < MAXROOMS; ++i)
+  for (int i = 0; i < MAXROOMS; ++i)
   {
     /***************************************************************************
     * IF...
@@ -117,7 +114,7 @@ int     rmnum = -1;
   * If you're here, the file is still open.
   ****************************************************************************/
 
-  for (i = 0; i < MAXROOMS; ++i)
+  for (int i = 0; i < MAXROOMS; ++i)
   {
     if (!strncmp(msg->room[i].name, rname, strlen(rname))
 	&& (msg->room[i].flags & QR_INUSE)
@@ -135,7 +132,7 @@ int     rmnum = -1;
     }
   }
 
-  for (i = 0; i < MAXROOMS; ++i)
+  for (int i = 0; i < MAXROOMS; ++i)
   {
     if (strstr(msg->room[i].name, rname)
         && (msg->room[i].flags & QR_INUSE)
@@ -199,7 +196,6 @@ forgetroom(void)
 void
 loadroom(void)
 {
-  int i, j;
 
   strcpy(room->name, msg->room[curr].name);
   room->roomaide = msg->room[curr].roomaide;
@@ -210,9 +206,10 @@ loadroom(void)
 
   if (curr == MAIL_RM_NBR)
   {
+    int j;
     for (j = 0; j < MSGSPERRM - MAILMSGS; j++)
       room->num[j] = room->pos[j] = room->chron[j] = 0;
-    for (i = 0; j < MSGSPERRM; i++, j++)
+    for (int i = 0; j < MSGSPERRM; i++, j++)
     {
       room->num[j] = room->chron[j] = ouruser->mr[i].num;
       room->pos[j] = ouruser->mr[i].pos < 0 ? -ouruser->mr[i].pos : ouruser->mr[i].pos;
@@ -220,7 +217,7 @@ loadroom(void)
     room->highest = room->num[MSGSPERRM - 1];
   }
   else
-    for (i = 0; i < MSGSPERRM; i++)
+    for (int i = 0; i < MSGSPERRM; i++)
     {
       room->num[i] = msg->room[curr].num[i];
       room->pos[i] = msg->room[curr].pos[i];

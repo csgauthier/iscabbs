@@ -1,6 +1,7 @@
 /*
  * term.c - Handles terminal I/O -- maybe eventually be removed.
  */
+#include <sys/ioctl.h>
 #include "defs.h"
 #include "ext.h"
 
