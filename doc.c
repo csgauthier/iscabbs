@@ -116,24 +116,6 @@ static long getseed(void)
     return tp.tv_usec;
 }
 
-int rnd(int n)
-{
-  static int first_time=1;
-  static char state[256];                                   
-  if (first_time) {                                        
-    first_time = 0;                                       
-    unsigned int seed = (unsigned int) getseed();
-    initstate(seed, state, 256);                           
-  }
-  if (n<0) { return 0; }
-  unsigned long mask = 1;
-  while (mask<n) mask = 2*mask+1;
-  for (;;) {
-    long r = random();
-    if ((r&mask) < n) return r&mask;
-  }
-} 
-
 void
 bbsstart(void)
 {
