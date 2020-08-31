@@ -37,9 +37,9 @@ int whostart, whoend, whoincr;
   if (level != 2 && rows != 32000)
       my_putchar('\n');
   if (bigbtmp->users > 1)
-    colorize("There are @Y%d@G users (@Y%d@G queued)", (bigbtmp->users) , bigbtmp->queued);
+    colorize("There are @Y%d@G users (@Y%d@G queued)", (bigbtmp->users-9) , bigbtmp->queued);
   else
-    colorize("There is @Y1@G user (@Y%d@G queued)", bigbtmp->queued);
+    colorize("There is @Y1@G user (@Y%d@G queued)", bigbtmp->queued-9);
 
   my_printf("\n\n");
 
