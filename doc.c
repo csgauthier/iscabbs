@@ -195,7 +195,7 @@ char    bueller = 0;
 
     if (guest && !strchr("0123456789BbFGHIJKLNOpPRsSTUwWyY/?#-", cit_cmd))
     {
-      colorize("\n\n@RThe Guest user cannot do that.@G\n");
+      colorize("\n\n@RThe Guest user cannot do that. @G\n");
       continue;
     }
 
