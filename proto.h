@@ -56,7 +56,7 @@ void alarmclock (void);
 void init_system (void);
 void logevent (const char *);
 void my_exit (int);
-u_short setup_express (void);
+uint16_t setup_express (void);
 char *gethost (void);
 int inkey (void);
 void get_string (const char *, int, char *, int);

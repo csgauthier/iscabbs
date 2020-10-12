@@ -282,8 +282,8 @@ struct bigbtmp
     long eternal;
     long usernum;
     time_t time;
-    u_long remaddr;
-    u_short remport;
+    uint32_t remaddr;
+    uint16_t remport;
     pid_t pid;
     char name[MAXALIAS + 1];
     char remote[40];
@@ -333,7 +333,7 @@ struct bigbtmp
     unsigned char subbuffer[64];
     unsigned char *subpointer;
     unsigned char *subend;
-    u_short port;
+    uint16_t port;
     short wouldbe;
     char unused[4];
   } qt[MAXQ];

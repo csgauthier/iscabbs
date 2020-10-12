@@ -16,7 +16,7 @@ char bbsname[28];
 char lines[9];
 int y;
 struct in_addr addr;
-u_short port;
+uint16_t port;
 int client;
 char remoteusername[16];
 char *newenv[3];
