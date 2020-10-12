@@ -218,7 +218,6 @@ reserve_slot(void)
 struct btmp newbtmp;
 int i;
 pid_t p;
-int j;
 struct sockaddr_in sa;
 long mineternal;
 
@@ -242,8 +241,8 @@ long mineternal;
   }
   else
   {
-    j = sizeof(sa);
-    getpeername(0, (struct sockaddr*)&sa, &j);
+    socklen_t len = sizeof(sa);
+    getpeername(0, (struct sockaddr*)&sa, &len);
     newbtmp.remaddr = sa.sin_addr.s_addr;
     newbtmp.remport = sa.sin_port;
     strcpy(newbtmp.remlogin, ARGV[1] && ARGV[2] ? ARGV[2] : "");
