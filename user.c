@@ -216,10 +216,7 @@ void
 reserve_slot(void)
 {
 struct btmp newbtmp;
-int i;
-pid_t p;
 struct sockaddr_in sa;
-long mineternal;
 
   /* Set up a place holder in the btmp file so no one else gets this spot */
   bzero((void *)&newbtmp, sizeof newbtmp);
@@ -258,8 +255,10 @@ long mineternal;
   if (bigbtmp->ghostcheck + 60 < newbtmp.time)
   {
     bigbtmp->ghostcheck = newbtmp.time;
-    for (i = 0; i < MAXUSERS; i++)
-      if ((p = bigbtmp->btmp[i].pid))
+    for (int i = 0; i < MAXUSERS; i++)
+    {
+      pid_t p = bigbtmp->btmp[i].pid;
+      if (p != 0)
 	if (kill(p, 0) < 0)
 	{
 	  errlog("Cleaned up ghost login of %s: %s", bigbtmp->btmp[i].name, strerror(errno));
@@ -278,28 +277,34 @@ long mineternal;
           remove_loggedin(p);
         }
 */
+    }
   }
 
+  // Loop until a slot becomes available.
   for (;;)
   {
-    for (mineternal = 999999999, i = 0; i < MAXUSERS; i++)
-      if (!bigbtmp->btmp[i].pid && bigbtmp->btmp[i].eternal < mineternal)
-        mineternal = bigbtmp->btmp[p = i].eternal;
+    // Find the index that has the smallest `eternal` value, where `pid` is zero.
+    int min_eternal_ix = 0;
+    for (long mineternal = 999999999, i = 0; i < MAXUSERS; i++)
+      if (bigbtmp->btmp[i].pid==0 && bigbtmp->btmp[i].eternal < mineternal)
+        mineternal = bigbtmp->btmp[min_eternal_ix = i].eternal;
+
     locks(SEM_BTMP);
-    if (!bigbtmp->btmp[p].pid)
+    if (bigbtmp->btmp[min_eternal_ix].pid==0)
     {
       newbtmp.eternal = ++(bigbtmp->eternal);
-      bigbtmp->btmp[p] = newbtmp;
-      bigbtmp->index[bigbtmp->users] = p;
+      bigbtmp->btmp[min_eternal_ix] = newbtmp;
+      bigbtmp->index[bigbtmp->users] = min_eternal_ix;
       if (++bigbtmp->users > msg->maxusers)
         msg->maxusers = bigbtmp->users;
-      errlog("Reserving btmp slot %d for pid %d (eternal %ld)", p, bigbtmp->btmp[p].pid, bigbtmp->eternal);
+      errlog("Reserving btmp slot %d for pid %d (eternal %ld)",
+              min_eternal_ix, bigbtmp->btmp[min_eternal_ix].pid, bigbtmp->eternal);
+      mybtmp = &bigbtmp->btmp[min_eternal_ix];
       unlocks(SEM_BTMP);
       break;
     }
     unlocks(SEM_BTMP);
   }
-  mybtmp = &bigbtmp->btmp[p];
 }
 
 
