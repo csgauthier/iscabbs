@@ -1,7 +1,17 @@
-#include <string.h>
 /*
  * defs.h - All needed include files.
  */
+
+// Feature test macros must come first, before any includes.
+// see `feature_test_macros(7)`.
+#if !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200809L  // enables strdup, popen, etc.
+#endif
+
+#if !defined(_DEFAULT_SOURCE)
+#define _DEFAULT_SOURCE // enables nice, caddr_t.
+#endif
+
 #ifdef __STDC__
 #include <stdarg.h>
 #else
@@ -16,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/param.h>
 #include <stdint.h>
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
