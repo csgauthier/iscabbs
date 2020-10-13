@@ -21,7 +21,7 @@ count_skips(void)
 
   if (curr == LOBBY_RM_NBR && count > 0)
   {
-    bzero((void *)skipping, sizeof skipping);
+    memset((void *)skipping, 0, sizeof(skipping));
     my_printf("---> You have skipped %d forum(s)\n", count);
   }
 }
