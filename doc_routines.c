@@ -1,9 +1,9 @@
 /*
  * doc_routines.c - General message system code.
  */
-#include <stdio_ext.h>
 #include "defs.h"
 #include "ext.h"
+#include <stdio_ext.h>
 
 
 
