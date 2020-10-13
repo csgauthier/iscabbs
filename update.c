@@ -394,10 +394,8 @@ update_whoknows(struct userinfo *start, long *ucount)
 {
 FILE   *file;
 char    filestr[160];
-char    temp[40];
 char    name[100];
 char    newname[100];
-int     i;
 int     rm_nbr;
 struct userinfo *u;
 int     unbr;
@@ -440,14 +438,16 @@ int     unbr;
           && ((!(msg->room[rm_nbr].flags & QR_PRIVATE) && u->forget[rm_nbr] != NEWUSERFORGET)
               || msg->room[rm_nbr].gen == u->generation[rm_nbr]))
       {
+        char    temp[sizeof(filestr)];
 	checked_snprintf(temp,sizeof(temp), "%s (%ld)", u->name, u->usernum);
-	i = strlen(temp);
-	strcat(temp, "                             " + i);
+        // This appears to be trying to create two columns, by alternating
+        // every other iteration.
 	if (!*filestr)
-	  strcpy(filestr, temp);
+            checked_strcat(filestr, sizeof(filestr), temp);
 	else
 	{
-	  strcat(filestr, temp);
+	  checked_strcat(filestr, sizeof(filestr), "                             ");
+	  checked_strcat(filestr, sizeof(filestr), temp);
 	  fprintf(file, "%s\n", filestr);
 	  *filestr = 0;
 	}
