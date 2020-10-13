@@ -184,6 +184,17 @@ int checked_snprintf_with_traceinfo (
 #define checked_snprintf(out, len, fmt, ...) \
     (checked_snprintf_with_traceinfo(__FILE__, __LINE__,(out), (len), (fmt),##__VA_ARGS__))
 
+char* checked_strcat_with_traceinfo (
+        const char* file, int line,
+        char* dest, size_t max_dest_size, const char *src);
+    // 'file' and 'line' provide tracing info.
+    // 'max_dest_size' is the total allocated capacity of the dest buffer.
+    // This is identical to 'strcat(dest, src)', but will log a fatal error
+    // if the buffer would overflow.
+
+#define checked_strcat(dest, max_dest_size, src) \
+    checked_strcat_with_traceinfo(__FILE__,__LINE__,(dest),(max_dest_size),(src))
+
 int my_putchar (int c);
 int my_putc (int c, FILE* stream);
 int output (const char *s);

@@ -94,6 +94,28 @@ int checked_snprintf_with_traceinfo (
     return n;
 }
 
+char* checked_strcat_with_traceinfo (
+        const char* file, int line,
+        char* dest, size_t max_dest_size, const char* src)
+{
+    // we need room for both strings and the null terminator.
+    size_t src_len  = strlen(src);
+    size_t dest_len = strlen(dest);
+    size_t need_size = dest_len + src_len + 1;
+
+    if (need_size <= max_dest_size)
+        memcpy( dest + dest_len, src, src_len + 1 );
+
+    else {
+        // error: buffer overflow
+        char * emsg = my_sprintf(NULL,
+                "FATAL: buffer overflow at file '%s':%d", file, line);
+        logfatal(emsg);
+    }
+
+    return dest;
+}
+
 static int
 my_puts (const char* s)
 {
