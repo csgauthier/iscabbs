@@ -606,7 +606,7 @@ int toast;
     if (!*help_str)
       return;
     /* We don't want these people walking the tree */
-    if (index(help_str, '.') || index(help_str, '/'))
+    if (strchr(help_str, '.') || strchr(help_str, '/'))
       continue;
 
     for (toast = 0; help_str[toast] != '\0' && toast < 30; toast++) {

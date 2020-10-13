@@ -734,7 +734,7 @@ static char hname[MAXHOSTNAMELEN + 1];
 
     /* So outside buttheads don't 'talk bbs' */
     chmod (tp, 0600);
-    tp = (char *) index (tp, '/') + 5;
+    tp = strchr (tp, '/') + 5;
     checked_snprintf(hname, sizeof(hname), "%s", tp);
 
     /* Not all systems have this, so you may have to roll your own... */
