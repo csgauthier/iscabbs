@@ -258,7 +258,7 @@ int i;
 #else
   msg->curpos = (mmpos = msg->curpos + len >= msgsize ? 0L : msg->curpos) + len;
 #endif
-  bcopy((char *)tmpstart, (char *)msgstart + mmpos, len);
+  memcpy((char *)msgstart + mmpos, (const char*)tmpstart, len);
 
   /* Now add a pointer to this message in the fullrm file for this room */
   msg->room[curr_rm].posted++;

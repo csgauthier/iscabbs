@@ -30,7 +30,7 @@ struct user *up;
     tmpuser = (struct user *)mmap(0, sizeof(struct user), PROT_READ | PROT_WRITE, MAP_ANONYMOUS /* | MAP_VARIABLE */ | MAP_PRIVATE, -1, 0);
     if (!tmpuser || tmpuser == (struct user *)-1)
       return(NULL);
-    bcopy(up, tmpuser, sizeof(struct user));
+    memcpy(tmpuser, up, sizeof(struct user));
     return(up = tmpuser);
   }
 

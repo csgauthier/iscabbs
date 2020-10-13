@@ -341,7 +341,7 @@ struct termios term;
 
   tcgetattr(1, &term);
   if (!saveterm.c_lflag && !saveterm.c_iflag)
-    bcopy((char *) &term, (char *) &saveterm, sizeof(struct termios));
+    memcpy( (char *) &saveterm, (const char *) &term, sizeof(struct termios));
 
   if (!mode)
   {
@@ -351,7 +351,7 @@ struct termios term;
     term.c_cc[VTIME] = 0;
   }
   else
-    bcopy((char *) &saveterm, (char *) &term, sizeof(struct termios));
+    memcpy( (char *) &term, (const char *) &saveterm, sizeof(struct termios));
 
   tcsetattr(1, TCSANOW, &term);
 }

@@ -498,7 +498,7 @@ int wasbusy = 0;
     msg->xcurpos = sizeof(long);
   curpos = msg->xcurpos;
   p = (char *)xmsg + curpos;
-  bcopy((char *)&xh, p, sizeof xh);
+  memcpy( p, (const char *)&xh, sizeof xh);
   p += sizeof xh;
   // BUG? `j` is strlen, but we copy `j+2` bytes.
   for (i = 0; i < XLENGTH && (j = strlen(send_string[i])); i++, p += j + 1)

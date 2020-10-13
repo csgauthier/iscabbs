@@ -39,7 +39,7 @@ dump(void)
   struct bigbtmp *temp;
 
   temp = (struct bigbtmp *)alloca(sizeof(struct bigbtmp));
-  bcopy(q, temp, sizeof(struct bigbtmp));
+  memcpy(temp, q, sizeof(struct bigbtmp));
   q = bigbtmp = temp;
   raise(SIGABRT);
 }

@@ -72,7 +72,7 @@ vote_unused_(void)
 
 
 	locks (SEM_VOTE);
-	bcopy ((char *) tmpstart, voteinfo->vote[pos].msg, sizeof (voteinfo->vote[pos].msg) - 1);
+	memcpy( voteinfo->vote[pos].msg, (const char *) tmpstart, sizeof (voteinfo->vote[pos].msg) - 1);
 	voteinfo->vote[pos].inuse = 1;	
 	unlocks (SEM_VOTE);
 	my_printf ("\n\n");

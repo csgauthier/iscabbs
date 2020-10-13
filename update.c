@@ -157,8 +157,8 @@ time_t t;
 	uinfo[unbr].f_admin = up->f_admin;
 	uinfo[unbr].f_prog = up->f_prog;
 	uinfo[unbr].f_aide = up->f_aide;
-	bcopy(up->generation, uinfo[unbr].generation, MAXROOMS);
-	bcopy(up->forget, uinfo[unbr].forget, MAXROOMS);
+	memcpy( uinfo[unbr].generation, (const char*)(up->generation), MAXROOMS);
+	memcpy( uinfo[unbr].forget, (const char*)(up->forget), MAXROOMS);
 #ifdef _UPDATEHACK
 	hack_xconf(up);
 #endif
