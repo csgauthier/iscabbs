@@ -121,7 +121,7 @@ extern char **environ;
  * Sure would be nice if there was a standard interface to this kind of
  * information, it is very useful.
  */
-#ifdef linux
+#ifdef __linux__
 #ifdef _IO_file_flags
 #define INPUT_LEFT()   ((stdin)->_IO_read_ptr < (stdin)->_IO_read_end)
 #else
