@@ -630,7 +630,7 @@ FILE 	*fp;
 
   while (fgets (buf, BUFSIZ, fp) != NULL)
   {
-    if ((p = rindex (buf, '\n')) != NULL)
+    if ((p = strrchr (buf, '\n')) != NULL)
       *p = 0;
     my_printf ("%s\n", buf);
   }
