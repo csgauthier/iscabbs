@@ -725,3 +725,45 @@ errlog (const char *fmt, ...)
     return 0;
 }
 
+static size_t
+file_size_from_fd( int fd )
+{
+  struct stat sb;
+  memset( &sb, 0, sizeof(struct stat));
+  if (fstat(fd, &sb) == 0)
+    return sb.st_size;
+  else
+    return 0;
+}
+
+unsigned char *
+mmap_file(const char *path, size_t* size)
+{
+  // open the fd
+  int fd = open( path, O_RDWR);
+  if (fd == -1)
+    return NULL;
+
+  // get the current size of the file.
+  size_t fsz = file_size_from_fd( fd );
+
+  // The caller requested `*size` bytes.
+  if (*size > fsz)
+  {
+    close(fd);
+    return NULL;
+  }
+
+  // zero means they want the whole file.
+  if (*size == 0)
+    *size = fsz;
+
+  // mmap, close, then validate.
+  void * p = mmap(NULL, *size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FILE, fd, 0);
+  close(fd);
+  if (p == MAP_FAILED)
+    return NULL;
+
+  return (unsigned char*)p;
+}
+
