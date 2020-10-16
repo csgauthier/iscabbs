@@ -11,7 +11,6 @@ CFLAGS   += -Wextra
 
 ## These warnings should be cleaned up ASAP one by one,
 ## they are listed in severity order (most severe is at the top).
-CFLAGS   += -Wno-maybe-uninitialized
 CFLAGS   += -Wno-sign-compare
 CFLAGS   += -Wno-stringop-overflow
 CFLAGS   += -Wno-unused-parameter

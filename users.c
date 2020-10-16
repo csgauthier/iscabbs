@@ -17,10 +17,10 @@ static int savelinknum;
 struct user *
 finduser(const char *name, long usernum, int linknum)
 {
-  int lower;
-  int upper;
-  int mid;
-  int cmp;
+  int lower=0;
+  int upper=0;
+  int mid=0;
+  int cmp=0;
 
   if (!name && !usernum)
     return((struct user *)(udata + 1) + linknum);
