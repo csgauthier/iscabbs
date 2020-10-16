@@ -402,25 +402,3 @@ int showanon;
   return(0);
 }
 
-
-
-char *
-mymmap(const char *name, size_t* size, int priv)
-{
-  int f = -1;
-  char *p;
-
-  if (name)
-  {
-    if ((f = open(name, O_RDWR)) < 0)
-      return(NULL);
-    else if (size && !*size)
-      *size = lseek(f, 0L, SEEK_END);
-  }
-
-  p = (char *)mmap(0, *size ? *size : 1, PROT_READ | PROT_WRITE, (f == -1 ? MAP_ANONYMOUS : MAP_FILE) /* | MAP_VARIABLE */ | (priv ? MAP_PRIVATE : MAP_SHARED), f, 0);
-  if (f >= 0)
-    close(f);
-
-  return(!p || p == (char *)-1 ? NULL : p);
-}
