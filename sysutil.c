@@ -767,3 +767,12 @@ mmap_file(const char *path, size_t* size)
   return (unsigned char*)p;
 }
 
+unsigned char *
+mmap_anonymous(size_t size)
+{
+  void * p = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  if (p == MAP_FAILED)
+    return NULL;
+
+  return (unsigned char*)p;
+}

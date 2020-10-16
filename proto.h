@@ -68,6 +68,7 @@ void more (const char *, int);
 int openfiles (void);
 char *mymmap (const char *, size_t *, int);
 unsigned char *mmap_file(const char *path, size_t* size) __attribute__((nonnull(1,2)));
+unsigned char *mmap_anonymous(size_t size) __attribute__((alloc_size(1)));
 int errlog (const char * fmt,...) __attribute__((format(printf,1,2)));
 unsigned int sleep (unsigned int);
 
