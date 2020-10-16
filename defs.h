@@ -118,7 +118,7 @@ extern char **environ;
 #endif
 
 #if 1
-#define FLUSH(a,b)	((b = q->qt[a].nfrontp - q->qt[a].nbackp) ? (!ssend(a, q->qt[a].nbackp, b) ? ((q->qt[a].nbackp = q->qt[a].nfrontp = q->qt[a].netobuf), 0) : -1) : 0)
+#define FLUSH(a,b)	((b = q->qt[a].nfrontp - q->qt[a].nbackp) ? (!ssend(a, (const char*) q->qt[a].nbackp, b) ? ((q->qt[a].nbackp = q->qt[a].nfrontp = q->qt[a].netobuf), 0) : -1) : 0)
 #else
 #define FLUSH(a,b)	if (b = q->qt[a].nfrontp - q->qt[a].nbackp)\
 			{\

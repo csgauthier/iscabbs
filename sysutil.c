@@ -640,7 +640,7 @@ void
 more(const char   *filename, int comments)
 {
 int     line;
-int size;
+size_t size;
 unsigned char *filep;
 unsigned char *p;
 int i;

@@ -143,8 +143,8 @@ int i;
 
       q->connectable--;
       q->qt[0].last = q->t;
-      i = sizeof sa;
-      while ((x = accept(sfd, (struct sockaddr*)&sa, &i)) < 0)
+      socklen_t sa_len = sizeof sa;
+      while ((x = accept(sfd, (struct sockaddr*)&sa, &sa_len)) < 0)
       {
         if (errno == EINTR)
 	  continue;
@@ -223,7 +223,7 @@ int i;
       q->qt[x].rows = 24;
       q->qt[x].initstate = T_INIT1;
       q->qt[x].state = TS_DATA;
-      for (i = 0; i < sizeof q->qt[0].options; i++)
+      for (size_t i = 0; i < sizeof q->qt[0].options; i++)
         q->qt[x].options[i] = q->qt[x].do_dont_resp[i] = q->qt[x].will_wont_resp[i] = 0;
       q->qt[x].ncc = 0;
       q->qt[x].addr = sa.sin_addr;
