@@ -381,7 +381,7 @@ struct user *tmpuser;
   char * newdescfile = my_sprintf(NULL,"%sroom%d.NEW", DESCDIR, curr);
 
   size = 0;
-  if (!(infop = (unsigned char *)mymmap(descfile, &size, 0)) || !size)
+  if (!(infop = mmap_file(descfile, &size)) || !size)
   {
     colorize("@RDescription doesn't yet exist@G\n");
     choice = 'B';

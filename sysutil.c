@@ -188,7 +188,7 @@ struct sigaction sact;
 
   /* Make sure the site is not locked out */
   size = 0;
-  if ((lockoutp = p = (unsigned char *)mymmap(LOCKOUT, &size, 0)))
+  if ((lockoutp = p = mmap_file(LOCKOUT, &size)))
   {
     strncpy(myhost, gethost(), sizeof (myhost) - 1);
     for (hp = myhost; *hp; hp++)
@@ -648,7 +648,7 @@ int noprint;
 
   my_putchar('\n');
   size = 0;
-  if (!(filep = p = (unsigned char *)mymmap(filename, &size, 0)))
+  if (!(filep = p = mmap_file(filename, &size)))
   {
     errlog("File %s is missing (%d rows)", filename, rows);
     my_printf("File %s is missing, sorry!\n\n", filename);

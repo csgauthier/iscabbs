@@ -526,7 +526,7 @@ size_t size;
 
   char * file = my_sprintf(NULL,"%sroom%d", DESCDIR, curr);
   size = 0;
-  if (!(p = (unsigned char *)mymmap(file, &size, 0)) || !size)
+  if (!(p = mmap_file(file, &size)) || size==0)
   {
     colorize("@RNo Forum Info is available\n");
     if (p)
