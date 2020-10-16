@@ -522,7 +522,7 @@ readdesc(void)
 int     dummy;
 char    name[MAXALIAS + 1];
 unsigned char *p;
-int size;
+size_t size;
 
   char * file = my_sprintf(NULL,"%sroom%d", DESCDIR, curr);
   size = 0;

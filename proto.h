@@ -66,7 +66,7 @@ void hit_return_now (void);
 void help (const char *, int);
 void more (const char *, int);
 int openfiles (void);
-char *mymmap (const char *, int *, int);
+char *mymmap (const char *, size_t *, int);
 int errlog (const char * fmt,...) __attribute__((format(printf,1,2)));
 unsigned int sleep (unsigned int);
 

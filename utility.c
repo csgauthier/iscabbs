@@ -5,7 +5,7 @@
 int
 openfiles(void)
 {
- int size;
+ size_t size;
 
   size = sizeof(struct bigbtmp);
   if (!(bigbtmp = (struct bigbtmp *)mymmap(TMPDATA, &size, 0)))

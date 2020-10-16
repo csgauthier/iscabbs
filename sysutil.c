@@ -150,7 +150,7 @@ int     howbad;
 char *hp;
 unsigned char *lockoutp;
 unsigned char *p;
-int size;
+size_t size;
 int i;
 struct sigaction sact;
 

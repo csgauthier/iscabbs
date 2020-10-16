@@ -405,7 +405,7 @@ int showanon;
 
 
 char *
-mymmap(const char *name, int *size, int priv)
+mymmap(const char *name, size_t* size, int priv)
 {
   int f = -1;
   char *p;

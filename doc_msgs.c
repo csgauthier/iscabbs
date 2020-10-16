@@ -512,7 +512,7 @@ unsigned char *tmpp;
 unsigned char *tmpsave;
 
   {
-    int size = 53248;
+    size_t size = 53248;
     if (!(tmpstart = (unsigned char *)mymmap(NULL, &size, 1)))
       return(MMAP_ERR);
   }

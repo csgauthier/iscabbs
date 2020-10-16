@@ -373,7 +373,7 @@ char    raname[MAXALIAS+1];
 int	upload;
 char   *cp;
 struct mheader *mh;
-int size;
+size_t size;
 unsigned char *infop;
 struct user *tmpuser;
 
