@@ -1,6 +1,7 @@
 #define INQUEUE
 #include "defs.h"
 #include "ext.h"
+#include <err.h>
 
 void
 bbsqueue(int dofork)
@@ -12,7 +13,9 @@ int i;
   openlog("bbsqueued", LOG_PID, LOG_LOCAL0);
   q = bigbtmp;
 
-  chdir(ROOT"/core/bbsqueued");
+  if (chdir(ROOT"/core/bbsqueued") == -1)
+    err( EXIT_FAILURE, "failed to chdir to '%s'", ROOT"core/bbsqueued");
+
   umask(027);
   //setresgid(19, 19, 19);
   //setresuid(0, 0, 0);

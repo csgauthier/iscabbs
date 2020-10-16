@@ -4,12 +4,16 @@
 #include "defs.h"
 #include "ext.h"
 
+#include <err.h>
+
 int
 main(int argc, char **argv)
 {
   int cmd = 0;
 
-  chdir( ROOT "core/bbs" );
+  if (chdir( ROOT "core/bbs" ) == -1)
+    err( EXIT_FAILURE, "failed to chdir to '%s'", ROOT "core/bbs");
+
   umask(027);
 
   if (openfiles() < 0)
