@@ -9,13 +9,13 @@
 #include "defs.h"
 #include "ext.h"
 
-searchtool ()
+void
+searchtool (void)
 {
-  register struct user *user;
+  struct user *user;
   char string[75];
-  register int i;
+  int i;
   int count = 0;
-  int found;
 
   my_printf ("Userfile search\r\n");
   my_printf ("Search the entire userbase for (case-insensitive) -> ");

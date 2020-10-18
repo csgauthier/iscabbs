@@ -1,4 +1,3 @@
-extern unsigned char   stdoutbuf[STDOUTBUFSIZ];
 extern struct room     sroom;
 extern struct room    *room;
 extern short	       curr;

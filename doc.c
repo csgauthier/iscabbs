@@ -3,6 +3,9 @@
  */
 #include "defs.h"
 #include "ext.h"
+static void blockhost (void);
+static void inituser (void);
+
 /*char fun_stuff[][80] = {
 	"IM IN UR LOBBY!! EATIN UR PROMPTZ!!!",
 	"Aliens are attacking, log off now.",
@@ -98,52 +101,16 @@
 };
 int fun_len = sizeof(fun_stuff) / sizeof(char[80]);
 */
-/*
- * getseed 
- *    get a seed (just 32 bits) for the pseudorandom generator, using
- *    the simplest possible thing (time returned by gettimeofday()).
- */
-static long getseed()
-{
-    struct timeval tp; 
-    struct timezone tzp;
-    if (gettimeofday(&tp, &tzp)) { 
-       return 0;
-    }
-    return tp.tv_usec;
-}
-
-int rnd(int n)
-{
-  static first_time=1;                                       
-  static char state[256];                                   
-  if (first_time) {                                        
-    first_time = 0;                                       
-    unsigned int seed = (unsigned int) getseed();
-    initstate(seed, state, 256);                           
-  }
-  if (n<0) { return 0; }
-  unsigned long mask = 1;
-  while (mask<n) mask = 2*mask+1;
-  for (;;) {
-    long r = random();
-    if ((r&mask) < n) return r&mask;
-  }
-} 
 
 void
-bbsstart()
+bbsstart(void)
 {
-unsigned char stdinbuf[STDINBUFSIZ];
 long    uglastmsg;	/* last msg seen in prev. rm */
 long    ugtemp = TWILIGHTZONE;
 short   prev_rm = TWILIGHTZONE;
 char    cit_cmd;
-char    bueller = 0;
 
   room = &sroom;
-  setvbuf(stdin, stdinbuf, _IOFBF, STDINBUFSIZ);
-  setvbuf(stdout, stdoutbuf, _IOFBF, STDOUTBUFSIZ);
 
   init_system();
 
@@ -236,7 +203,7 @@ char    bueller = 0;
 //        break;
 
       case 'A':
-	my_printf("Sysop commands\n", msg->room[curr].name);
+	my_printf("Sysop commands %s\n", msg->room[curr].name);
 	aide_menu();
 	break;
 
@@ -439,7 +406,6 @@ char    bueller = 0;
 
       case 'T':
 	my_printf("OMG DEY CUT OFF MAH TWEETER!\n");
-        //twitter();
 	break;
 
       case 'u':
@@ -450,7 +416,6 @@ char    bueller = 0;
 
       case 'U':
         my_printf("Update Facebook Status, coming soon...\n");
-        //system("/home/bbs/bin/bbsfb.sh");
 	break;
 
       case 'v':
@@ -542,7 +507,7 @@ char    bueller = 0;
 	if (ouruser->f_elf && !ouruser->f_restricted && !ouruser->f_twit)
           if (mybtmp->xstat && !mybtmp->elf)
             my_printf("\n\nYou can't enable yourself as a guide while your X's are disabled.\n");
-	  else if (mybtmp->elf = !mybtmp->elf)
+	  else if ((mybtmp->elf = !mybtmp->elf))
 	    my_printf("\n\nYou are now marked as being available to help others.\n");
 	  else
 	    my_printf("\n\nYou are no longer marked as being available to help others.\n");
@@ -588,12 +553,10 @@ char    bueller = 0;
  * in ouruser->lastseen[MAIL_RM_NBR].
  */
 int
-checkmail(tmpuser, quiet)
-  struct user *tmpuser;
-  int     quiet;
+checkmail(struct user *tmpuser, int  quiet)
 {
-register int i;
-int     count = 0;
+    int i;
+    int     count = 0;
 
   /* See if user is such a doofus we've kicked them out of Mail> */
   if (tmpuser->generation[MAIL_RM_NBR] == RODSERLING)
@@ -608,11 +571,12 @@ int     count = 0;
     else if (!count)
       count--;
 
-  if (!quiet)
+  if (!quiet){
     if (count == 1)
       my_printf("*** You have a new private message in Mail>\n");
     else if (count > 1)
       my_printf("*** You have %d new private messages in Mail>\n", count);
+  }
 
   return(count > 0 ? count : 0);
 }
@@ -620,17 +584,18 @@ int     count = 0;
 
 
 void
-help(topic, morehelp)
-register char *topic;
-register int morehelp;
+help(const char *topic, int morehelp)
 {
 char help_str[30];
-char hfile[100];
-register int f;
+int f;
 int toast;
 
-  sprintf(hfile, "%s%s", HELPDIR, topic);
+  {
+  char * hfile = my_sprintf(NULL, "%s%s", HELPDIR, topic);
   more(hfile, 1);
+  free(hfile);
+  hfile=NULL;
+  }
   if (!morehelp)
     return;
 
@@ -641,14 +606,14 @@ int toast;
     if (!*help_str)
       return;
     /* We don't want these people walking the tree */
-    if (index(help_str, '.') || index(help_str, '/'))
+    if (strchr(help_str, '.') || strchr(help_str, '/'))
       continue;
 
     for (toast = 0; help_str[toast] != '\0' && toast < 30; toast++) {
       help_str[toast] = tolower(help_str[toast]);
     }
 //    *help_str = tolower(*help_str);
-    sprintf(hfile, "%s%s%s", HELPDIR, "topics.", help_str);
+    char * hfile = my_sprintf(NULL, "%s%s%s", HELPDIR, "topics.", help_str);
 
 //    colorize("\n@WDebug: %s@G\n", hfile);
 
@@ -659,6 +624,7 @@ int toast;
       close(f);
       more(hfile, 1);
     }
+    free(hfile);
   }
 }
 
@@ -668,10 +634,10 @@ int toast;
  * Flag rooms a user no longer belongs to so generation numbers are kept
  * consistent.  Also resets any pointers that might have gotten out of range.
  */
-void
-inituser()
+static void
+inituser(void)
 {
-register int i;
+int i;
 
   for (i = 0; i < MAXROOMS; ++i)
   {
@@ -696,8 +662,7 @@ register int i;
 
 
 int
-wanttoyell(cmd)
-int cmd;
+wanttoyell(int cmd)
 {
   my_printf("%s", cmd == 'y' ? "Yell to Sysop\n" : "Upload Yell to Sysop\n");
   help("yell.list", NO);
@@ -726,81 +691,54 @@ int cmd;
   return(0);
 }
 
-void
-blockhost()
+static void
+blockhost (void)
 {
-char bl_host[51];
-char blockhost[125];
+    char    bl_host[51];
 
-colorize("@YHostname or IP to block (blank to quit): @G");
-get_string("", 51, bl_host, -1);
-if (!strlen(bl_host) == 1)
-{
-colorize("@YCancel.\n@G");
-}
-else
-{
+    colorize ("@YHostname or IP to block (blank to quit): @G");
+    get_string ("", 51, bl_host, -1);
+    if (strlen (bl_host) == 0)
+        colorize ("@YCancel.\n@G");
+    else {
 //printf("Hmm.  Can't block %s", bl_host);
-printf("Are you sure you want to block %s(Y/n)? ", bl_host);
-switch (get_single_quiet("YyNn\n"))
-  {
+        printf ("Are you sure you want to block %s(Y/n)? ", bl_host);
+        switch (get_single_quiet ("YyNn\n")) {
 //    case 'y':
-//	printf("\n");
- //       sprintf(blockhost, "/home/bbs/bin/blockip.sh %s", bl_host);
- //       system(blockhost);
-//	printf("%s blocked\n", bl_host);
- //     break;
+//  printf("\n");
+            //       sprintf(blockhost, "/home/bbs/bin/blockip.sh %s", bl_host);
+            //       system(blockhost);
+//  printf("%s blocked\n", bl_host);
+            //     break;
 
-    case 'Y':
-        printf("\n");
-	sprintf(blockhost, "/home/bbs/bin/blockip.sh %s", bl_host);
-	system(blockhost);
-        colorize("@R\n%s blocked\n@G", bl_host);
-      break;
+        case 'Y': {
+            printf ("\n");
+            char * blockhost = my_sprintf (NULL, "/home/bbs/bin/blockip.sh %s", bl_host);
+            system (blockhost);
+            free(blockhost);
+            colorize ("@R\n%s blocked\n@G", bl_host);
+            } break;
 
-    case 'N':
-colorize("@RCanceled.\n");
-      break;
-    case 'n':
-colorize("@RCanceled.\n");
-      break;
+        case 'N':
+            colorize ("@RCanceled.\n");
+            break;
+        case 'n':
+            colorize ("@RCanceled.\n");
+            break;
 
 
-    default:
-colorize("@RCanceled.\n");
-      break;
+        default:
+            colorize ("@RCanceled.\n");
+            break;
 
-}
+        }
 //sprintf(blockhost, "echo \"/home/bbs/bin/blockip.sh %s\"> /tmp/test", bl_host);
 //system(blockhost);
-//}
-}
-}
-
-void
-twitter()
-{
-char twname[32];
-char twpass[16];
-char twinput[126];
-char tweetpost[200];
-char *tweet = malloc(strlen(twinput) +3);
-colorize("@YTwitter\n");
-colorize("@YYour Twitter username: @G");
-get_string("", 29, twname, -1);
-colorize("@YYour Twitter password: @G");
-get_string("", 16, twpass, -1);
-colorize("@YYour Tweet: @G");
-get_string("", 70, twinput, -1);
-
-sprintf(tweetpost, "/home/bbs/bin/bbstw.sh %s %s \'%s\'", twname, twpass, twinput);
-
-system(tweetpost);
-
+    }
 }
 
 void
-dologout()
+dologout(void)
 {
   my_printf("Logout\n\nReally log out? (Y/N) -> ");
   flush_input(0);

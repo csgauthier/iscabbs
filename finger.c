@@ -4,14 +4,10 @@
 #include "defs.h"
 #include "ext.h"
 
-
 #define MAXCONN 60
 
-
-
-
 static void
-setup_socket()
+setup_socket(void)
 {
   struct sockaddr_in sa;
   int one = 1;
@@ -25,31 +21,28 @@ setup_socket()
   sa.sin_family = AF_INET;
   sa.sin_addr.s_addr = htonl(0);
   sa.sin_port = htons(79);
-  if (bind(0, &sa, sizeof sa) < 0)
+  if (bind(0, (const struct sockaddr*)&sa, sizeof sa) < 0)
     _exit(1);
   if (listen(0, SOMAXCONN) < 0)
     _exit(1);
 }
 
 
-
 static void
-s_sigalrm2()
+s_sigalrm2(int signo)
 {
   signal(SIGALRM, s_sigalrm2);
   alarm(30);
 }
 
 
-
 void
-bbsfinger()
+bbsfinger(void)
 {
-register int n;
-register int i;
-register int x;
-register char *p;
-int size;
+int n;
+int i;
+int x;
+char *p;
 fd_set rfd;
 struct fd
 {
@@ -57,7 +50,6 @@ struct fd
   short pos;
   char buf[24];
 } fd[MAXCONN];
-unsigned char bigstdoutbuf[262143];
 
   if (!getenv("INIT_STATE") && fork())
     _exit(0);
@@ -86,7 +78,9 @@ unsigned char bigstdoutbuf[262143];
 
   setup_socket();
 
-  setvbuf(stdout, bigstdoutbuf, _IOFBF, sizeof bigstdoutbuf);
+  const size_t bigstdoutbuf_size = 262143;
+  char * bigstdoutbuf = calloc(bigstdoutbuf_size, sizeof(char));
+  setvbuf(stdout, bigstdoutbuf, _IOFBF, bigstdoutbuf_size);
 
   for (;;)
   {
@@ -131,8 +125,8 @@ unsigned char bigstdoutbuf[262143];
       struct linger linger;
 
       fd[0].conn = 0;
-      size = sizeof sa;
-      if ((i = accept(0, &sa, &size)) < 0)
+      socklen_t size = sizeof sa;
+      if ((i = accept(0, (struct sockaddr*)&sa, &size)) < 0)
         break;
       if (i != 1)
       {
@@ -149,7 +143,7 @@ unsigned char bigstdoutbuf[262143];
         break;
       }
 
-      size = sizeof bigstdoutbuf;
+      size = bigstdoutbuf_size;
       if (setsockopt(1, SOL_SOCKET, SO_SNDBUF, &size, sizeof size) < 0)
       {
         close(1);
@@ -217,4 +211,6 @@ unsigned char bigstdoutbuf[262143];
       shutdown(n, 1);
     }
   }
+
+  free(bigstdoutbuf);
 }

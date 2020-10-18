@@ -4,6 +4,7 @@
 #include "defs.h"
 #include "ext.h"
 
+static void check_quit(const char *s);
 
 /*
  * login_user (name, passwd, time_sys, laston); 
@@ -14,12 +15,9 @@
  */
 
 struct user *
-login_user(name, passwd)
-  char   *name;
-  char   *passwd;
+login_user(const char   *name, const char   *passwd)
 {
 struct user *up;
-char   *cp;
 
   guest = !strcmp(name, "Guest");
   if (!(up = getuser(name)))
@@ -32,13 +30,13 @@ char   *cp;
     tmpuser = (struct user *)mmap(0, sizeof(struct user), PROT_READ | PROT_WRITE, MAP_ANONYMOUS /* | MAP_VARIABLE */ | MAP_PRIVATE, -1, 0);
     if (!tmpuser || tmpuser == (struct user *)-1)
       return(NULL);
-    bcopy(up, tmpuser, sizeof(struct user));
+    memcpy(tmpuser, up, sizeof(struct user));
     return(up = tmpuser);
   }
 
   if (!getenv("BBSNAME"))
   {
-    cp = (char *)crypt(passwd, up->passwd);
+    const char* cp = crypt(passwd, up->passwd);
     if (strncmp(up->passwd, cp, 13))
     {
       freeuser(up);
@@ -56,11 +54,7 @@ char   *cp;
  */
 
 void
-change_password(up, old, new, noold)
-  struct user *up;
-  char   *old,
-         *new;
-  int     noold;
+change_password(struct user *up, const char*old, const char* new, int noold)
 {
 time_t  salt;
 char    saltc[4];
@@ -93,17 +87,15 @@ int     c,
   unlocks(SEM_USER);
 }
 
-
-
 int
-new_user()
+new_user(void)
 {
-  register int i;
-  register int j;
-  register int c;
-  register char *p;
-  register char *name;
-  register struct user *tmpuser = NULL;
+  int i;
+  int j;
+  int c;
+  char *p;
+  char *name;
+  struct user *tmpuser = NULL;
   char pas[9];
   char pas2[14];
   char real_name[MAXNAME+1];
@@ -114,7 +106,6 @@ new_user()
   char phone[21];
   char mail[MAXNAME+1];
   char name2[MAXALIAS+1];
-  char work[80];
   int anonymous;
   int salt;
   char saltc[3];
@@ -219,7 +210,8 @@ new_user()
 	my_printf("\nYou have to provide your name!\n");
       else if (i < j)
 	my_printf("\nThe character \"%c\" is not allowed in a name.\n", real_name[i]);
-      else if (j < 4 || !strchr(real_name, ' ') || real_name[j - 2] == ' ' || real_name[j - 3] == ' ' && real_name[j - 1] == '.')
+      else if (j < 4 || !strchr(real_name, ' ') || real_name[j - 2] == ' ' 
+              || (real_name[j - 3] == ' ' && real_name[j - 1] == '.'))
 	my_printf("\nYou must provide both your full first and last names!\n");
       else if (!strcmp(real_name, name) || !strcmp(real_name, name2))
       {
@@ -348,7 +340,7 @@ new_user()
     saltc[i] = c;
   }
   saltc[2] = 0;
-  strcpy(pas2, (char *)crypt(pas, saltc));
+  strcpy(pas2, crypt(pas, saltc));
 
   locks(SEM_NEWBIE);
   usernum = ++msg->eternal;
@@ -390,8 +382,15 @@ new_user()
   ouruser->firstcall = ouruser->time = mybtmp->time;
   strcpy(ouruser->loginname, ARGV[1] && ARGV[2] ? ARGV[2] : "");
   add_loggedin(ouruser);
-  sprintf(work, "NEWUSER %s%s%s", ouruser->loginname, *ouruser->loginname ? "@" : "", ouruser->remote);
-  logevent(work);
+
+  {
+      char * logmsg = my_sprintf(NULL,"NEWUSER %s%s%s",
+                      ouruser->loginname,
+                      *ouruser->loginname ? "@" : "",
+                      ouruser->remote);
+      logevent(logmsg);
+      free(logmsg);
+  }
 
   my_printf("\n\nYour account has been created.\n\n");
 
@@ -412,10 +411,8 @@ new_user()
   return(1);
 }
 
-
-void
-check_quit(s)
-register char *s;
+static void
+check_quit(const char *s)
 {
   if (!strcasecmp(s, "exit") || !strcasecmp(s, "quit") || !strcasecmp(s, "logout"))
   {

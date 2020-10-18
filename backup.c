@@ -4,10 +4,8 @@
 #include "defs.h"
 #include "ext.h"
 
-
 void
-bbsbackup(what)
-register char *what;
+bbsbackup(const char *what)
 {
   if (!strcmp(what, "USERDATA"))
     backupuserdata();

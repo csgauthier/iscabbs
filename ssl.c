@@ -6,7 +6,7 @@
 #include "defs.h"
 #include "ext.h"
 
-void initssl()
+void initssl(void)
 {
   SSL_CTX *ctx;
   SSL_METHOD *meth;

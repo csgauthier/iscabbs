@@ -4,23 +4,24 @@
 #include "defs.h"
 #include "ext.h"
 
+static void set_read_params(int cit_cmd, int *dir, int *rm_msg_nbr, long *searchkey);
+static int resetpos(long savedid);
 
 /**********************************************************************
 * count_skips
 * Count how many rooms were skipped, notify user, and reset skipping array.
 **********************************************************************/
-void
-count_skips()
+static void
+count_skips(void)
 {
-register int i;
-register int count;
+  int count = 0;
 
-  for (count = 0, i = 0; i < MAXROOMS; i++)
+  for (int i = 0; i < MAXROOMS; ++i)
     count += skipping[i >> 3] >> (i & 7) & 1;
 
-  if (curr == LOBBY_RM_NBR && count)
+  if (curr == LOBBY_RM_NBR && count > 0)
   {
-    bzero((void *)skipping, sizeof skipping);
+    memset((void *)skipping, 0, sizeof(skipping));
     my_printf("---> You have skipped %d forum(s)\n", count);
   }
 }
@@ -36,14 +37,12 @@ register int count;
 * We return YES or NO because we want to control access to passworded rooms.
 ****************************************************************************/
 int 
-findroom()
+findroom(void)
 {
-int     i;
-char   *rname;
 int     rmnum = -1;
 
 
-  rname = get_name("forum name/number? -> ", 3);
+  char * rname = get_name("forum name/number? -> ", 3);
 
   if (!*rname)
     return (NO);
@@ -51,7 +50,7 @@ int     rmnum = -1;
   if (*rname >= '0' && *rname <= '9')
     rmnum = atoi(rname);
 
-  for (i = 0; i < MAXROOMS; ++i)
+  for (int i = 0; i < MAXROOMS; ++i)
   {
     /***************************************************************************
     * IF...
@@ -115,7 +114,7 @@ int     rmnum = -1;
   * If you're here, the file is still open.
   ****************************************************************************/
 
-  for (i = 0; i < MAXROOMS; ++i)
+  for (int i = 0; i < MAXROOMS; ++i)
   {
     if (!strncmp(msg->room[i].name, rname, strlen(rname))
 	&& (msg->room[i].flags & QR_INUSE)
@@ -133,7 +132,7 @@ int     rmnum = -1;
     }
   }
 
-  for (i = 0; i < MAXROOMS; ++i)
+  for (int i = 0; i < MAXROOMS; ++i)
   {
     if (strstr(msg->room[i].name, rname)
         && (msg->room[i].flags & QR_INUSE)
@@ -167,7 +166,7 @@ int     rmnum = -1;
 * User chooses this option (Z key) to unsubscribe to the current room.
 **********************************************************************/
 int
-forgetroom()
+forgetroom(void)
 {
   if (curr < AIDE_RM_NBR)
   {
@@ -195,9 +194,8 @@ forgetroom()
 *    Read the fullroom structure
 ****************************************************************************/
 void
-loadroom()
+loadroom(void)
 {
-  register int i, j;
 
   strcpy(room->name, msg->room[curr].name);
   room->roomaide = msg->room[curr].roomaide;
@@ -208,9 +206,10 @@ loadroom()
 
   if (curr == MAIL_RM_NBR)
   {
+    int j;
     for (j = 0; j < MSGSPERRM - MAILMSGS; j++)
       room->num[j] = room->pos[j] = room->chron[j] = 0;
-    for (i = 0; j < MSGSPERRM; i++, j++)
+    for (int i = 0; j < MSGSPERRM; i++, j++)
     {
       room->num[j] = room->chron[j] = ouruser->mr[i].num;
       room->pos[j] = ouruser->mr[i].pos < 0 ? -ouruser->mr[i].pos : ouruser->mr[i].pos;
@@ -218,7 +217,7 @@ loadroom()
     room->highest = room->num[MSGSPERRM - 1];
   }
   else
-    for (i = 0; i < MSGSPERRM; i++)
+    for (int i = 0; i < MSGSPERRM; i++)
     {
       room->num[i] = msg->room[curr].num[i];
       room->pos[i] = msg->room[curr].pos[i];
@@ -254,9 +253,9 @@ loadroom()
 * It calls count_skips.
 ****************************************************************************/
 int
-nextroom()
+nextroom(void)
 {
-register int i;
+int i;
 
   if (checkmail(ouruser, NOISY) > 0)
   {			/* Forced into mailroom ASAP after mail arrives */
@@ -308,7 +307,7 @@ register int i;
 * Loads the room specified by curr_rm, and opens it up for reading.
 **************************************************************************/
 void
-openroom()
+openroom(void)
 {
   loadroom();
 
@@ -341,8 +340,7 @@ openroom()
 *         changed '#' to search by FRchron  -dn
 ************************************************************************/
 void
-readroom(cit_cmd)
-  int     cit_cmd;
+readroom(int cit_cmd)
 {
 int    *auth;
 int     chr;
@@ -597,8 +595,8 @@ int savedrows = -1;
 */
 	    break;
           }
-          /* FALL THRU if note successfully post in aide room */
-
+          /* fall through if note successfully post in aide room */
+    /* fall through */
 	case 'D':
 	  if (chr == 'D')
             my_putchar('\n');
@@ -716,7 +714,7 @@ int savedrows = -1;
           if (ouruser->f_elf && !ouruser->f_restricted && !ouruser->f_twit)
             if (mybtmp->xstat && !mybtmp->elf)
               my_printf("\n\nYou can't enable yourself as a guide while your X's are disabled.\n");
-            else if (mybtmp->elf = !mybtmp->elf)
+            else if ((mybtmp->elf = !mybtmp->elf))
               my_printf("\n\nYou are now marked as being available to help others.\n");
             else
               my_printf("\n\nYou are no longer marked as being available to help others.\n");
@@ -763,12 +761,8 @@ int savedrows = -1;
 * in the switch statement.  
 * search by FRchron added 4-23-91 -dn  (added searchkey)
 **********************************************************************/
-void
-set_read_params(cit_cmd, dir, rm_msg_nbr, searchkey)
-  int     cit_cmd;
-  int    *dir;
-  int    *rm_msg_nbr;
-  long   *searchkey;
+static void
+set_read_params(int cit_cmd, int *dir, int *rm_msg_nbr, long *searchkey)
 {
 
 int     nbr;
@@ -789,7 +783,7 @@ char    nbr_str[12];	/* C-defined max for longs is +/- 2,147,483,647 */
       get_string("Find message by number -> ", 11, nbr_str, -1);
       *searchkey = atol(nbr_str);
       if (*searchkey < 0L)
-	*searchkey = ABS(*searchkey);
+	*searchkey = abs(*searchkey);
       *rm_msg_nbr = 0;		/* start searching from the beginning */
       break;
 
@@ -814,12 +808,10 @@ char    nbr_str[12];	/* C-defined max for longs is +/- 2,147,483,647 */
   return;
 }
 
-
-int
-resetpos(savedid)
-long savedid;
+static int
+resetpos(long savedid)
 {
-register int i;
+int i;
 
   for (i = 0; i < MSGSPERRM; i++)
     if (room->num[i] >= savedid)

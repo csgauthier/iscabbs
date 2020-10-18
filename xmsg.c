@@ -3,29 +3,28 @@
 
 #define XLENGTH 20
 
+static void
+sendx(struct btmp *buser, struct user *touser,
+        char send_string[][80], int override);
 
-int
-displayx(pos, num, t, prev, next)
-register long pos;
-register int num;
-register time_t *t;
-register long *prev;
-register long *next;
+static int syself_ok(const char *name);
+
+static int
+displayx(long pos, int num, time_t *t, long *prev, long *next)
 {
   char nstr[12];
   char name[MAXALIAS + 1];
-  register struct xheader *xh;
-  register char *s;
-  register int sender = 1;
-  register int noshow = pos < 0;
-  register int i;
+  struct xheader *xh;
+  char *s;
+  int sender = 1;
+  int noshow = pos < 0;
 
   pos = pos < 0 ? -pos : pos;
   xh = (struct xheader *)(void *)(xmsg + pos);
 
   if (msg->xcurpos + (msg->xmsgsize >> 6) > (pos < msg->xcurpos ? pos + msg->xmsgsize : pos))
   {
-    errlog("X database scrollover pos is %08x, curpos is %08x", pos, msg->xcurpos);
+    errlog("X database scrollover pos is %08lx, curpos is %08lx", pos, msg->xcurpos);
     return(1);
   }
 
@@ -52,7 +51,7 @@ register long *next;
     sender = 0;
     if (xh->rnum != ouruser->usernum)
     {
-      errlog("X database user not send/recv, got %08x and %08x", xh->snum, xh->rnum);
+      errlog("X database user not send/recv, got %08lx and %08lx", xh->snum, xh->rnum);
       return(-1);
     }
   }
@@ -62,22 +61,26 @@ register long *next;
   /* Catch wraparound when pointing to old X for user */
   if (t && *t && xh->time > *t + 300)
   {
-    errlog("X time sequence invalid, got %08x wanted %08x, args were %08x, %d, %08x, %08x", xh->time, *t, pos, num, prev ? *prev : -1, next ? *next : -1);
+    errlog("X time sequence invalid, got %08lx wanted %08lx, args were %08lx, %d, %08lx, %08lx", xh->time, *t, pos, num, prev ? *prev : -1, next ? *next : -1);
     return(1);
   }
   else if (t)
     *t = xh->time;
 
   if (next)
+  {
     if (sender)
       *next = xh->snext;
     else
       *next = xh->rnext;
-  if (prev)
+  }
+
+  if (prev){
     if (sender)
       *prev = xh->sprev;
     else
       *prev = xh->rprev;
+  }
   else if (sender > 0)
     return(1);
 
@@ -85,7 +88,7 @@ register long *next;
     return(0);
 
   if (num)
-    sprintf(nstr, "(#%d) ", num);
+    checked_snprintf(nstr,sizeof(nstr), "(#%d) ", num);
   else
     strcpy(nstr, "(old) ");
 
@@ -114,11 +117,10 @@ register long *next;
 
 
 void
-checkx(resetnox)
-register int resetnox;
+checkx(int resetnox)
 {
-  register int i;
-  register int nox = mybtmp->nox;
+  int i;
+  int nox = mybtmp->nox;
 
   if (resetnox < 0)
   {
@@ -161,14 +163,13 @@ register int resetnox;
 
 
 void
-express(which)
-int which;
+express(int which)
 {
-register int i;
-register char *name;
-register struct btmp *buser;
-register struct user *p;
-register int override = ' ';
+int i;
+char *name;
+struct btmp *buser = NULL;
+struct user *p;
+int override = ' ';
 struct btmp tuser;
 char send_string[XLENGTH][80];
 
@@ -293,7 +294,7 @@ char send_string[XLENGTH][80];
   for (i = 0; i < NXCONF && (p->xconf[i].usernum != ouruser->usernum || !p->xconf[i].which); i++)
     ;
 
-  if (i < NXCONF || ouruser->f_admin && p->f_admin)
+  if (i < NXCONF || (ouruser->f_admin && p->f_admin))
     override = 'w';
 
   if (tuser.xstat && !(p->f_twit))
@@ -412,24 +413,18 @@ char send_string[XLENGTH][80];
   freeuser(p);
 }
 
-
-
-void
-sendx(buser, touser, send_string, override)
-register struct btmp *buser;
-register struct user *touser;
-char send_string[][80];
-int override;
+static void
+sendx(struct btmp *buser, struct user *touser,
+        char send_string[][80], int override)
 {
 struct xheader xh;
 time_t t;
-register int i;
-register int j;
-register char *p;
-register long curpos;
-register struct tm *tp;
-register struct xheader *xhp;
-register int wasbusy = 0;
+int i;
+int j;
+char *p;
+long curpos;
+struct xheader *xhp;
+int wasbusy = 0;
 
   /* BEEPS */
   if (override == 'b')
@@ -453,7 +448,7 @@ register int wasbusy = 0;
     }
   }
 
-  tp = localtime(&t);
+  localtime(&t);
   xh.checkbit = 1;
   xh.rnum = touser ? touser->usernum : 0;
   xh.snum = ouruser->usernum;
@@ -503,8 +498,9 @@ register int wasbusy = 0;
     msg->xcurpos = sizeof(long);
   curpos = msg->xcurpos;
   p = (char *)xmsg + curpos;
-  bcopy((char *)&xh, p, sizeof xh);
+  memcpy( p, (const char *)&xh, sizeof xh);
   p += sizeof xh;
+  // BUG? `j` is strlen, but we copy `j+2` bytes.
   for (i = 0; i < XLENGTH && (j = strlen(send_string[i])); i++, p += j + 1)
     strncpy(p, send_string[i], j + 2);
   msg->xcurpos = ((unsigned char *)p + sizeof(long) - xmsg) & ~(sizeof(long) - 1);
@@ -577,14 +573,13 @@ register int wasbusy = 0;
 
 
 void
-change_express(cmd)
-register int cmd;
+change_express(int cmd)
 {
   colorize("%s@ReXpress messages %sABLED\n", cmd ? "Change eXpress status\n\n" : "", (mybtmp->xstat ^= 1) ? "DIS" : "EN");
 }
 
 void
-change_beeps()
+change_beeps(void)
 {
   locks (SEM_USER);
   colorize ("@ReXpress beeps %sABLED\n", (ouruser->f_nobeep ^= 1) ? "DIS" : "EN");
@@ -593,19 +588,19 @@ change_beeps()
 
 
 void
-old_express()
+old_express(void)
 {
 char nstr[8];
 long prev;
 long next;
 time_t t = 0;
-register long pos;
-register long oldpos = 0;
-register int i;
-register int c = ' ';
-register int dir = BACKWARD;
-register int n = 0;
-register int savedir;
+long pos;
+long oldpos = 0;
+int i;
+int c = ' ';
+int dir = BACKWARD;
+int n = 0;
+int savedir=0;
 
   for (;;)
   {
@@ -626,6 +621,7 @@ register int savedir;
     if (c)
     {
       if (!pos || displayx(n ? -pos : pos, i < 0 ? 0 : i, dir == BACKWARD ? &t : NULL, &prev, &next))
+      {
         if (!n)
           return;
         else
@@ -634,8 +630,10 @@ register int savedir;
           pos = oldpos;
           dir = savedir;
         }
+      }
 
       if (n)
+      {
         if (n == i)
         {
           n = -1;
@@ -652,6 +650,7 @@ register int savedir;
             pos = prev;
           continue;
         }
+      }
     }
 
     my_printf("\nOld X message review  <N>ext (%s) <B>ack <S>top <#> -> ", dir == BACKWARD ? "backward" : "forward");
@@ -727,15 +726,14 @@ register int savedir;
 
 
 void
-get_syself_help(cmd)
-int cmd;
+get_syself_help(int cmd)
 {
   char send_string[XLENGTH][80];
   struct btmp btmp;
-  struct btmp *buser;
+  struct btmp *buser = NULL;
   struct user *p;
-  register int i;
-  register int n;
+  int i;
+  int n;
   time_t t;
   int diff, maxdiff = 0;
   int save = -1;
@@ -768,7 +766,7 @@ int cmd;
     for (i = 0, n = (pid + t) % MAXUSERS; i < MAXUSERS; i++, n = (n == MAXUSERS - 1) ? 0 : n + 1)
       if (bigbtmp->btmp[n].pid && bigbtmp->btmp[n].elf && !bigbtmp->btmp[n].xstat && !bigbtmp->btmp[n].nox && bigbtmp->btmp[n].pid != pid)
       {
-        diff = 121 - ABS(120 - ((t - bigbtmp->btmp[n].time) / 60));
+        diff = 121 - abs(120 - ((t - bigbtmp->btmp[n].time) / 60));
         if (((bigbtmp->btmp[n].pid + i) % diff) < diff - 15)
         {
           if (!syself_ok(bigbtmp->btmp[n].name))
@@ -830,14 +828,11 @@ int cmd;
   }
 }
 
-
-
-int
-syself_ok(name)
-register char *name;
+static int
+syself_ok(const char *name)
 {
-register struct user *up;
-register int i;
+struct user *up;
+int i;
 
   if (!(up = getuser(name)))
     return(0);
@@ -850,11 +845,11 @@ register int i;
 
 
 void
-xbroadcast()
+xbroadcast(void)
 {
 char send_string[XLENGTH][80];
-register int i;
-register int j;
+int i;
+int j;
 char override = 'B';
 
   my_printf("\nEnter the message you wish to broadcast to ALL users...\n");
@@ -888,14 +883,14 @@ char override = 'B';
   {
     sendx(NULL, NULL, send_string, override);
     for (i = 0; i < MAXUSERS; i++)
-      if (j = bigbtmp->btmp[i].pid)
+      if ((j = bigbtmp->btmp[i].pid))
         kill(j, SIGIO);
     my_printf("Message broadcast.\n");
   }
   else if (override == 'b')
   {
     for (i = 0; i < MAXUSERS; i++)
-      if (j = bigbtmp->btmp[i].pid)
+      if ((j = bigbtmp->btmp[i].pid))
         kill (j, SIGUSR2);
     my_printf ("Everyone has been beeped.  I hope you're happy now.\r\n");
   }
@@ -904,21 +899,19 @@ char override = 'B';
 
 
 int
-xyell(up, p)
-register struct user *up;
-register unsigned char *p;
+xyell(struct user *up, unsigned char *p)
 {
   char nstr[8];
-  register long pos = ouruser->xmaxpos;
-  register struct xheader *xh;
-  register int i;
-  register char *s;
-  register int num = xmsgnum - 1;
-  register int sender;
-  register long usernum;
-  register time_t t = 0;
-  register int found = 0;
-  register unsigned char *savep = p;
+  long pos = ouruser->xmaxpos;
+  struct xheader *xh;
+  int i;
+  char *s;
+  int num = xmsgnum - 1;
+  int sender;
+  long usernum;
+  time_t t = 0;
+  int found = 0;
+  unsigned char *savep = p;
 
   usernum = up->usernum;
 
@@ -946,7 +939,7 @@ register unsigned char *p;
 
     found = 1;
     if (num > 0)
-      sprintf(nstr, "#%d", num);
+      checked_snprintf(nstr,sizeof(nstr), "#%d", num);
     else
       strcpy(nstr, "old");
     p += sprintf((char *)p, "\n%s %s (%s) from %s to %s at %s %s\n", sender ? "---" : (xh->type == X_QUESTION ? "%%%" : "***"), xh->type == X_QUESTION ? "Question" : "Message", nstr, getusername(xh->snum, 1), getusername(xh->rnum, 1), formtime (6, xh->time), sender ? "---" : (xh->type == X_QUESTION ? "%%%" : "***"));
@@ -965,10 +958,8 @@ register unsigned char *p;
 }
 
 
-
 void
-xinit(reset)
-int reset;
+xinit(int reset)
 {
   ouruser->xseenpos = 0;
 
@@ -986,11 +977,10 @@ int reset;
 
 
 void
-clean_xconf(tmpuser)
-register struct user *tmpuser;
+clean_xconf(struct user *tmpuser)
 {
-  register int i, j;
-  register long num;
+  int i, j;
+  long num;
 
   locks(SEM_USER);
   for (i = 0; i < NXCONF && (num = tmpuser->xconf[i].usernum); i++)

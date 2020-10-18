@@ -282,8 +282,8 @@ struct bigbtmp
     long eternal;
     long usernum;
     time_t time;
-    u_long remaddr;
-    u_short remport;
+    uint32_t remaddr;
+    uint16_t remport;
     pid_t pid;
     char name[MAXALIAS + 1];
     char remote[40];
@@ -303,7 +303,7 @@ struct bigbtmp
 
   struct qtmp
   {
-    u_long addr;		/* Peer addresses of fd's */
+    struct in_addr addr;/* Peer addresses of fd's */
     time_t conn;		/* Time connected */
     time_t last;		/* Time last data arrived */
     short qlo;			/* Lowest point of fd in queue so far */
@@ -333,7 +333,7 @@ struct bigbtmp
     unsigned char subbuffer[64];
     unsigned char *subpointer;
     unsigned char *subend;
-    u_short port;
+    uint16_t port;
     short wouldbe;
     char unused[4];
   } qt[MAXQ];

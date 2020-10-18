@@ -8,22 +8,16 @@
 
 
 int
-bbssync(init)
-int init;
+bbssync(int init)
 {
-  long pst_data[32];
-  unsigned char outbuf[100];
-  char s[100];
-  struct pst_dynamic *pst = (void *)pst_data;
   long oldcputime[9];
   time_t t;
   int flags;
-  register long curpos;
-  register FILE *fp;
-  register int f;
-  register struct tm *tm;
-  register int i;
-  register int trim;
+  long curpos;
+  FILE *fp;
+  struct tm *tm;
+  int i;
+  int trim;
 
   if (fork())
     _exit(0);
@@ -37,7 +31,6 @@ int init;
 
   if (!(fp = fopen(ROOT"/var/idle", "a")))
     _exit(0);
-  setvbuf(fp, outbuf, _IOFBF, sizeof outbuf);
   flags = fcntl(fileno(fp), F_GETFL);
   flags |= O_SYNC;
   fcntl(fileno(fp), F_SETFL, flags);
@@ -52,7 +45,7 @@ int init;
     {
       setsid();
 #if 1
-      execl(BBSEXEC, BBSEXEC, "-f", 0);
+      execl(BBSEXEC, BBSEXEC, "-f", NULL);
 #endif
       return(FINGER);
     }
@@ -62,7 +55,7 @@ int init;
       setsid();
       sleep(60);
 #if 1
-      execl(BBSEXEC, BBSEXEC, "-q", 0);
+      execl(BBSEXEC, BBSEXEC, "-q", NULL);
 #endif
       return(QUEUE);
     }
@@ -115,35 +108,54 @@ int init;
     trim = 4;
     curpos = msg->xcurpos & ~4095;
     if (curpos - trim*1024*1024 >= 0)
+    {
       if (curpos + 256*1024 >= msg->xmsgsize) 
         msync((caddr_t)xmsg + (curpos + 256*1024 - msg->xmsgsize), curpos - trim*1024*1024 - (curpos + 256*1024 - msg->xmsgsize), MS_INVALIDATE);
       else
         msync((caddr_t)xmsg, curpos - trim*1024*1024, MS_INVALIDATE);
+    }
     if (curpos + 256*1024 < msg->xmsgsize)
+    {
       if (trim*1024*1024 - curpos >= 0)
         msync((caddr_t)xmsg + curpos + 256*1024, msg->xmsgsize - curpos - 256*1024 - (trim*1024*1024 - curpos), MS_INVALIDATE);
       else
         msync((caddr_t)xmsg + curpos + 256*1024, msg->xmsgsize - curpos - 256*1024, MS_INVALIDATE);
+    }
 
     if (tm->tm_min % 15 == 0)
       trim = 8;
     else
       trim = 16;
+
     curpos = msg->curpos & ~4095;
     if (curpos - trim*1024*1024 >= 0)
+    {
       if (curpos + 256*1024 >= 61036*4096)
         msync((caddr_t)msgstart + (curpos + 256*1024 - 61036*4096), curpos - trim*1024*1024 - (curpos + 256*1024 - 61036*4096), MS_INVALIDATE);
       else
         msync((caddr_t)msgstart, curpos - trim*1024*1024, MS_INVALIDATE);
+    }
+
     if (curpos + 256*1024 < 61036*4096)
+    {
       if (trim*1024*1024 - curpos >= 0)
         msync((caddr_t)msgstart + curpos + 256*1024, 61036*4096 - curpos - 256*1024 - (trim*1024*1024 - curpos), MS_INVALIDATE);
       else
         msync((caddr_t)msgstart + curpos + 256*1024, 61036*4096 - curpos - 256*1024, MS_INVALIDATE);
+    }
 
-    sprintf(s, ROOT"/core/bbs/core-%02d%02d%02d%02d", tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min);
-    rename("/bbs/core/bbs/bbs.core", s);
-    sprintf(s, ROOT"/core/bbsqueued/core-%02d%02d%02d%02d", tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min);
-    rename("/bbs/core/bbsqueued/bbs.core", s);
+    {
+    char * corepath = my_sprintf(NULL,ROOT"/core/bbs/core-%02d%02d%02d%02d",
+                      tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min);
+    rename("/bbs/core/bbs/bbs.core", corepath);
+    free(corepath);
+    }
+
+    {
+    char * corepath = my_sprintf(NULL,ROOT"/core/bbsqueued/core-%02d%02d%02d%02d",
+                      tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min);
+    rename("/bbs/core/bbsqueued/bbs.core", corepath);
+    free(corepath);
+    }
   }
 }

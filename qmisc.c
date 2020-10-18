@@ -1,9 +1,8 @@
 #include "defs.h"
 #include "ext.h"
 
-
 void
-reap()
+reap(void)
 {
   int stat_loc;
 
@@ -14,10 +13,8 @@ reap()
   signal(SIGCLD, (void *)reap);
 }
 
-
-
 void
-ring()
+ring(void)
 {
   if (++f_qalarm > 4)
   {
@@ -29,22 +26,20 @@ ring()
     }
     else
     {
-      execl(BBSEXEC, BBSEXEC, "-q", 0);
+      execl(BBSEXEC, BBSEXEC, "-q", NULL);
     }
   }
   signal(SIGALRM, (void *)ring);
   alarm(30);
 }
 
-
-
 void
-dump()
+dump(void)
 {
   struct bigbtmp *temp;
 
   temp = (struct bigbtmp *)alloca(sizeof(struct bigbtmp));
-  bcopy(q, temp, sizeof(struct bigbtmp));
+  memcpy(temp, q, sizeof(struct bigbtmp));
   q = bigbtmp = temp;
   raise(SIGABRT);
 }
@@ -52,17 +47,16 @@ dump()
 
 
 void
-do_ring()
+do_ring(void)
 {
-char pst_data[128];
-register struct pst_dynamic *pst = (struct pst_dynamic *)(void *)pst_data;
-register int z;
+int z;
 
   f_qalarm = 0;
   q->t = time(0);
   for (z = 3; z < MAXQ; z++)
     if (q->qt[z].conn || q->qt[z].state < 0)
-      if (q->qt[z].initstate && q->qt[z].last + 300 < q->t || q->qt[z].state < 0 && q->qt[z].last + 9 < q->t)
+      if ((q->qt[z].initstate && q->qt[z].last + 300 < q->t)
+          || (q->qt[z].state < 0 && q->qt[z].last + 9 < q->t))
         drop(z);
   if (q->qt[0].last + 300 < q->t)
     setup();
@@ -104,7 +98,7 @@ register int z;
 
 
 void
-reread()
+reread(void)
 {
   f_reread = 1;
   signal(SIGHUP, (void *)reread);
@@ -113,14 +107,13 @@ reread()
 
 
 void
-do_reread()
+do_reread(void)
 {
-unsigned char buf[256];
 FILE *f;
-register int c;
+int c;
 int limit;
 int lockout;
-int i;
+int fd;
 
   f_reread = 0;
   if (!(f = fopen(DOWNFILE, "r")))
@@ -130,7 +123,6 @@ int i;
       q->down = 0;
   else
     q->down = 1;
-  setvbuf(f, buf, _IOFBF, sizeof buf);
   q->hellolen = 0;
   while (q->hellolen + 1 < sizeof q->hello)
   {
@@ -142,10 +134,12 @@ int i;
   }
   fclose(f);
 
-  if ((i = open(LIMITFILE, O_RDONLY)) < 0)
+  if ((fd = open(LIMITFILE, O_RDONLY)) < 0)
     logfatal("LIMITFILE open: %m");
-  read(i, buf, sizeof buf);
-  close(i);
+
+  char buf[256];
+  read(fd, buf, sizeof buf);
+  close(fd);
 #if 1
   if (sscanf(buf, "%d %d", &limit, &lockout) != 2)
     logfatal("scanf: bad format!");
@@ -173,30 +167,24 @@ int i;
     signal(SIGCLD, SIG_IGN);
 }
 
-
-
 void
-quit()
+quit(void)
 {
   f_term = 1;
   signal(SIGTERM, (void *)quit);
 }
 
-
-
 void
-do_quit()
+do_quit(void)
 {
-  syslog(LOG_INFO, "users %d, queue %d, limit %d, lockout %d", q->forks - q->reaps, q->qp, q->limit, q->lockout);
-  syslog(LOG_INFO, "forks %d, maxqueue %d", q->forks, q->maxqp);
-  syslog(LOG_INFO, "admins %d, upgrades %d, users %d", q->aidewiz, q->upgrade, q->nonupgrade);
+  syslog(LOG_INFO, "users %ld, queue %d, limit %d, lockout %d", q->forks - q->reaps, q->qp, q->limit, q->lockout);
+  syslog(LOG_INFO, "forks %ld, maxqueue %d", q->forks, q->maxqp);
+  syslog(LOG_INFO, "admins %ld, upgrades %ld, users %ld", q->aidewiz, q->upgrade, q->nonupgrade);
   _exit(0);
 }
 
-
-
 void
-restart()
+restart(void)
 {
   f_restart = 1;
   signal(SIGUSR2, (void *)restart);
@@ -205,7 +193,7 @@ restart()
 
 
 void
-do_restart()
+do_restart(void)
 {
   char *newenv[2];
 
@@ -213,27 +201,22 @@ do_restart()
   newenv[1] = 0;
   environ = newenv;
   syslog(LOG_INFO, "Restarting process");
-  execl(BBSEXEC, BBSEXEC, "-q", 0);
+  execl(BBSEXEC, BBSEXEC, "-q", NULL);
   syslog(LOG_ERR, "exec: %m");
 }
 
-
-
 void
-setup()
+setup(void)
 {
   f_quit = 1;
   signal(SIGQUIT, (void *)setup);
 }
 
-
-
 void
-do_setup()
+do_setup(void)
 {
 struct sockaddr_in sa;
 int on = 1;
-long oldmask;
 
   f_quit = 0;
 /*
@@ -250,7 +233,7 @@ long oldmask;
   sa.sin_family = AF_INET;
   sa.sin_addr.s_addr = 0;
   sa.sin_port = htons (PORT);
-  if (bind(sfd, &sa, sizeof sa))
+  if (bind(sfd, (const struct sockaddr*)&sa, sizeof sa))
     logfatal("bind: %m");
   if (listen(sfd, SOMAXCONN))
     logfatal("listen: %m");
@@ -259,14 +242,12 @@ long oldmask;
 
 
 
-void
-checkauth(x)
-register int x;
+static void
+checkauth(int x)
 {
-char work[80];
-register struct user *u;
-register char *p;
-register int i, j;
+struct user *u;
+char *p;
+int i, j;
 
   if (!(u = getuser(q->qt[x].name)))
   {
@@ -318,8 +299,9 @@ register int i, j;
     ssend(x, HASONEMAIL, sizeof HASONEMAIL - 1);
   else if (j > 1)
   {
-    sprintf(work, HASMANYMAIL, j);
-    ssend(x, work, strlen(work));
+    char * msg = my_sprintf(NULL,HASMANYMAIL, j);
+    ssend(x, msg, strlen(msg));
+    free(msg);
   }
 
   freeuser(u);
@@ -327,9 +309,7 @@ register int i, j;
 
 
 void
-dologin(c, x)
-register int c;
-register int x;
+dologin(int c, int x)
 {
   char d;
 
@@ -410,26 +390,22 @@ register int x;
 
 
 void
-logfatal(error)
-char *error;
+logfatal(const char *error)
 {
-  struct timeval tv;
 
-  syslog(LOG_ERR, error);
+  syslog(LOG_ERR, "%s", error);
 #if 1
   syslog(LOG_INFO, "Starting fresh queue process upon death in 15 seconds...");
   sleep(15);
-  execl(BBSEXEC, BBSEXEC, "-q", 0);
+  execl(BBSEXEC, BBSEXEC, "-q", NULL);
 #endif
   _exit(1);
 }
 
-
 void
-drop(s)
-int s;
+drop(int s)
 {
-register int i, j;
+int i, j;
 
   if (s > 0)
   {
@@ -455,12 +431,9 @@ register int i, j;
 
 
 int
-ssend(s, msg, len)
-register int s;
-register char *msg;
-register int len;
+ssend(int s, const char* msg, int len)
 {
-  register int x;
+  int x;
 
   for (;;)
   {
@@ -468,6 +441,7 @@ register int len;
     if (x == len)
       return(0);
     if (x < 0)
+    {
       if (errno == EINTR)
         continue;
       else
@@ -475,6 +449,7 @@ register int len;
         drop(s);
         return(-1);
       }
+    }
     msg += x;
     len -= x;
     continue;

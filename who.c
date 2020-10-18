@@ -15,14 +15,12 @@
  */
 
 void
-show_online(level)
-  int     level;
+show_online(int     level)
 {
 struct btmp *btmp;
-struct user *tmpuser;
 int l;
 char    msg_status;
-register int     i;
+int     i;
 int     tdif,
         min,
         hour,
@@ -37,9 +35,9 @@ int whostart, whoend, whoincr;
   if (level != 2 && rows != 32000)
       my_putchar('\n');
   if (bigbtmp->users > 1)
-    colorize("There are @Y%d@G users (@Y%d@G queued)", (bigbtmp->users-9) , bigbtmp->queued);
+    colorize("There are @Y%ld@G users (@Y%ld@G queued)", (bigbtmp->users-9) , bigbtmp->queued);
   else
-    colorize("There is @Y1@G user (@Y%d@G queued)", bigbtmp->queued-9);
+    colorize("There is @Y1@G user (@Y%ld@G queued)", bigbtmp->queued-9);
 
   my_printf("\n\n");
 
@@ -102,20 +100,20 @@ int whostart, whoend, whoincr;
         {
           char work2[60];
 
-          sprintf(work2, "%s%s%s", btmp->remlogin, *btmp->remlogin ? "@@" : "", btmp->remote);
-	  colorize("@Y%-19s @M%5d @M%3d @R%2d:%02d%c @C%.37s\n", btmp->name, btmp->pid, btmp->eternal, hour, min, btmp->client ? 'C' : ' ', work2);
+          checked_snprintf(work2,sizeof(work2), "%s%s%s", btmp->remlogin, *btmp->remlogin ? "@@" : "", btmp->remote);
+	  colorize("@Y%-19s @M%5d @M%3ld @R%2d:%02d%c @C%.37s\n", btmp->name, btmp->pid, btmp->eternal, hour, min, btmp->client ? 'C' : ' ', work2);
         }
 	break;
       case 3:
-	if (msg_status = ' ')
+	if ((msg_status = ' ')) // TODO: This makes no sense. It's probably a bug.
 	  msg_status = ' ';
 
         if (btmp->elf && !btmp->xstat)
           msg_status = '%';
         if (pos == 3)
-          sprintf(work, "%c%s", msg_status, btmp->name);
+          checked_snprintf(work,sizeof(work), "%c%s", msg_status, btmp->name);
         else
-          sprintf(work, "%c%-19s", msg_status, btmp->name);
+          checked_snprintf(work,sizeof(work), "%c%-19s", msg_status, btmp->name);
 	break;
       case 0:
       case 2:
@@ -171,16 +169,14 @@ int whostart, whoend, whoincr;
  */
 
 struct btmp *
-is_online(btmp, user, name)
-struct btmp *btmp;
-struct user *user;
-char *name;
+is_online(struct btmp *btmp, struct user *user, const char *name)
 {
-register int i;
+int i;
 
   if (user)
   {
     if ((i = user->btmpindex) >= 0)
+    {
       if (bigbtmp->btmp[i].pid && bigbtmp->btmp[i].usernum == user->usernum)
       {
         if (btmp)
@@ -194,6 +190,7 @@ register int i;
           user->btmpindex = -1;
         unlocks(SEM_USER);
       }
+    }
     return(NULL);
   }
 
@@ -217,10 +214,7 @@ register int i;
  */
 
 int
-profile(name, tuser, flags)
-char   *name;
-struct user *tuser;
-int flags;
+profile(const char   *name, struct user *tuser, int flags)
 {
 struct user *tmpuser;
 struct btmp userstat;
@@ -231,7 +225,8 @@ int showanon;
     tmpuser = tuser;
   else if (*name)
   {
-    if (!(tmpuser = getuser(name)) || tmpuser->f_invisible && flags != PROF_ALL)
+    if (!(tmpuser = getuser(name))
+        || (tmpuser->f_invisible && flags != PROF_ALL))
     {
       if (tmpuser)
 	freeuser(tmpuser);
@@ -342,7 +337,7 @@ int showanon;
 	colorize (" until %s @Gfrom @M%.38s\n", formtime (4, tmpuser->timeoff), tmpuser->remote);
     }
 
-      colorize("@GTimes called:@M %ld @GMessages posted:@M %ld @GX messages sent:@M %ld @GUser# @M%ld@G\n", tmpuser->timescalled, tmpuser->posted, tmpuser->totalx, tmpuser->usernum);
+      colorize("@GTimes called:@M %d @GMessages posted:@M %d @GX messages sent:@M %ld @GUser# @M%ld@G\n", tmpuser->timescalled, tmpuser->posted, tmpuser->totalx, tmpuser->usernum);
 
     if (flags == PROF_ALL)
     {
@@ -378,11 +373,12 @@ int showanon;
       my_printf ("\n");
 
     if (online && rows != 32000)
+    {
       if (userstat.xstat)
         colorize("@R[eXpress messages DISABLED]\n");
-      else
-        if (userstat.elf)
+      else if (userstat.elf)
           colorize("@R[This user can be eXpressed if you need help with the system]\n");
+    }
   }
 
   colorize("@G");
@@ -406,26 +402,3 @@ int showanon;
   return(0);
 }
 
-
-
-char *
-mymmap(name, size, priv)
-register char *name;
-register int *size;
-register int priv;
-{
-  register int f = -1;
-  register char *p;
-
-  if (name)
-    if ((f = open(name, O_RDWR)) < 0)
-      return(NULL);
-    else if (size && !*size)
-      *size = lseek(f, 0L, SEEK_END);
-
-  p = (char *)mmap(0, *size ? *size : 1, PROT_READ | PROT_WRITE, (f == -1 ? MAP_ANONYMOUS : MAP_FILE) /* | MAP_VARIABLE */ | (priv ? MAP_PRIVATE : MAP_SHARED), f, 0);
-  if (f >= 0)
-    close(f);
-
-  return(!p || p == (char *)-1 ? NULL : p);
-}

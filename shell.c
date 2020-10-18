@@ -20,15 +20,13 @@
  */
 
 char   *
-get_name(prompt, quit_priv)
-register char *prompt;
-register int quit_priv;
+get_name(const char *prompt, int quit_priv)
 {
-register char *p;
-register int c;
-register int upflag;
-register int fflag;
-register int invalid = 0;
+char *p;
+int c;
+int upflag;
+int fflag;
+int invalid = 0;
 
   for (;;)
   {
@@ -130,15 +128,15 @@ register int invalid = 0;
  */
 
 void
-do_login()
+do_login(void)
 {
-register int i;
-register int users;
-register char *name;
-register struct user *tmpuser = 0;
-register int wrong = 0;
-register int fd;
-register char *bbsname;
+int i;
+int users;
+char *name;
+struct user *tmpuser = 0;
+int wrong = 0;
+int fd;
+char *bbsname;
 char pas[9];
 char temp[128];
 char myname[MAXALIAS + 1];
@@ -181,7 +179,7 @@ char myname[MAXALIAS + 1];
 
     if (strcmp(name, "New"))
     {
-      if (tmpuser = getuser(name))
+      if ((tmpuser = getuser(name)))
         freeuser(tmpuser);
       if (tmpuser && (!bbsname || tty) && strcmp(name, "Guest"))
         get_string("Password: ", -8, pas, -1);
@@ -245,7 +243,7 @@ char myname[MAXALIAS + 1];
 	  my_exit(10);
 	}
 
-	sprintf(temp, "%s %s%s%s/%d", client ? "CLIENT" : "LOGIN", ARGV[1] && ARGV[2] ? ARGV[2] : "", ARGV[1] && ARGV[2] ? "@" : "", ouruser->remote, mybtmp->remport);
+	checked_snprintf(temp,sizeof(temp), "%s %s%s%s/%d", client ? "CLIENT" : "LOGIN", ARGV[1] && ARGV[2] ? ARGV[2] : "", ARGV[1] && ARGV[2] ? "@" : "", ouruser->remote, mybtmp->remport);
 	logevent(temp);
 
 	++ouruser->timescalled;
@@ -302,11 +300,10 @@ char myname[MAXALIAS + 1];
 
 
 void
-profile_user(all)
-register int all;
+profile_user(int all)
 {
-register char *name;
-register int how = PROF_REG;
+char *name;
+int how = PROF_REG;
 
   my_printf("Profile user\n\nUser to profile? %s", all ? "[FULL PROFILE] " : "");
   if (*profile_default)
@@ -316,18 +313,22 @@ register int how = PROF_REG;
 
   name = get_name("", 2);
   if (!*name)
+  {
     if (*profile_default)
       name = profile_default;
     else
       strcpy (name, ouruser->name);
+  }
 
   if (all)
+  {
     if (ouruser->f_admin)
       how = PROF_ALL;
     else if (!strcmp(name, ouruser->name))
       how = PROF_SELF;
     else
       how = PROF_EXTRA;
+  }
 
   if (profile(name, NULL, how) < 0)
     my_printf("There is no user %s on this BBS.\n", name);

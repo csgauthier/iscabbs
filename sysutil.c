@@ -1,8 +1,9 @@
 #include "defs.h"
 #include "ext.h"
 
+static void myecho(int     mode);
 
-void
+static void
 s_sigdie()
 {
   if (tty)
@@ -15,8 +16,7 @@ s_sigdie()
   }
 }
 
-
-void
+static void
 s_sigquit()
 {
   if (!tty)
@@ -28,9 +28,8 @@ s_sigquit()
   //errlog ("SIGQUIT while lock on %d", lockflags);
 }
 
-
-void
-s_sigio()
+static void
+s_sigio(void)
 {
   /* Force-check */
   if (XPENDING)
@@ -39,11 +38,10 @@ s_sigio()
   signal(SIGIO, (void *)s_sigio);
 }
 
-
-void
-s_sigusr2()
+static void
+s_sigusr2(void)
 {
-  register int i;
+  int i;
 
   for (i = 8; i > 0; i--)
   {
@@ -54,12 +52,8 @@ s_sigusr2()
   signal (SIGUSR2, (void *)s_sigusr2);
 }
 
-
-
-
-
-void
-s_sigalrm()
+static void
+s_sigalrm(void)
 {
   signal(SIGALRM, (void *)s_sigalrm);
 
@@ -82,7 +76,7 @@ s_sigalrm()
 
 
 void
-alarmclock()
+alarmclock(void)
 {
   f_alarm = 0;
   logintime += 5;
@@ -148,7 +142,7 @@ alarmclock()
  * Initialize the system. 
  */
 void
-init_system()
+init_system(void)
 {
 char    myhost[65];
 char    host[80];
@@ -156,8 +150,8 @@ int     howbad;
 char *hp;
 unsigned char *lockoutp;
 unsigned char *p;
-int size;
-register int i;
+size_t size;
+int i;
 struct sigaction sact;
 
 
@@ -194,7 +188,7 @@ struct sigaction sact;
 
   /* Make sure the site is not locked out */
   size = 0;
-  if (lockoutp = p = (unsigned char *)mymmap(LOCKOUT, &size, 0))
+  if ((lockoutp = p = mmap_file(LOCKOUT, &size)))
   {
     strncpy(myhost, gethost(), sizeof (myhost) - 1);
     for (hp = myhost; *hp; hp++)
@@ -233,22 +227,20 @@ struct sigaction sact;
 
 
 void
-logevent(message)
-register char *message;
+logevent (const char *message)
 {
-register int f;
-register struct tm *tp;
-time_t t;
-char buf[120];
+    int     f;
 
-  if ((f = open(LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0640)) >= 0)
-  {
-    t = msg->t = time(0);
-    tp = localtime(&t);
-    sprintf(buf, "%02d%02d%02d:%02d%02d %s : %s\n", tp->tm_year % 100, tp->tm_mon + 1, tp->tm_mday, tp->tm_hour, tp->tm_min, ouruser ? ouruser->name : "_NEWUSER_", message);
-    write(f, buf, strlen(buf));
-    close(f);
-  }
+    if ((f = open (LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0640)) >= 0) {
+        time_t  t = msg->t = time (0);
+        struct tm *tp = localtime (&t);
+        char   *buf =
+            my_sprintf(NULL,"%02d%02d%02d:%02d%02d %s : %s\n", tp->tm_year % 100, tp->tm_mon + 1, tp->tm_mday,
+                        tp->tm_hour, tp->tm_min, ouruser ? ouruser->name : "_NEWUSER_", message);
+        write (f, buf, strlen (buf));
+        close (f);
+        free (buf);
+    }
 }
 
 
@@ -257,10 +249,9 @@ char buf[120];
  * Exit the program in an orderly way. 
  */
 void
-my_exit(doflush)
-register int doflush;
+my_exit(int doflush)
 {
-  register int save = f_death;
+  int save = f_death;
 
   if (lockflags)
   {
@@ -286,7 +277,6 @@ register int doflush;
   {
     int f;
     struct tm *ltm;
-    char junk[80];
 
     if (doflush)
       checkx(-1);
@@ -298,14 +288,13 @@ register int doflush;
     ouruser->timeoff = msg->t = time(0);
     ouruser->timetot = ouruser->timetot + ouruser->timeoff - ouruser->time;
 
-    strcpy(junk, ETC);
-    strcat(junk, "uselog");
-    if ((f = open(junk, O_WRONLY | O_CREAT | O_APPEND, 0640)) >= 0)
+    if ((f = open(ETC "uselog", O_WRONLY | O_CREAT | O_APPEND, 0640)) >= 0)
     {
       ltm = localtime(&ouruser->time);
-      sprintf(junk, "%02d%02d%02d:%02d%02d:%04d:%s\n", ltm->tm_year % 100, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, (ouruser->timeoff - ouruser->time) / 60 + 1, ouruser->name);
+      char * junk = my_sprintf(NULL,"%02d%02d%02d:%02d%02d:%04ld:%s\n", ltm->tm_year % 100, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, (ouruser->timeoff - ouruser->time) / 60 + 1, ouruser->name);
       write(f, junk, strlen(junk));
       close(f);
+      free(junk);
     }
 
     msync((caddr_t)ouruser, sizeof(struct user), MS_ASYNC);
@@ -345,16 +334,14 @@ register int doflush;
   _exit(0);
 }
 
-
-void
-myecho(mode)
-  int     mode;
+static void
+myecho(int     mode)
 {
 struct termios term;
 
   tcgetattr(1, &term);
   if (!saveterm.c_lflag && !saveterm.c_iflag)
-    bcopy((char *) &term, (char *) &saveterm, sizeof(struct termios));
+    memcpy( (char *) &saveterm, (const char *) &term, sizeof(struct termios));
 
   if (!mode)
   {
@@ -364,7 +351,7 @@ struct termios term;
     term.c_cc[VTIME] = 0;
   }
   else
-    bcopy((char *) &saveterm, (char *) &term, sizeof(struct termios));
+    memcpy( (char *) &term, (const char *) &saveterm, sizeof(struct termios));
 
   tcsetattr(1, TCSANOW, &term);
 }
@@ -379,9 +366,9 @@ struct termios term;
  */
 
 int
-inkey()
+inkey(void)
 {
-register int i = 257;
+int i = 257;
 int noflush = 1;
 
   while (i > DEL)
@@ -443,13 +430,12 @@ int noflush = 1;
 
 
 void
-printdate(s)
-register char *s;
+printdate(const char* fmt)
 {
-time_t  t;
+  time_t  t;
 
   t = msg->t = time(0);
-  my_printf(s, ctime(&t));
+  my_printf(fmt, ctime(&t));
 }
 
 
@@ -464,28 +450,24 @@ time_t  t;
  */
 
 void
-get_string(prompt, length, result, line)
-  char   *prompt;
-  int     length;
-  char   *result;
-  int     line;
+get_string(const char *prompt, int length, char *result, int line)
 {
      get_new_string(prompt, length, result, line, 5);
 }
 
 void
-get_new_string(prompt, length, result, line, limit)
-  char   *prompt;
-  int     length;
-  char   *result;
-  int     line; 
-  int     limit; 
+get_new_string(
+  const char   *prompt,
+  int     length,
+  char   *result,
+  int     line, 
+  int     limit)
 {
 static char wrap[80];
 char *rest;
-register char *p = result;
-register char *q;
-register c;
+char *p = result;
+char *q;
+int c;
 int     hidden;
 int     invalid = 0;
 
@@ -569,12 +551,12 @@ int     invalid = 0;
     { 
       *p++ = c;
       if (!client)
+      {
         if (!hidden)
-	{
           my_putchar(c);
-	}
         else
           my_putchar('.');
+      }
     }
     else if (c < SP || line < 0 || line == limit - 1)
       continue;
@@ -610,10 +592,9 @@ int     invalid = 0;
 
 
 int
-get_single_quiet(valid_string)
-  char   *valid_string;
+get_single_quiet(const char   *valid_string)
 {
-register int c;
+int c;
 int invalid = 0;
 
   for (;;)
@@ -638,7 +619,7 @@ int invalid = 0;
 
 
 void
-hit_return_now()
+hit_return_now(void)
 {
   flush_input(0);
   my_printf("\nHit return to continue...");
@@ -656,20 +637,18 @@ hit_return_now()
  */
 
 void
-more(filename, comments)
-  char   *filename;
-  int comments;
+more(const char   *filename, int comments)
 {
 int     line;
-int size;
+size_t size;
 unsigned char *filep;
 unsigned char *p;
-register int i;
-register int noprint;
+int i;
+int noprint;
 
   my_putchar('\n');
   size = 0;
-  if (!(filep = p = (unsigned char *)mymmap(filename, &size, 0)))
+  if (!(filep = p = mmap_file(filename, &size)))
   {
     errlog("File %s is missing (%d rows)", filename, rows);
     my_printf("File %s is missing, sorry!\n\n", filename);
@@ -678,10 +657,12 @@ register int noprint;
 
   for (noprint = comments && *p == '#', line = i = 0; i < size; i++, p++)
     if ((noprint ? *p : my_putchar(*p)) == '\n')
+    {
       if (!noprint && ++line >= rows - 1 && line_more(&line, (i * 100) / size) < 0)
         break;
       else
         noprint = comments && p[1] == '#';
+    }
 
   my_putchar('\n');
   munmap((void *)filep, size);
@@ -690,11 +671,10 @@ register int noprint;
 
 
 unsigned int
-sleep(sec)
-register unsigned int sec;
+sleep(unsigned int sec)
 {
   struct timeval tv;
-  register time_t t;
+  time_t t;
 
   fflush(stdout);
   t = time(0);
@@ -713,51 +693,86 @@ register unsigned int sec;
   return(0);
 }
 
-
-
 int
-#ifdef __STDC__
-errlog(const char *fmt, ...)
-#else
-errlog(fmt, va_alist)
-char *fmt;
-va_dcl
-#endif
+errlog (const char *fmt, ...)
 {
-va_list ap;
-char s[240];
-time_t t;
-register int f;
+    int     fd;
 
-#ifdef __STDC__
-  va_start(ap, fmt);
-#else         
-  va_start(ap);
-#endif
-  if ((f = open(ERRLOG, O_WRONLY | O_CREAT | O_APPEND, 0640)) < 0)
-    return(-1);
-  t = time(0);
-  strcpy(s, ctime(&t));
-  s[strlen(s) - 1] = ' ';
-  if (ouruser)
-    strcat(s, ouruser->name);
-  else
-    strcat(s, "__NONE__");
-  strcat(s, "  ");
-  vsprintf(s + strlen(s), fmt, ap);
-  strcat(s, "\n");
-  write(f, s, strlen(s));
-  va_end(ap);
-  return(0);
+    if ((fd = open (ERRLOG, O_WRONLY | O_CREAT | O_APPEND, 0640)) < 0)
+        return (-1);
+
+    // write ctime to buffer
+    time_t t = time (0);
+    char* buf = my_sprintf(NULL, "%s ", ctime (&t));
+
+    // append name
+    buf = my_sprintf(buf, "%s ", ouruser ?  ouruser->name : "__NONE__");
+
+    // append formatted args
+    va_list ap;
+    va_start (ap, fmt);
+    buf = my_vsprintf(buf, fmt, ap);
+    va_end(ap);
+
+    // append newline
+    buf = my_sprintf(buf, "%s", "\n");
+
+    write (fd, buf, strlen (buf));// TODO: check return
+    close(fd);
+
+    free(buf);
+
+    return 0;
 }
 
-
-int
-strcasecmp(s1, s2)
-register const char *s1;
-register const char *s2;
+static size_t
+file_size_from_fd( int fd )
 {
-  for (; *s1 && tolower(*s1) == tolower(*s2); s1++, s2++)
-    ;
-  return(*s1 || *s2);
+  struct stat sb;
+  memset( &sb, 0, sizeof(struct stat));
+  if (fstat(fd, &sb) == 0)
+    return sb.st_size;
+  else
+    return 0;
+}
+
+unsigned char *
+mmap_file(const char *path, size_t* size)
+{
+  // open the fd
+  int fd = open( path, O_RDWR);
+  if (fd == -1)
+    return NULL;
+
+  // get the current size of the file.
+  size_t fsz = file_size_from_fd( fd );
+
+  // The caller requested `*size` bytes.
+  if (*size > fsz)
+  {
+    close(fd);
+    return NULL;
+  }
+
+  // zero means they want the whole file.
+  if (*size == 0)
+    *size = fsz;
+
+  // mmap, close, then validate.
+  void * p = mmap(NULL, *size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FILE, fd, 0);
+  close(fd);
+  if (p == MAP_FAILED)
+    return NULL;
+
+  return (unsigned char*)p;
+}
+
+unsigned char *
+mmap_anonymous(size_t size)
+{
+  void * p = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  if (p == MAP_FAILED)
+    return NULL;
+
+  return (unsigned char*)p;
 }

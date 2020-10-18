@@ -6,12 +6,14 @@
 #include "defs.h"
 #include "ext.h"
 
+static int makevotemsg(void);
 
-vote()
+// TODO: this function isn't used.
+void
+vote_unused_(void)
 {
   int err;
   struct user *user;
-  char tmp[80];
   int cmd;
   int i;
   int j;
@@ -70,7 +72,7 @@ vote()
 
 
 	locks (SEM_VOTE);
-	bcopy ((char *) tmpstart, voteinfo->vote[pos].msg, sizeof (voteinfo->vote[pos].msg) - 1);
+	memcpy( voteinfo->vote[pos].msg, (const char *) tmpstart, sizeof (voteinfo->vote[pos].msg) - 1);
 	voteinfo->vote[pos].inuse = 1;	
 	unlocks (SEM_VOTE);
 	my_printf ("\n\n");
@@ -173,10 +175,10 @@ vote()
 
 
 /* This is just a modified makemessage() */
-int makevotemsg(void)
+static int
+makevotemsg(void)
 {
 struct vote vote;
-int     auth;
 int     chr = CTRL_D;
 int     cmd;
 int     i;
@@ -185,20 +187,19 @@ int     lastspace;      /* char position of last space encountered on line */
 int     cancelspace;    /* true when last character on line is a space */
 char    thisline[MARGIN + 1];   /* array to save current line */
 time_t  now;
-char    dummy[MAXALIAS + 1];
 int     invalid = 0;
 unsigned char *tmpp;
 unsigned char *tmpsave;
 
 
   {
-    int size = sizeof (vote.msg) - 1;
-    if (!(tmpstart = (unsigned char *)mymmap(NULL, &size, 1)))
+    size_t size = sizeof (vote.msg) - 1;
+    if (!(tmpstart = mmap_anonymous(size)))
       return(MMAP_ERR);
   }
 
   tmpp = tmpsave = tmpstart;
-  my_printf ("\n\nEnter an item description, up to %d chars.  Use ^D to end.\n\n", sizeof (vote.msg) - 1);
+  my_printf ("\n\nEnter an item description, up to %zu chars.  Use ^D to end.\n\n", sizeof (vote.msg) - 1);
 
   lnlngth = 0;
   lastspace = 0;
@@ -296,6 +297,7 @@ unsigned char *tmpsave;
       lnlngth--;
     }
     else if (lnlngth == MARGIN)
+    {
       if (lastspace > MARGIN / 2)
       {
         for (lnlngth--; lnlngth > lastspace; lnlngth--)
@@ -322,6 +324,7 @@ unsigned char *tmpsave;
         lastspace = 0;
         lnlngth = 1;
       }
+    }
 
     if (chr != CTRL_D && chr != LF)
     {
@@ -330,8 +333,6 @@ unsigned char *tmpsave;
     }
     else if (lnlngth || chr == LF)
     {
-      register int save = lnlngth;
-
       for (; lnlngth && thisline[lnlngth] == ' '; lnlngth--)
         ;
       for (i = 1; i <= lnlngth; i++)

@@ -1,22 +1,21 @@
 #define INQUEUE
 #include "defs.h"
 #include "ext.h"
-
-
+#include <err.h>
 
 void
-bbsqueue(dofork)
-register int dofork;
+bbsqueue(int dofork)
 {
-register int x;
-register int s;
+int x;
 int i;
 
   //sigblock(sigmask(SIGCLD) | sigmask(SIGALRM) | sigmask(SIGHUP) | sigmask(SIGUSR2) | sigmask(SIGTERM) | sigmask(SIGQUIT));
   openlog("bbsqueued", LOG_PID, LOG_LOCAL0);
   q = bigbtmp;
 
-  chdir(ROOT"/core/bbsqueued");
+  if (chdir(ROOT"/core/bbsqueued") == -1)
+    err( EXIT_FAILURE, "failed to chdir to '%s'", ROOT"core/bbsqueued");
+
   umask(027);
   //setresgid(19, 19, 19);
   //setresuid(0, 0, 0);
@@ -118,6 +117,7 @@ int i;
     q->t = time(0);
     /* q->ltm = localtime(&q->t); */	/* segfault here... ? */
     if (i)
+    {
       if (i == EINTR)
       {
 	if (f_term)
@@ -135,6 +135,7 @@ int i;
       }
       else
         logfatal("select: %m");
+    }
 
     while (FD_ISSET(sfd, &q->fds))
     {
@@ -142,8 +143,8 @@ int i;
 
       q->connectable--;
       q->qt[0].last = q->t;
-      i = sizeof sa;
-      while ((x = accept(sfd, &sa, &i)) < 0)
+      socklen_t sa_len = sizeof sa;
+      while ((x = accept(sfd, (struct sockaddr*)&sa, &sa_len)) < 0)
       {
         if (errno == EINTR)
 	  continue;
@@ -222,10 +223,10 @@ int i;
       q->qt[x].rows = 24;
       q->qt[x].initstate = T_INIT1;
       q->qt[x].state = TS_DATA;
-      for (i = 0; i < sizeof q->qt[0].options; i++)
+      for (size_t i = 0; i < sizeof q->qt[0].options; i++)
         q->qt[x].options[i] = q->qt[x].do_dont_resp[i] = q->qt[x].will_wont_resp[i] = 0;
       q->qt[x].ncc = 0;
-      q->qt[x].addr = sa.sin_addr.s_addr;
+      q->qt[x].addr = sa.sin_addr;
       q->qt[x].port = sa.sin_port;
       q->qt[x].acc = 0;
       q->qt[x].login = 0;

@@ -15,28 +15,22 @@ static int savelinknum;
  * pointer to the user struct on success, NULL on failure.
  */
 struct user *
-finduser(name, usernum, linknum)
-register char *name;
-register long usernum;
-register int linknum;
+finduser(const char *name, long usernum, int linknum)
 {
-  register int old;
-  register int gen;
-  register int lower;
-  register int upper;
-  register int mid;
-  register int cmp;
-  register struct userlink *linkptr;
+  int lower=0;
+  int upper=0;
+  int mid=0;
+  int cmp=0;
 
   if (!name && !usernum)
     return((struct user *)(udata + 1) + linknum);
 
-  for (gen = -1; gen != udata->gen; )
+  for (int gen = -1; gen != udata->gen; )
   {
     if (gen >= 0)
       udata->retries++;
     gen = udata->gen;
-    old = udata->which;
+    int old = udata->which;
     if (gen != udata->gen)
       continue;
 
@@ -45,7 +39,7 @@ register int linknum;
     {
       mid = (lower + upper) >> 1;
       linknum = name ? udata->name[old][mid] : udata->num[old][mid];
-      linkptr = &udata->link[linknum];
+      struct userlink * linkptr = &udata->link[linknum];
       cmp = name ? strcmp(name, linkptr->name) : (usernum - linkptr->usernum);
 
       if (cmp < 0)
@@ -78,15 +72,13 @@ register int linknum;
  * NULL on failure.
  */
 struct user *
-adduser(name, usernum)
-register char *name;
-register long usernum;
+adduser(const char *name, long usernum)
 {
-  register struct user *user;
-  register int old;
-  register int new;
-  register int free;
-  register struct userlink *linkptr;
+  struct user *user;
+  int old;
+  int new;
+  int free;
+  struct userlink *linkptr;
 
   for (;;)
   {
@@ -123,10 +115,11 @@ register long usernum;
     udata->free[new] = linkptr->free;
 
     /* Check if username currently exists */
-    if (user = finduser(name, 0, 0))
+    if ((user = finduser(name, 0, 0)))
+    {
       if (user->usernum || time(0) < user->timeoff + (30*60))
       {
-        errlog("Found user %s with name '%s' num %d timeoff %d time %d", name, user->name, user->usernum, user->timeoff, time(0));
+        errlog("Found user %s with name '%s' num %ld timeoff %ld time %ld", name, user->name, user->usernum, user->timeoff, time(0));
         user = NULL;
         break;
       }
@@ -136,6 +129,7 @@ register long usernum;
         deleteuser(name);
         continue;
       }
+    }
 
     memcpy((void *)&udata->name[new][0], (void *)&udata->name[old][0], saveindex * sizeof(int));
     udata->name[new][saveindex] = free;
@@ -145,7 +139,7 @@ register long usernum;
     if (finduser(NULL, usernum, 0))
     {
       /* This could happen after a crash unless usernum eternal always syncd */
-      errlog("Found old usernum %d (%s) in adduser", usernum, udata->link[udata->name[old][saveindex]].name);
+      errlog("Found old usernum %ld (%s) in adduser", usernum, udata->link[udata->name[old][saveindex]].name);
       break;
     }
 
@@ -176,14 +170,13 @@ register long usernum;
  * on success, -1 on failure.
  */
 int
-deleteuser(name)
-register char *name;
+deleteuser(const char *name)
 {
-  register struct user *user;
-  register int old;
-  register int new;
-  register int linknum;
-  register struct userlink *linkptr;
+  struct user *user;
+  int old;
+  int new;
+  int linknum;
+  struct userlink *linkptr;
 
   for (;;)
   {
@@ -213,7 +206,7 @@ register char *name;
 
     if (!finduser(NULL, linkptr->usernum, 0))
     {
-      errlog("Failed to find user %s by usernum %d (should not happen)", name, linkptr->usernum);
+      errlog("Failed to find user %s by usernum %ld (should not happen)", name, linkptr->usernum);
       break;
     }
     memcpy((void *)&udata->num[new][0], (void *)&udata->num[old][0], saveindex * sizeof(int));
@@ -241,10 +234,9 @@ register char *name;
  * Returns a pointer to the user struct on success, NULL on failure.
  */
 struct user *
-getuser(name)
-register char *name;
+getuser(const char *name)
 {
-  register struct user *user;
+  struct user *user;
 
   user = finduser(name, 0, 0);
   if (user && (strcmp(name, user->name) || !user->usernum))
@@ -260,23 +252,19 @@ register char *name;
  * instead of NULL)
  */
 char *
-getusername(num, how)
-register const long num;
-register const int how;
+getusername(const long num, const int how)
 {
   return(finduser(NULL, num, 0) ? udata->link[savelinknum].name : (how ? "<Deleted User>" : NULL));
- }
- 
+}
 
 
 /*
  * Returns index to user in udata structure, for use with finduser().
  */
 int
-getuserlink(tmpuser)
-const register struct user *tmpuser;
+getuserlink(const struct user *tmpuser)
 {
-  return((tmpuser - (struct user *)(udata + 1)) / sizeof(struct user));
+    return((tmpuser - (struct user *)(udata + 1)) / sizeof(struct user));
 }
 
 
@@ -285,8 +273,7 @@ const register struct user *tmpuser;
  * Isn't strictly necessary, but useful for VM management.
  */
 void
-freeuser(tmpuser)
-register struct user *tmpuser;
+freeuser(struct user *tmpuser)
 {
 #if 0
   /*
@@ -299,7 +286,7 @@ register struct user *tmpuser;
   if (tmpuser != ouruser)
     madvise((caddr_t)tmpuser, sizeof(struct user), MADV_DONTNEED);
 #else
-  register int index;
+  int index;
 
   if (tmpuser != ouruser && ((index = tmpuser->btmpindex) < 0 || tmpuser->usernum != bigbtmp->btmp[index].usernum) && strcmp(tmpuser->name, "Guest"))
     msync((caddr_t)tmpuser, sizeof(struct user), MS_ASYNC | MS_INVALIDATE);
@@ -314,9 +301,9 @@ register struct user *tmpuser;
  * success, -1 on failure.
  */
 int
-openuser()
+openuser(void)
 {
-  register int f;
+  int f;
 
   if ((f = open(USERDATA, O_RDWR)) < 0) {
     perror ("openuser open");
@@ -338,12 +325,10 @@ openuser()
 #endif
 }
 
-
-
 struct userdata *
-copyuserdata()
+copyuserdata(void)
 {
-  register struct userdata *ucopy;
+  struct userdata *ucopy;
 
   ucopy = (struct userdata *)mmap(0, sizeof(struct userdata), PROT_READ | PROT_WRITE, MAP_ANONYMOUS |  MAP_PRIVATE, -1, 0);
   if (!ucopy || ucopy == (struct userdata *)-1)
@@ -356,16 +341,14 @@ copyuserdata()
   return(ucopy); 
 }
 
-
-
 int
-backupuserdata()
+backupuserdata(void)
 {
-  register struct userdata *ucopy;
-  register char *zero;
-  register struct user *up;
-  register int i;
-  register int count = 0;
+  struct userdata *ucopy;
+  char *zero;
+  struct user *up;
+  int i;
+  int count = 0;
 
   zero = (char *)mmap(0, sizeof (struct user), PROT_READ | PROT_WRITE, MAP_ANONYMOUS   | MAP_PRIVATE, -1, 0);
   if (!zero || zero == (char *)-1)
@@ -382,11 +365,11 @@ backupuserdata()
     {
       up = finduser(ucopy->link[i].name, 0, 0);
       if (!up)
-        errlog("backupuserdata(): Couldn't find user name %s (num %d) in slot %d", ucopy->link[i].name, ucopy->link[i].usernum, i);
+        errlog("backupuserdata(): Couldn't find user name %s (num %ld) in slot %d", ucopy->link[i].name, ucopy->link[i].usernum, i);
       else if (up != finduser(NULL, ucopy->link[i].usernum, 0))
-        errlog("backupuserdata(): Couldn't find user num %d (name %s) in slot %d", ucopy->link[i].usernum, ucopy->link[i].name, i);
+        errlog("backupuserdata(): Couldn't find user num %ld (name %s) in slot %d", ucopy->link[i].usernum, ucopy->link[i].name, i);
       else if (up->usernum != ucopy->link[i].usernum || strcmp(up->name, ucopy->link[i].name))
-        errlog("backupuserdata(): Mismatch for user %s num %d in slot %d ('%s'/%d)", ucopy->link[i].name, ucopy->link[i].usernum, i, up->name, up->usernum);
+        errlog("backupuserdata(): Mismatch for user %s num %ld in slot %d ('%s'/%ld)", ucopy->link[i].name, ucopy->link[i].usernum, i, up->name, up->usernum);
       else
       {
         write(1, up, sizeof(struct user));
@@ -401,22 +384,5 @@ backupuserdata()
   if (count != ucopy->totalusers[ucopy->which])
     errlog("backupuserdata(): backed up %d users, total should be %d", count, ucopy->totalusers[ucopy->which]);
 
-  return(0);
-}
-
-
-
-int
-listusers()
-{
-  register int i;
-  register int which;
-
-  which = udata->which;
-  for (i = 0; i < udata->totalusers[which]; i++)
-    my_printf("%06d  %s\n", udata->link[udata->name[which][i]].usernum, udata->link[udata->name[which][i]].name);
-  my_putchar('\n');
-  for (i = 0; i < udata->totalusers[which]; i++)
-    my_printf("%06d  %s\n", udata->link[udata->num[which][i]].usernum, udata->link[udata->num[which][i]].name);
   return(0);
 }

@@ -4,12 +4,12 @@
 #include "defs.h"
 #include "ext.h"
 
+static void newmaxnewbie(int num);
 
 void
-locks(which)
-register int which;
+locks(int which)
 {
-  register int i;
+  int i;
 
   if (lockflags)
   {
@@ -38,10 +38,9 @@ register int which;
  
 
 void
-unlocks(which)
-register int which;
+unlocks(int which)
 {
-  register int i;
+  int i;
 
   if (which < 0)
   {
@@ -71,12 +70,11 @@ register int which;
 
 
 int
-add_loggedin(up)
-  struct user *up;
+add_loggedin(struct user *up)
 {
-register int i;
-register int j;
-register int p;
+int i;
+int j;
+int p;
 int count = 0;
 int btmpindex = 0;
 
@@ -183,11 +181,10 @@ int btmpindex = 0;
 
 
 void
-remove_loggedin(p)
-register int p;
+remove_loggedin(int p)
 {
-register int i;
-register struct btmp *btmp;
+int i;
+struct btmp *btmp;
 
   for (i = bigbtmp->users - 1; i >= 0; i--)
     if (bigbtmp->btmp[bigbtmp->index[i]].pid == p)
@@ -216,14 +213,10 @@ register struct btmp *btmp;
  */
 
 void
-reserve_slot()
+reserve_slot(void)
 {
 struct btmp newbtmp;
-register int i;
-register int p;
-int j;
 struct sockaddr_in sa;
-long mineternal;
 
   /* Set up a place holder in the btmp file so no one else gets this spot */
   bzero((void *)&newbtmp, sizeof newbtmp);
@@ -245,8 +238,8 @@ long mineternal;
   }
   else
   {
-    j = sizeof(sa);
-    getpeername(0, &sa, &j);
+    socklen_t len = sizeof(sa);
+    getpeername(0, (struct sockaddr*)&sa, &len);
     newbtmp.remaddr = sa.sin_addr.s_addr;
     newbtmp.remport = sa.sin_port;
     strcpy(newbtmp.remlogin, ARGV[1] && ARGV[2] ? ARGV[2] : "");
@@ -255,15 +248,17 @@ long mineternal;
   /* used to check user limits here...now just check for file overflow */
   if (bigbtmp->users >= MAXUSERS - 1)
   {
-    errlog("Who list overflow at %d users", bigbtmp->users);
+    errlog("Who list overflow at %ld users", bigbtmp->users);
     my_exit(0);
   }
 
   if (bigbtmp->ghostcheck + 60 < newbtmp.time)
   {
     bigbtmp->ghostcheck = newbtmp.time;
-    for (i = 0; i < MAXUSERS; i++)
-      if (p = bigbtmp->btmp[i].pid)
+    for (int i = 0; i < MAXUSERS; i++)
+    {
+      pid_t p = bigbtmp->btmp[i].pid;
+      if (p != 0)
 	if (kill(p, 0) < 0)
 	{
 	  errlog("Cleaned up ghost login of %s: %s", bigbtmp->btmp[i].name, strerror(errno));
@@ -282,34 +277,40 @@ long mineternal;
           remove_loggedin(p);
         }
 */
+    }
   }
 
+  // Loop until a slot becomes available.
   for (;;)
   {
-    for (mineternal = 999999999, i = 0; i < MAXUSERS; i++)
-      if (!bigbtmp->btmp[i].pid && bigbtmp->btmp[i].eternal < mineternal)
-        mineternal = bigbtmp->btmp[p = i].eternal;
+    // Find the index that has the smallest `eternal` value, where `pid` is zero.
+    int min_eternal_ix = 0;
+    for (long mineternal = 999999999, i = 0; i < MAXUSERS; i++)
+      if (bigbtmp->btmp[i].pid==0 && bigbtmp->btmp[i].eternal < mineternal)
+        mineternal = bigbtmp->btmp[min_eternal_ix = i].eternal;
+
     locks(SEM_BTMP);
-    if (!bigbtmp->btmp[p].pid)
+    if (bigbtmp->btmp[min_eternal_ix].pid==0)
     {
       newbtmp.eternal = ++(bigbtmp->eternal);
-      bigbtmp->btmp[p] = newbtmp;
-      bigbtmp->index[bigbtmp->users] = p;
+      bigbtmp->btmp[min_eternal_ix] = newbtmp;
+      bigbtmp->index[bigbtmp->users] = min_eternal_ix;
       if (++bigbtmp->users > msg->maxusers)
         msg->maxusers = bigbtmp->users;
-      errlog("Reserving btmp slot %d for pid %d (eternal %d)", p, bigbtmp->btmp[p].pid, bigbtmp->eternal);
+      errlog("Reserving btmp slot %d for pid %d (eternal %ld)",
+              min_eternal_ix, bigbtmp->btmp[min_eternal_ix].pid, bigbtmp->eternal);
+      mybtmp = &bigbtmp->btmp[min_eternal_ix];
       unlocks(SEM_BTMP);
       break;
     }
     unlocks(SEM_BTMP);
   }
-  mybtmp = &bigbtmp->btmp[p];
 }
 
 
 
 void
-clientwho()
+clientwho(void)
 {
 struct btmp *btmp;
 int i;
@@ -375,16 +376,15 @@ long mineternal;
 
 
 void
-validate_users(what)
-int what;
+validate_users(int what)
 {
-  register int c = ' ';
-  register int i;
-  register int count;
-  register int pick;
-  register time_t t;
+  int c = ' ';
+  int i;
+  int count;
+  int pick;
+  time_t t;
   time_t oldt;
-  register struct user *tuser = NULL;
+  struct user *tuser = NULL;
   struct btmp btmp;
   unsigned char skips[(MAXNEWBIES >> 3) + 1];
   short skipped = 0;
@@ -485,6 +485,7 @@ int what;
 
 	case 'P':
 	  my_printf("Profile\n");
+      // fall through
 	case 'p':
 	  if (!tuser && !(tuser = getuser(msg->newbies[i].name)))
 	  {
@@ -523,11 +524,8 @@ int what;
   }
 }
 
-
-
-void
-newmaxnewbie(num)
-register int num;
+static void
+newmaxnewbie(int num)
 {
   locks(SEM_NEWBIE);
   if (num == msg->maxnewbie)
@@ -548,18 +546,15 @@ register int num;
  * given, progress messages are provided.
  */
 void
-logout_user(tmpuser, btmp, how)
-register struct user *tmpuser;
-register struct btmp *btmp;
-register int how;
+logout_user(struct user *tmpuser, struct btmp *btmp, int how)
 {
   struct btmp copybtmp;
-  register int copyindex;
-  register int i;
+  int copyindex;
+  int i;
 
   if (btmp)
   {
-    if (i = btmp->pid)
+    if ((i = btmp->pid))
       kill(i, how ? SIGTERM : SIGQUIT);
     return;
   }
