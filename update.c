@@ -8,6 +8,11 @@
 #undef MARGIN
 #define MARGIN 54
 
+#ifdef _UPDATEHACK
+static int addxconf(struct user *u, long num, struct xconf x[60], int which);
+static int hack_xconf(struct user *u);
+#endif
+
 
 struct userinfo
 {
@@ -20,19 +25,15 @@ struct userinfo
   unsigned int f_aide:1;
 };
 
-
-struct userinfo * getusers();
-
-
+static struct userinfo * getusers(long* ucount);
+static int update_aides(struct userinfo *start, long *ucount);
+static int update_whoknows(struct userinfo *start, long *ucount);
 
 void
-bbsupdate()
+bbsupdate(void)
 {
 struct userinfo *start;
 long    ucount;
-int f;
-
-  setvbuf(stdout, stdoutbuf, _IOFBF, STDOUTBUFSIZ);
 
   if (!(start = getusers(&ucount)))
   {
@@ -63,13 +64,10 @@ int f;
   fflush(stdout);
 }
 
-
-
-struct userinfo *
-getusers(ucount)
-long   *ucount;
+static struct userinfo *
+getusers(long   *ucount)
 {
-register int i;
+int i;
 struct userinfo *start;
 struct user *up;
 struct userinfo *uinfo;
@@ -88,10 +86,6 @@ int     st_nov = 0;
 int     st_ansi = 0;
 FILE   *info;
 time_t t;
-unsigned char ulogbuf[8192];
-unsigned char infobuf[8192];
-char	work[80];
-
 
   if (!(ucopy = copyuserdata()))
   {
@@ -109,29 +103,25 @@ char	work[80];
     return(NULL);
   }
   start = uinfo;
-    
-  sprintf (work, "%svar/userlist", ROOT);
-  if (!(ulog = fopen(work, "w")))
+
+  if (!(ulog = fopen( ROOT "var/userlist", "w")))
   {
     perror ("open userlist");
     return(NULL);
   }
-  setvbuf(ulog, ulogbuf, _IOFBF, sizeof ulogbuf);
   fprintf(ulog, "   date    time   call   post    x       priv  name                 realname               email                                     connection\n");
 
-  sprintf (work, "%svar/info", ROOT);
-  if (!(info = fopen(work, "w")))
+  if (!(info = fopen( ROOT "var/info" , "w")))
   {
     perror ("can't open info");
     return(NULL);
   }
-  setvbuf(info, infobuf, _IOFBF, sizeof infobuf);
 
   t = time(0);
   for (d = 0; d < *ucount; d++)
   {
       zap = TRUE;
-      if (up = finduser(NULL, ucopy->link[ucopy->name[ucopy->which][d]].usernum, 0))
+      if ((up = finduser(NULL, ucopy->link[ucopy->name[ucopy->which][d]].usernum, 0)))
       {
 	zap = FALSE;
 	days_since_on = (t - up->time) / 86400;
@@ -167,8 +157,8 @@ char	work[80];
 	uinfo[unbr].f_admin = up->f_admin;
 	uinfo[unbr].f_prog = up->f_prog;
 	uinfo[unbr].f_aide = up->f_aide;
-	bcopy(up->generation, uinfo[unbr].generation, MAXROOMS);
-	bcopy(up->forget, uinfo[unbr].forget, MAXROOMS);
+	memcpy( uinfo[unbr].generation, (const char*)(up->generation), MAXROOMS);
+	memcpy( uinfo[unbr].forget, (const char*)(up->forget), MAXROOMS);
 #ifdef _UPDATEHACK
 	hack_xconf(up);
 #endif
@@ -180,7 +170,7 @@ char	work[80];
 
 	ltm = localtime(&up->time);
 	i = strcmp(up->A_real_name, up->real_name) || strcmp(up->A_addr1, up->addr1) || strcmp(up->A_city, up->city) || strcmp(up->A_state, up->state) || strcmp(up->A_zip, up->zip) || strcmp(up->A_phone, up->phone) || strcmp(up->A_mail, up->mail);
-	fprintf(ulog, "%s%02d%02d%02d  %02d:%02d  %5ld  %6ld  %6ld  0000  %-19s: %-20s : %-40s; %s@%s\n", i ? "** " : "   ", ltm->tm_year, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, up->timescalled, up->posted, up->totalx, up->name, up->real_name, up->mail, up->loginname, up->remote);
+	fprintf(ulog, "%s%02d%02d%02d  %02d:%02d  %5d  %6d  %6ld  0000  %-19s: %-20s : %-40s; %s@%s\n", i ? "** " : "   ", ltm->tm_year, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, up->timescalled, up->posted, up->totalx, up->name, up->real_name, up->mail, up->loginname, up->remote);
       }
 
   }
@@ -196,9 +186,9 @@ char	work[80];
 // The following are a couple comparison functions needed for qsort()
 // calls in update_aides.
 
-int cmp_userinfo(first, second)     // return lt, eq, gt for userinfo structs
-  const struct userinfo *first;     // based on their usernumber.  see
-  const struct userinfo *second;    // man 3 qsort for details
+int cmp_userinfo(                   // return lt, eq, gt for userinfo structs
+  const struct userinfo *first,     // based on their usernumber.  see
+  const struct userinfo *second)    // man 3 qsort for details
 {
   if (first->usernum > second->usernum)
     return(1);
@@ -209,14 +199,14 @@ int cmp_userinfo(first, second)     // return lt, eq, gt for userinfo structs
 }
 
 
-int cmp_room_glob(first, second)    // return lt, eq, gt for room_glob structs
-  const struct room_glob *first;    // based on alphabetical of the roomname
-  const struct room_glob *second;   // case-insensitive
+int cmp_room_glob(                  // return lt, eq, gt for room_glob structs
+  const struct room_glob *first,    // based on alphabetical of the roomname
+  const struct room_glob *second)   // case-insensitive
 {
   int c = 0, retval = 0;
 
   // cheap hack for comparison in 'alphabetical order'
-  
+
   do {
     if(toupper(first->roomname[c]) < toupper(second->roomname[c]))
       retval--;
@@ -229,7 +219,7 @@ int cmp_room_glob(first, second)    // return lt, eq, gt for room_glob structs
             && !(second->roomname[c] == '\0' || second->roomname[c] == ' '));
 
   return retval;
-  
+
   //return(strcasecmp(first->roomname, second->roomname));
 }
 
@@ -237,18 +227,14 @@ int cmp_room_glob(first, second)    // return lt, eq, gt for room_glob structs
 
 
 
-update_aides(start, ucount)
-struct userinfo *start;
-long   *ucount;
+static int
+update_aides(struct userinfo *start, long   *ucount)
 {
 FILE   *af;
 //int     nameflag = NO;
 int     room_number;
-char    tmpstr[100];
-char    name[100];
 struct userinfo *curruser, *bkey, dummy;
 long    user_number;
-unsigned char afbuf[8192];
 
 struct room_glob roomdata[MAXROOMS];
 
@@ -260,36 +246,27 @@ size_t num_elements, size;
 bkey = &dummy;
 
 
-  sprintf(name, "%s.NEW", AIDELIST);
+  const char  * const name = AIDELIST ".NEW";
   if (!(af = fopen(name, "w")))
     return (-1);
-  setvbuf(af, afbuf, _IOFBF, sizeof afbuf);
 
   fprintf(af, "Sysops and Programmers\n");
 
   curruser = start;
-  
+
   // below, we loop through all users, and display their names and user
   // numbers if they're a programmer or sysop.  Eventually we'll do
   // them in alphabetical order and possibly tabbed output, but for
   // now, it's quick and dirty line by line, by user number.
 
-  for (user_number = 0; user_number < *ucount; user_number++) 
+  for (user_number = 0; user_number < *ucount; user_number++)
   {
-    *tmpstr = 0;  // set null at start of string to reset for below
-
-    if (curruser->f_admin)
-    {
-      sprintf(tmpstr, "\n %s(%ld) ", curruser->name, curruser->usernum);
-
-      if (curruser->f_prog)
-        strcat(tmpstr, "*Programmer* ");
-      if (curruser->f_aide)
-        strcat(tmpstr, "*Sysop*");
-
-      fprintf(af, "%s", tmpstr);   // write the string to file
+    if (curruser->f_admin){
+      fprintf(af, "\n %s(%ld) %s%s", curruser->name, curruser->usernum,
+          (curruser->f_prog ? "*Programmer* " : ""),
+          (curruser->f_aide ? "*Sysop*" : ""));
     }
-  curruser++;  // increment pointer
+      curruser++;  // increment pointer
   }
 
   fprintf(af, "\n\n");
@@ -337,7 +314,7 @@ bkey = &dummy;
   size = sizeof(*start);
 
   // sort array of userinfo structs into ascending numeric order by usernum
-  qsort(start, num_elements, size, cmp_userinfo);
+  qsort(start, num_elements, size, (int(*)(const void*,const void*))cmp_userinfo);
 
   // now we do a binary search to find the user name associated with the
   // room's moderator usernumber.  If the moderator usernumber is zero,
@@ -349,9 +326,9 @@ bkey = &dummy;
     curruser = start;
     curruser = start;   // assign the pointer to the start of user array
     if (roomdata[c].moderator_number)
-    {   
+    {
       bkey->usernum = roomdata[c].moderator_number;
-      curruser = bsearch(bkey, start, num_elements, size, cmp_userinfo);
+      curruser = bsearch(bkey, start, num_elements, size, (int(*)(const void*,const void*))cmp_userinfo);
 
       /*if (curruser->usernum == roomdata[c].moderator_number)*/
 	if (curruser && curruser->usernum == roomdata[c].moderator_number)
@@ -359,14 +336,15 @@ bkey = &dummy;
         strcat(roomdata[c].moderator_name, curruser->name);
       } else {
         // we shouldn't ever get here now that code has been debugged
-        sprintf(roomdata[c].moderator_name, "User %ld",
-          roomdata[c].moderator_number);
+        checked_snprintf(roomdata[c].moderator_name,
+            sizeof(roomdata[c].moderator_name),
+            "User %ld", roomdata[c].moderator_number);
       }
     }
     else
     {
       strcat(roomdata[c].moderator_name, "(Sysop)");
-    } 
+    }
   }
 
   // Now we want to sort the array of filled-in room_glob structs into
@@ -375,39 +353,27 @@ bkey = &dummy;
   num_elements = max_display_rooms;
   size = sizeof(*roomdata);
 
-  qsort(roomdata, num_elements, size, cmp_room_glob);
-  
+  qsort(roomdata, num_elements, size, (int(*)(const void*,const void*))cmp_room_glob);
+
 
   // Now we display the array
 
-  fprintf(af, "Forum Moderators\n\n");
+  fprintf(af, "%s", "Forum Moderators\n\n");
 
   for (c = 0; c < max_display_rooms; c++)
   {
-    char buff[50];
-    *buff = *tmpstr = 0; 
+    int len = fprintf(af, " \"%s>\"", roomdata[c].roomname);
 
-    sprintf(tmpstr, " \"%s>\"", roomdata[c].roomname);
+    while (len < (MAXNAME + 6))
+        len += fprintf(af, " ");
 
-    while (strlen(tmpstr) < (MAXNAME + 6))
-    {
-      if (strlen(tmpstr) % 2)
-        strcat(tmpstr, " ");
-      else
-        strcat(tmpstr, " ");
-    }
-
-    sprintf(buff, " \"%s\"\n", roomdata[c].moderator_name);
-
-    strcat(tmpstr, buff); 
-
-    fprintf(af, tmpstr);
+    fprintf(af, " \"%s\"\n", roomdata[c].moderator_name);
   }
 
   {
     struct tm *fun;
     time_t *fun2, buff;
-    
+
     buff = time(NULL);
     fun2 = &buff;
     fun = localtime(fun2);
@@ -423,32 +389,26 @@ bkey = &dummy;
 
 
 
-update_whoknows(start, ucount)
-struct userinfo *start;
-int    *ucount;
+static int
+update_whoknows(struct userinfo *start, long *ucount)
 {
 FILE   *file;
 char    filestr[160];
-char    temp[40];
 char    name[100];
 char    newname[100];
-int     i;
 int     rm_nbr;
 struct userinfo *u;
 int     unbr;
-unsigned char filebuf[8192];
-
 
   for (rm_nbr = 0; rm_nbr < MAXROOMS; rm_nbr++)
   {
     u = start;
 
-    sprintf(name, "%srm%d.NEW", WHODIR, rm_nbr);
-    sprintf(newname, "%srm%d", WHODIR, rm_nbr);
+    checked_snprintf(name,sizeof(name), "%srm%d.NEW", WHODIR, rm_nbr);
+    checked_snprintf(newname,sizeof(newname), "%srm%d", WHODIR, rm_nbr);
 
     if (!(file = fopen(name, "w")))
       return (-1);
-    setvbuf(file, filebuf, _IOFBF, sizeof filebuf);
 
     if (!(msg->room[rm_nbr].flags & QR_INUSE))
     {
@@ -458,7 +418,7 @@ unsigned char filebuf[8192];
     }
 
     /* make a heading in the whoknows file for this room */
-    sprintf(filestr, "\nWho knows \"%s\"\n\n", msg->room[rm_nbr].name);
+    checked_snprintf(filestr,sizeof(filestr), "\nWho knows \"%s\"\n\n", msg->room[rm_nbr].name);
 
     if (rm_nbr < 2)
     {
@@ -473,20 +433,21 @@ unsigned char filebuf[8192];
 
     for (unbr = 0; unbr < *ucount; unbr++)
     {
-      if (msg->room[rm_nbr].gen != u->forget[rm_nbr] &&
-	  u->generation[rm_nbr] != RODSERLING &&
-	  (!(msg->room[rm_nbr].flags & QR_PRIVATE) &&
-	   u->forget[rm_nbr] != NEWUSERFORGET ||
-	   msg->room[rm_nbr].gen == u->generation[rm_nbr]))
+      if (msg->room[rm_nbr].gen != u->forget[rm_nbr]
+          && u->generation[rm_nbr] != RODSERLING
+          && ((!(msg->room[rm_nbr].flags & QR_PRIVATE) && u->forget[rm_nbr] != NEWUSERFORGET)
+              || msg->room[rm_nbr].gen == u->generation[rm_nbr]))
       {
-	sprintf(temp, "%s (%ld)", u->name, u->usernum);
-	i = strlen(temp);
-	strcat(temp, "                             " + i);
+        char    temp[sizeof(filestr)];
+	checked_snprintf(temp,sizeof(temp), "%s (%ld)", u->name, u->usernum);
+        // This appears to be trying to create two columns, by alternating
+        // every other iteration.
 	if (!*filestr)
-	  strcpy(filestr, temp);
+            checked_strcat(filestr, sizeof(filestr), temp);
 	else
 	{
-	  strcat(filestr, temp);
+	  checked_strcat(filestr, sizeof(filestr), "                             ");
+	  checked_strcat(filestr, sizeof(filestr), temp);
 	  fprintf(file, "%s\n", filestr);
 	  *filestr = 0;
 	}
@@ -510,11 +471,10 @@ unsigned char filebuf[8192];
     unsigned int usernum:24;            /* Username to enable/disable*/
   };
 
-int
-hack_xconf(u)
-register struct user *u;
+static int
+hack_xconf(struct user *u)
 {
-  register int i;
+  int i;
   struct xconf x[60];
 
   if ((sizeof x) != 240)
@@ -537,16 +497,11 @@ register struct user *u;
   return 0;
 }
 
-
-int
-addxconf(u, num, x, which)
-register struct user *u;
-register long num;
-struct xconf x[60];
-register int which;
+static int
+addxconf(struct user *u, long num, struct xconf x[60], int which)
 {
-  register char *name, *tmpname;
-  register int i, j;
+  char *name, *tmpname;
+  int i, j;
 
   name = getusername(num, 0);
   if (!name)

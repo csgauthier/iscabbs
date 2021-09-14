@@ -14,9 +14,7 @@
 * Adjusted for FRchron on 4-23-91 -dn
 ****************************************************************************/
 void
-deletemessage(delnum, quiet)
-  long    delnum;
-  int     quiet;
+deletemessage(long delnum, int quiet)
 {
   locks(SEM_MSG);
   fr_delete(delnum);
@@ -43,10 +41,9 @@ deletemessage(delnum, quiet)
 *
 **********************************************************************/
 int
-entermessage(troom, recipient, upload)
-  int     troom;
-  char   *recipient;
-  int     upload;
+entermessage(int     troom,
+  const char   *recipient,
+  int     upload)
 {
 int     curr_rm = troom;
 int     err;
@@ -57,7 +54,7 @@ struct user *tmpuser = NULL;
 int     tosysop = NO;	/* message to sysop flag */
 int     len;
 struct mheader *mh;
-register int i;
+int i;
 
 
   if (curr_rm == LOBBY_RM_NBR && !ouruser->f_admin)
@@ -130,7 +127,7 @@ register int i;
     if (curr_rm == AIDE_RM_NBR)
       curr_rm = MAIL_RM_NBR;
   }				/* end if mailroom (recipient analysis) */
-  if (*recipient)
+  if (*recipient){
     if (!(tmpuser = getuser(recipient)) || tmpuser->f_invisible)
     {
       if (tmpuser)
@@ -168,6 +165,7 @@ register int i;
       }
       curr_rm = MAIL_RM_NBR;
     }
+  }
 
   if (sysopflags & SYSOP_FROM_SYSOP)
     mtype = MES_SYSOP;
@@ -260,7 +258,7 @@ register int i;
 #else
   msg->curpos = (mmpos = msg->curpos + len >= msgsize ? 0L : msg->curpos) + len;
 #endif
-  bcopy((char *)tmpstart, (char *)msgstart + mmpos, len);
+  memcpy((char *)msgstart + mmpos, (const char*)tmpstart, len);
 
   /* Now add a pointer to this message in the fullrm file for this room */
   msg->room[curr_rm].posted++;
@@ -286,7 +284,7 @@ register int i;
   ouruser->posted++;
   if (room->num[MSGSPERRM - 1] != savedhighest)
   {
-    register long sh = savedhighest;
+    long sh = savedhighest;
 
     loadroom();
     if (ouruser->lastseen[curr] == sh && !ouruser->f_ownnew && room->num[MSGSPERRM - 2] == sh)
@@ -308,40 +306,30 @@ register int i;
  * making parsing messages much quicker and easier.  Messages are headed by a
  * special magic byte on a word (4 byte) boundary that is unique (M_MAGIC).
  */
-int
 
 /*
  *   Copy the POST_E POST_S stuff from readmessage()'s wrapper
  */
-newreadmessage(p, auth, aname, new, msgid)
-  unsigned char *p;
-  int    *auth;         /* set this parameter to YES if author */
-  char   *aname;
-  int     new;          /* TRUE to skip new message author just wrote */
-  long    msgid;        /* message id (validity check -- if 0 ignore it) */
+static int
+newreadmessage(
+  unsigned char *p,
+  int    *auth,         /* set this parameter to YES if author */
+  char   *aname,
+  int     new,          /* TRUE to skip new message author just wrote */
+  long    msgid)        /* message id (validity check -- if 0 ignore it) */
 {
-struct mheader *mh;
-char    title[120];	/* This used to be 70.  Caused seg faults.  Bad -JB */
-char    work[70];
-char    authfield[20];
-int     linenbr;
-int     msgsize;
-int     msgpos;
-char    *name;
-long    mstartpos;
-int     show = 1;
-long    oldpos;
-register int i;
+    int     show = 1;
+    char * title = NULL;
 
 
-  mh = (struct mheader *)(void *)p;
+    struct mheader *mh = (struct mheader *)(void *)p;
 
   if (!mh)
   {
     my_printf ("readmessage:  no mh!\n");
     return (MNFERR);
   }
-  if ((int)p & 3)
+  if ((intptr_t)p & 3) // This is appears to be testing for an address not aligned to 32-bit boundary. But why?
   {
     printf ("wtf?\r\n");
     return(MNFERR);
@@ -362,23 +350,24 @@ register int i;
   if (msgid)
     sysopflags &= ~SYSOP_MSG;
 
+
   if (mh->mtype == MES_ANON)
-    strcpy(title, "@Y  ***********  ");
+    title = my_sprintf(title, "%s", "@Y  ***********  ");
   else if (mh->mtype == MES_AN2)
-    strcpy(title, "@Y  -anonymous-  ");
+    title = my_sprintf(title, "%s", "@Y  -anonymous-  ");
   else
-    *title = 0;
-  strcpy(authfield, title);
+    title = my_sprintf(NULL, "%s", "");
 
-  sprintf(work, "@M%s", formtime (2, mh->ptime));
+  char * authfield = strdup(title);
+
+  title = my_sprintf(title, "@M%s", formtime (2, mh->ptime));
   // sprintf(work, "@M%s %d, %d %02d:%02d", months[mh->month], mh->day, 1900 + mh->year, mh->hour, mh->minute);
-  strcat(title, work);
 
-  name = getusername(mh->poster, 1);
+  char * name = getusername(mh->poster, 1);
   if (mh->mtype == MES_DESC)
   {
-    sprintf(work, "@G by @C%s", name);
-    strcat(title, work);
+    title = my_sprintf(title, "@G by @C%s", name);
+
 // neuro edit
 // don't fucking ask me how half this shit works, it appears the forum info
 // gets rewritten every time somebody reads it (?!) but this works once every
@@ -394,7 +383,8 @@ register int i;
 // end neuro edit
     strcpy(aname, name);
     colorize("@G\nForum moderator is @C%s@G.  Total messages:@R %ld\n@GForum info last updated ", name, msg->room[curr].posted);
-    strcat(title, "\n");
+
+    title = my_sprintf(title, "\n");
   }
   else
   {
@@ -414,8 +404,7 @@ register int i;
     {
       if (mh->mtype == MES_SYSOP)
         sysopflags |= SYSOP_MSG;
-      sprintf(work, "@G from @C%s%s%s", name, mh->mtype == MES_FM ? " (Forum Moderator)" : "", (mh->mtype == MES_SYSOP && (!mh->mail || (*auth && ouruser->f_aide || !*auth && !ouruser->f_aide))) ? " (Sysop)" : "");
-      strcat(title, work);
+      title = my_sprintf(title, "@G from @C%s%s%s", name, mh->mtype == MES_FM ? " (Forum Moderator)" : "", (mh->mtype == MES_SYSOP && (!mh->mail || ((*auth && ouruser->f_aide) || (!*auth && !ouruser->f_aide)))) ? " (Sysop)" : "");
     }
     else
       if (!*auth && !ouruser->f_prog && ouruser->usernum != msg->room[curr].roomaide)
@@ -425,8 +414,7 @@ register int i;
       }
       else if (*auth)
       {
-        sprintf(work, "@G from @C%s", name);
-        strcat(title, work);
+        title = my_sprintf (title, "@G from @C%s", name);
       }
   }
 
@@ -435,33 +423,35 @@ register int i;
     if (mh->mtype == MES_NORMAL && ouruser->usernum != mh->ext.mail.recipient && curr == MAIL_RM_NBR && !*auth)
       return(MNFERR);
     name = getusername(mh->ext.mail.recipient, 1);
-    sprintf(work, "@G to @C%s%s", name, (mh->mtype == MES_SYSOP && (*auth && !ouruser->f_aide || !*auth && ouruser->f_aide)) ? " (Sysop)" : "");
-    strcat(title, work);
+
+    title = my_sprintf(title, "@G to @C%s%s", name, (mh->mtype == MES_SYSOP && ((*auth && !ouruser->f_aide) || (!*auth && ouruser->f_aide))) ? " (Sysop)" : "");
   }
   else if (mh->quotedx)
-    strcat(title, " @C(Quoted X's)");
+    title = my_sprintf(title, " @C(Quoted X's)");
 
   if (curr != MAIL_RM_NBR && mh->mtype != MES_DESC && curr != mh->forum && curr != AIDE_RM_NBR)
-  {
-    sprintf(work, "@G in @Y%s>", msg->room[mh->forum].name);
-    strcat(title, work);
-  }
+    title = my_sprintf(title, "@G in @Y%s>", msg->room[mh->forum].name);
 
   if (new)
     my_putchar('\n');
 
-  colorize(show || mh->mtype == MES_DESC ? title : authfield);
+  if (show || mh->mtype == MES_DESC )
+     colorize("%s", title);
+  else
+     colorize("%s", authfield);
   colorize("@G\n");
 
   p += mh->hlen;
-  msgsize = mh->len;
-  msgpos = 0;
-  linenbr = mh->mtype == MES_DESC ? 3 : 1;
+  int msgsize = mh->len;
+  int msgpos = 0;
+  int linenbr = mh->mtype == MES_DESC ? 3 : 1;
 
-  for (;;)
+  for (int i;;)
     if (!(i = *p++) || ((++msgpos, my_putchar(i)) == '\n' && ++linenbr >= rows - 1 && line_more(&linenbr, (msgpos * 100) / msgsize) < 0))
       break;
 
+  free(authfield);
+  free(title);
   return(0);
 }
 
@@ -469,14 +459,14 @@ register int i;
 
 
 int
-readmessage(p, auth, aname, new, msgid)
-  unsigned char *p;
-  int    *auth;         /* set this parameter to YES if author */
-  char   *aname;
-  int     new;          /* TRUE to skip new message author just wrote */
-  long    msgid;        /* message id (validity check -- if 0 ignore it) */
+readmessage(
+  unsigned char *p,
+  int    *auth,         /* set this parameter to YES if author */
+  char   *aname,
+  int     new,          /* TRUE to skip new message author just wrote */
+  long    msgid)        /* message id (validity check -- if 0 ignore it) */
 {
-  register int ret;
+  int ret;
 
   if (client)
   {
@@ -501,10 +491,10 @@ readmessage(p, auth, aname, new, msgid)
 
 
 int
-makemessage(recipient, mtype, upload)
-  struct user *recipient; /* on entry, NULL if its not mail */
-  int     mtype;	/* MES_NORMAL, MES_ANON, MES_AN2, MES_DESC */
-  int     upload;	/* TRUE if user wants to end a message via ctrl-D */
+makemessage(
+  struct user *recipient, /* on entry, NULL if its not mail */
+  int     mtype,	/* MES_NORMAL, MES_ANON, MES_AN2, MES_DESC */
+  int     upload)	/* TRUE if user wants to end a message via ctrl-D */
 {
 int     auth;
 int     chr = CTRL_D;
@@ -522,8 +512,8 @@ unsigned char *tmpp;
 unsigned char *tmpsave;
 
   {
-    int size = 53248;
-    if (!(tmpstart = (unsigned char *)mymmap(NULL, &size, 1)))
+    size_t size = 53248;
+    if (!(tmpstart = mmap_anonymous(size)))
       return(MMAP_ERR);
   }
 
@@ -609,7 +599,7 @@ unsigned char *tmpsave;
         lnlngth++;
         continue;
       }
-      else if (chr == LF || chr == CTRL_D || chr == TAB && lnlngth >= MARGIN - 8)
+      else if (chr == LF || chr == CTRL_D || (chr == TAB && lnlngth >= MARGIN - 8))
       {
 	for (; lnlngth && tmpp[-1] == SP; tmpp--, lnlngth--)
 	  ;
@@ -721,6 +711,7 @@ unsigned char *tmpsave;
 	lnlngth--;
       }
       else if (lnlngth == MARGIN)
+      {
         if (lastspace > MARGIN / 2)
         {
           for (lnlngth--; lnlngth > lastspace; lnlngth--)
@@ -747,15 +738,16 @@ unsigned char *tmpsave;
           lastspace = 0;
           lnlngth = 1;
         }
+      }
   
       if (chr != CTRL_D && chr != LF)
       {
         thisline[lnlngth] = my_putchar(chr);
 	continue;
       }
-      else if (lnlngth || chr == LF && upload)
+      else if (lnlngth || (chr == LF && upload))
       {
-	register int save = lnlngth;
+	int save = lnlngth;
 
         for (; lnlngth && thisline[lnlngth] == ' '; lnlngth--)
           ;

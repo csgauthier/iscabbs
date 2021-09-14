@@ -1,0 +1,16 @@
+--blank-lines-after-declarations
+--blank-lines-after-procedures
+--no-tabs
+--braces-on-if-line
+--dont-cuddle-else
+--no-blank-lines-after-commas
+--declaration-indentation8
+--braces-on-struct-decl-line
+--indent-level4
+--continue-at-parentheses
+--tab-size4
+--break-before-boolean-operator
+--honour-newlines
+--space-special-semicolon
+--line-length110
+/* --dont-break-procedure-type */

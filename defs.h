@@ -1,7 +1,17 @@
-#include <string.h>
 /*
  * defs.h - All needed include files.
  */
+
+// Feature test macros must come first, before any includes.
+// see `feature_test_macros(7)`.
+#if !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200809L  // enables strdup, popen, etc.
+#endif
+
+#if !defined(_DEFAULT_SOURCE)
+#define _DEFAULT_SOURCE // enables nice, caddr_t.
+#endif
+
 #ifdef __STDC__
 #include <stdarg.h>
 #else
@@ -15,6 +25,8 @@
 #endif
 #include <sys/types.h>
 #include <sys/param.h>
+#include <stdint.h>
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
@@ -61,8 +73,6 @@
 #define STDINBUFSIZ	256
 #define STDOUTBUFSIZ	960
 
-#define ABS(x)	((x) < 0 ? (-(x)) : (x))
-
 #ifndef MIN
 #define MIN(a, b)       ((a) < (b) ? (a) : (b))
 #endif
@@ -92,7 +102,6 @@
 #include "users.h"
 #include "queue.h"
 
-extern int errno;
 extern char **environ;
 
 #define BBS             1
@@ -109,7 +118,7 @@ extern char **environ;
 #endif
 
 #if 1
-#define FLUSH(a,b)	((b = q->qt[a].nfrontp - q->qt[a].nbackp) ? (!ssend(a, q->qt[a].nbackp, b) ? ((q->qt[a].nbackp = q->qt[a].nfrontp = q->qt[a].netobuf), 0) : -1) : 0)
+#define FLUSH(a,b)	((b = q->qt[a].nfrontp - q->qt[a].nbackp) ? (!ssend(a, (const char*) q->qt[a].nbackp, b) ? ((q->qt[a].nbackp = q->qt[a].nfrontp = q->qt[a].netobuf), 0) : -1) : 0)
 #else
 #define FLUSH(a,b)	if (b = q->qt[a].nfrontp - q->qt[a].nbackp)\
 			{\
@@ -123,11 +132,12 @@ extern char **environ;
  * Sure would be nice if there was a standard interface to this kind of
  * information, it is very useful.
  */
-#ifdef linux
+#ifdef __linux__
 #ifdef _IO_file_flags
 #define INPUT_LEFT()   ((stdin)->_IO_read_ptr < (stdin)->_IO_read_end)
 #else
-#define INPUT_LEFT()   ((stdin)->_gptr < (stdin)->_egptr)
+//#define INPUT_LEFT()   ((stdin)->_gptr < (stdin)->_egptr)
+#define INPUT_LEFT()   ((stdin)->_IO_read_ptr < (stdin)->_IO_read_end)
 #endif
 #else
 #if (BSD >= 44) || defined(bsdi)

@@ -1,65 +1,157 @@
 /* Routines for character input and output to the BBS */
 
+#include <stdio.h>
+#include <stdarg.h>
+
 #include "defs.h"
 #include "ext.h"
 
 #ifndef BBS
 int ansi = 0;
-#endif 
+#endif
 
-
+static int my_cputs (const char *s);
+static int my_puts (const char* s);
 
 /* A standard printf -- no color code recognition. */
 /* works best if output is not fflushed */
+int
 my_printf (const char *fmt, ...)
 {
-    char string [1024];
+    // delegate to my_vsprintf
     va_list ap;
+    va_start(ap, fmt);
+    char * buf = my_vsprintf(NULL, fmt, ap);
+    va_end(ap);
 
-    va_start (ap, fmt);
-    (void) vsprintf (string, fmt, ap);
-    va_end (ap);
-    return my_puts (string);
+    // output, then discard the buffer
+    int r = my_puts (buf);
+    free(buf);
+    return r;
 }
 
-
-my_puts (s)
-char *s;
+char*
+my_vsprintf (char* prefix, const char *fmt, va_list ap)
 {
-  int count;
+    // call once to get buffer size
+    // We need to 'va_copy'` here because we can't restart it.
+    va_list tmpArgs;
+    va_copy(tmpArgs, ap);
+    int n = vsnprintf (NULL, 0, fmt, tmpArgs);
+    va_end (tmpArgs);
+    if (n <= 0)
+        return calloc(1,sizeof(char)); // TODO: handle err.
 
-  count = 0;
+    if (prefix)
+        n += strlen(prefix);
+
+    // alloc buffer and call again
+    char * buf = (char*) calloc(n+1, sizeof(char));
+    vsnprintf (buf, n+1, fmt, ap);
+    if (prefix)
+        free(prefix);
+    return buf;
+}
+
+char*
+my_sprintf (char* prefix, const char *fmt, ...)
+{
+    // delegate to my_vsprintf
+    va_list ap;
+    va_start(ap, fmt);
+    char * buf = my_vsprintf(prefix, fmt, ap);
+    va_end(ap);
+    return buf;
+}
+
+int checked_snprintf_with_traceinfo (
+        const char* file, int line,
+        char* out, size_t len, const char *fmt, ...)
+{
+    va_list ap;
+    va_start (ap, fmt);
+    errno = 0;
+    const int n = vsnprintf (out, len, fmt, ap);
+    const int saved_errno = errno;
+    va_end (ap);
+
+    if (n < 0){
+        // error: I/O or system error.
+        char * emsg = my_sprintf(NULL,
+                "FATAL: vsnprintf system or I/O error. "
+                "Called at file '%s':%d "
+                " errno said: %s",
+                file, line, strerror(saved_errno));
+        logfatal(emsg);
+    }
+    else if (n >= len){
+        // error: buffer overflow
+        char * emsg = my_sprintf(NULL,
+                "FATAL: buffer overflow at file '%s':%d",
+                file, line);
+        logfatal(emsg);
+    }
+    return n;
+}
+
+char* checked_strcat_with_traceinfo (
+        const char* file, int line,
+        char* dest, size_t max_dest_size, const char* src)
+{
+    // we need room for both strings and the null terminator.
+    size_t src_len  = strlen(src);
+    size_t dest_len = strlen(dest);
+    size_t need_size = dest_len + src_len + 1;
+
+    if (need_size <= max_dest_size)
+        memcpy( dest + dest_len, src, src_len + 1 );
+
+    else {
+        // error: buffer overflow
+        char * emsg = my_sprintf(NULL,
+                "FATAL: buffer overflow at file '%s':%d", file, line);
+        logfatal(emsg);
+    }
+
+    return dest;
+}
+
+static int
+my_puts (const char* s)
+{
+  int count = 0;
+
   while (*s) {
-    count = count + (my_putchar (*s) != EOF);
-    s++;
+    count += (my_putchar (*s) != EOF);
+    ++s;
   }
 
-  return (count);
+  return count;
 }
-
-
 
 /* A simple printf that recognizes color codes */
+int
 colorize (const char *fmt, ...)
 {
-    char string [1024];
+    // delegate to my_vsprintf
     va_list ap;
+    va_start(ap, fmt);
+    char * buf = my_vsprintf(NULL, fmt, ap);
+    va_end(ap);
 
-    va_start (ap, fmt);
-    (void)  vsprintf (string, fmt, ap);
-    va_end (ap);
-    return my_cputs (string); 
+    // write it
+    int rc = my_cputs (buf);
+    free(buf);
+    return rc;
 }
-
 
 /* check for color codes and \r\n translation.  Return the number of characters
    (not including color codes) printed. */
-my_cputs (s)
-char *s;
+static int
+my_cputs (const char *s)
 {
-  int count;
+  int count = 0;
 
-  count = 0;
   while (*s) {
 
     if (*s == '@') {
@@ -104,30 +196,30 @@ char *s;
 	    output ("\033[1m\033[33m");
 	    break;
 	}
-      else if (*s == '@') 
-	count = count + (my_putchar (*s) != EOF);
+      else if (*s == '@')
+	count += (my_putchar (*s) != EOF);
     } else
-      count = count + (my_putchar (*s) != EOF);
-    s++;
+      count += (my_putchar (*s) != EOF);
+    ++s;
   }
 
   return count;
 }
 
 
-output (s)
-char *s;
+int
+output (const char *s)
 {
   while (*s) {
     my_putchar (*s);
-    s++;
+    ++s;
   }
   return 0;
 }
 
 
-my_putchar (c)
-int c;
+int
+my_putchar (int c)
 {
 #ifdef _SSL
   char newline = '\r';
@@ -145,12 +237,9 @@ int c;
 #endif
 }
 
-my_putc (c, stream)
-int c;
-FILE *stream;
+int
+my_putc (int c, FILE* stream)
 {
-  int i;
-  i = putc (c, stream);
-
-  return (i);
+    return putc (c, stream);
 }
+

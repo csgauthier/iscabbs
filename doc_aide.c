@@ -4,6 +4,15 @@
 #include "defs.h"
 #include "ext.h"
 
+static void aide_logout(void);
+static void createroom(void);
+static void deleteroom(void);
+static void editdesc(void);
+static void editroom(void);
+static void invite(void);
+static void kickout (void);
+static void logout_all (void);
+static void whoknows(void);
 
 
 /**********************************************************************
@@ -15,10 +24,9 @@
 * NOT do <A>ideify <C>reateroom <Z>ap room.
 **********************************************************************/
 void
-aide_menu()
+aide_menu(void)
 {
-register int chr = '?';
-int     i;
+int chr = '?';
 
   /* Can't get here unless you're at least a room aide for this room */
 
@@ -133,16 +141,15 @@ int     i;
 /**********************************************************************
 * createroom
 **********************************************************************/
-void
-createroom()
+static void
+createroom(void)
 {
-register int i;
+int i;
 int     found;
 char   *newroom;
 char    opt;
 int     rm_nbr;
 int    qpos;
-char filename[80];
 char pas[11];
 
   if (ouruser->f_novice)
@@ -226,12 +233,19 @@ char pas[11];
   
   /* delete & zero room info & whoknows files if they exist */
   /* NOTE: Need exclusive access here! */
-  sprintf(filename, "%sroom%d", DESCDIR, qpos);
-  unlink(filename);
-  open(filename, O_WRONLY | O_CREAT, 0640);
-  sprintf(filename, "%srm%d", WHODIR, qpos);
-  unlink(filename);
-  open(filename, O_WRONLY | O_CREAT, 0640);
+  // TODO: there's a better way to do this.
+  {
+      char * filename = my_sprintf(NULL,"%sroom%d", DESCDIR, qpos);
+      unlink(filename);
+      open(filename, O_WRONLY | O_CREAT, 0640);
+      free(filename);
+  }
+  {
+      char * filename = my_sprintf(NULL,"%srm%d", WHODIR, qpos);
+      unlink(filename);
+      open(filename, O_WRONLY | O_CREAT, 0640);
+      free(filename);
+  }
 
   locks(SEM_MSG);
 
@@ -303,10 +317,9 @@ char pas[11];
 /**********************************************************************
 * deleteroom
 **********************************************************************/
-void
-deleteroom()
+static void
+deleteroom(void)
 {
-char    filename[100];
 char    confirm[7];
 
   if (curr <= AIDE_RM_NBR)
@@ -324,10 +337,14 @@ char    confirm[7];
 
   locks(-1);
   msg->room[curr].flags = 0;
-  sprintf(filename, "%sroom%d", DESCDIR, curr);
+
+  char * filename = my_sprintf(NULL,"%sroom%d", DESCDIR, curr);
   unlink(filename);
-  sprintf(filename, "%srm%d", WHODIR, curr);
+  free(filename);
+
+  filename = my_sprintf(NULL,"%srm%d", WHODIR, curr);
   unlink(filename);
+  free(filename);
   unlocks(-1);
 
   /* you just nuked the room, need to go somewhere! */
@@ -345,33 +362,26 @@ char    confirm[7];
 * If a new aide is chosen, read his/her user file and assign ->usernum
 * to be roomaide.
 **********************************************************************/
-void
-editdesc()
+static void
+editdesc(void)
 {
-int     bytes;
-int    chr;
 char    choice = '0';
-char    descfile[100];
-char    newdescfile[100];
 int     dfd;		/* desc file descriptor */
 int     dummy;		/* readmsg() needs this: returns YES/NO */
 int     err;		/* makemessage returns this */
-time_t  now;		/* for time -- want to mark this change */
-int     old;
 char    raname[MAXALIAS+1];
 int	upload;
 char   *cp;
-int     i;
 struct mheader *mh;
-int size;
+size_t size;
 unsigned char *infop;
 struct user *tmpuser;
 
-  sprintf(descfile, "%sroom%d", DESCDIR, curr);
-  sprintf(newdescfile, "%sroom%d.NEW", DESCDIR, curr);
+  char * descfile = my_sprintf(NULL,"%sroom%d", DESCDIR, curr);
+  char * newdescfile = my_sprintf(NULL,"%sroom%d.NEW", DESCDIR, curr);
 
   size = 0;
-  if (!(infop = (unsigned char *)mymmap(descfile, &size, 0)) || !size)
+  if (!(infop = mmap_file(descfile, &size)) || !size)
   {
     colorize("@RDescription doesn't yet exist@G\n");
     choice = 'B';
@@ -390,13 +400,13 @@ struct user *tmpuser;
     my_putchar('\n');
   }
   if (choice == 'Q' || choice == ' ' || choice == '\n')
-    return;
+    goto Return;
 
   if (choice == 'B' || choice == 'F')
   {
     cp = get_name("\nEnter 'Sysop' for default administrator moderation.\nNew forum moderator -> ", 2);
     if (!*cp)
-      return;
+      goto Return;
 
     if (!strcmp(cp, "Sysop"))
       msg->room[curr].roomaide = 0;
@@ -406,7 +416,7 @@ struct user *tmpuser;
 	if (tmpuser)
 	  freeuser(tmpuser);
 	my_printf("\nThere is no user %s on this BBS.\n", cp);
-        return;
+        goto Return;
       }
       else
       {
@@ -415,7 +425,7 @@ struct user *tmpuser;
       }
 
     if (choice == 'F')
-      return;
+      goto Return;
   }
 
   my_printf("\nHit Y to upload a description or N to enter it normally (Y/N) -> ");
@@ -446,6 +456,10 @@ struct user *tmpuser;
     if (yesno(-1))
       msg->room[curr].descupdate = msg->room[curr].highest;
   }
+
+Return:; // free the mallocs
+    free(descfile);
+    free(newdescfile);
 }
 
 
@@ -453,8 +467,8 @@ struct user *tmpuser;
 * editroom
 * <E>dit room in aide menu
 **********************************************************************/
-void
-editroom()
+static void
+editroom(void)
 {
 char    anon_opt;
 char    opt;
@@ -589,8 +603,8 @@ int     gen;
 * Modifies the user's generation and forget numbers to make a member
 * of the room.
 **********************************************************************/
-void
-invite()
+static void
+invite(void)
 {
 struct user *tmpuser;
 char   *uname;
@@ -629,8 +643,8 @@ char   *uname;
 * kickout
 * Edit a user's generation number for a room so (s)he can't get to it.
 **********************************************************************/
-void
-kickout()
+static void
+kickout(void)
 {
 struct user *tmpuser;
 char   *uname;
@@ -676,17 +690,16 @@ char   *uname;
 }
 
 
-void
-aide_logout()
+static void
+aide_logout(void)
 {
 struct user *tmpuser;
 char   *uname;
 struct btmp btmp;
-register int i;
 
   uname = get_name("Name of user to log out? ", 2);
  
-  if (*uname)
+  if (*uname){
     if (!(tmpuser = getuser(uname)))
       my_printf("There is no user %s on this BBS.\n", uname);
     else
@@ -699,15 +712,13 @@ register int i;
 	logout_user(tmpuser, NULL, 0);
       freeuser(tmpuser);
     }
+  }
 }
 
-
-
-void
-logout_all()
+static void
+logout_all(void)
 {
-  register int i;
-  register int p;
+  int i;
 
   my_printf("Are you are you want to logout all users on the BBS? (Y/N) -> ");
   if (yesno(-1))
@@ -735,13 +746,12 @@ logout_all()
 * Simply mores the whoknows list for current room
 * update aide list is called after an aide change
 **********************************************************************/
-void
-whoknows()
+static void
+whoknows(void)
 {
-char    filename[100];
-
-  sprintf(filename, "%srm%d", WHODIR, curr);
+  char * filename = my_sprintf(NULL,"%srm%d", WHODIR, curr);
   more(filename, 0);
+  free(filename);
 }
 
 

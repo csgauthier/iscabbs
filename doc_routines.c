@@ -3,17 +3,19 @@
  */
 #include "defs.h"
 #include "ext.h"
+#include <stdio_ext.h>
+
 
 
 /**********************************************************************
 * countmsgs
 **********************************************************************/
 int
-countmsgs()
+countmsgs(void)
 {
 int     count = 0;
 int     new = 0;
-register int i;
+int i;
 
   for (i = 0; i < MSGSPERRM; i++)
   {
@@ -44,7 +46,7 @@ register int i;
 * debug report
 **********************************************************************/
 void
-debug()
+debug(void)
 {
 }
 
@@ -55,8 +57,7 @@ debug()
 * with unread messages, and list all forgotten rooms.
 -----------------------------------------------------------------------*/
 void
-knrooms(tmpuser)
-  struct user *tmpuser;
+knrooms(struct user *tmpuser)
 {
 int     i;
 int     limit = 24;
@@ -88,7 +89,7 @@ int     rm_nbr;
 	      || (msg->room[rm_nbr].gen == tmpuser->generation[rm_nbr])))
       {
 
-	sprintf(tmpstr, " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
+	checked_snprintf(tmpstr, sizeof(tmpstr), " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
 	while (strlen(tmpstr) % limit)
 	  strcat(tmpstr, " ");
 
@@ -139,7 +140,7 @@ int     rm_nbr;
               || (msg->room[rm_nbr].gen == tmpuser->generation[rm_nbr])))
       {
 
-	sprintf(tmpstr, " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
+	checked_snprintf(tmpstr, sizeof(tmpstr), " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
 	while (strlen(tmpstr) % limit)
 	  strcat(tmpstr, " ");
 	newlength = oldlength + strlen(tmpstr);
@@ -185,7 +186,7 @@ int     rm_nbr;
             || (msg->room[rm_nbr].gen == tmpuser->generation[rm_nbr])))
     {
 
-      sprintf(tmpstr, " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
+      checked_snprintf(tmpstr, sizeof(tmpstr), " %d\056%s>  ", rm_nbr, msg->room[rm_nbr].name);
       while (strlen(tmpstr) % limit)
 	strcat(tmpstr, " ");
       newlength = oldlength + strlen(tmpstr);
@@ -215,9 +216,7 @@ int     rm_nbr;
 * returns 0 for okay keep going, -1 for quit reading.
 ************************************************************/
 int
-line_more(nbr, percent)
-int    *nbr;
-int     percent;
+line_more(int *nbr, int percent)
 {
 int     chr;
 int     savenox = mybtmp->nox;
@@ -255,6 +254,7 @@ int     savenox = mybtmp->nox;
       chr = get_single_quiet("0123456789NpPqQSvxY/? \n");
 
     if (strchr("0123456789QxpP?/", chr))
+    {
       if (!ouruser)
 	continue;
       else if (guest)
@@ -264,6 +264,7 @@ int     savenox = mybtmp->nox;
       }
       else
         mybtmp->nox = 1;
+    }
 
     switch (chr)
     {
@@ -345,18 +346,18 @@ int     savenox = mybtmp->nox;
 
 
 void
-flush_input(sec)
-register int sec;
+flush_input(int sec)
 {
-register int i;
+int i;
 int flush = -1;
 
   if (sec)
     sleep(sec);
   if (tty)
   {
-    while (INPUT_LEFT())
-      (void)getchar();
+    //while (INPUT_LEFT())
+    //  (void)getchar();
+    __fpurge(stdin);
     tcflush(0, TCIFLUSH);
   }
   else
@@ -382,8 +383,7 @@ int flush = -1;
 *  struct fullrm *fullrm - the new updated fullrm (out)
 *********************************************************************/
 void
-fr_delete(delnum)
-  long    delnum;
+fr_delete(long    delnum)
 {
 int i;
 
@@ -448,14 +448,9 @@ int i;
 *  long pos;                   Position in the msgmain file         *
 *********************************************************************/
 void
-fr_post(rm, msgnum, pos, mmhi, tmpuser)
-  int     rm;
-  long    msgnum;
-  long    pos;
-  long    mmhi;
-  struct user *tmpuser;
+fr_post(int rm, long msgnum, long pos, long mmhi, struct user *tmpuser)
 {
-  register int i;
+  int i;
 
   if (rm == MAIL_RM_NBR)
     if (tmpuser)
@@ -522,23 +517,24 @@ fr_post(rm, msgnum, pos, mmhi, tmpuser)
 * read room description
 **********************************************************************/
 void
-readdesc()
+readdesc(void)
 {
 int     dummy;
-char    file[100];
 char    name[MAXALIAS + 1];
 unsigned char *p;
-int size;
+size_t size;
 
-  sprintf(file, "%sroom%d", DESCDIR, curr);
+  char * file = my_sprintf(NULL,"%sroom%d", DESCDIR, curr);
   size = 0;
-  if (!(p = (unsigned char *)mymmap(file, &size, 0)) || !size)
+  if (!(p = mmap_file(file, &size)) || size==0)
   {
     colorize("@RNo Forum Info is available\n");
     if (p)
       munmap((void *)p, size);
+    free(file);
     return;
   }
+  free(file);
 
   readmessage(p, &dummy, name, FALSE, 0);
 
@@ -553,9 +549,7 @@ int size;
 * last seen in *uglastmsg.
 ***************************************************************************/
 void
-storeug(uglastmsg, ugtemp)
-  long   *uglastmsg;
-  long   *ugtemp;
+storeug(long   *uglastmsg, long   *ugtemp)
 {
   *uglastmsg = *ugtemp;
   *ugtemp = ouruser->lastseen[curr];
@@ -567,10 +561,7 @@ storeug(uglastmsg, ugtemp)
 * ungoto
 **********************************************************************/
 void
-ungoto(prev, uglastmsg, ugtemp)
-  int    prev;
-  long   *uglastmsg;
-  long   *ugtemp;
+ungoto(int prev, long *uglastmsg, long *ugtemp)
 {
   if (prev == TWILIGHTZONE)
     return;
@@ -590,8 +581,7 @@ ungoto(prev, uglastmsg, ugtemp)
 * Notate ouruser record accordingly.
 **********************************************************************/
 void
-updatels(prev)
-  short    *prev;
+updatels(short    *prev)
 {
   *prev = curr;
   ouruser->lastseen[curr] = room->num[MSGSPERRM - 1];
@@ -605,10 +595,9 @@ updatels(prev)
 * returns Y == YES , N == NO
 **********************************************************************/
 int
-yesno(def)
-int def;
+yesno(int def)
 {
-register int i;
+int i;
  
   if (def < 0)
     i = get_single_quiet("YN");
@@ -629,7 +618,7 @@ register int i;
 }
 
 void 
-do_fortune()
+do_fortune(void)
 {
 char 	*cmd = FORTUNE;
 char 	*p;
@@ -641,7 +630,7 @@ FILE 	*fp;
 
   while (fgets (buf, BUFSIZ, fp) != NULL)
   {
-    if ((p = rindex (buf, '\n')) != NULL)
+    if ((p = strrchr (buf, '\n')) != NULL)
       *p = 0;
     my_printf ("%s\n", buf);
   }
@@ -659,14 +648,12 @@ char *days[7] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
 
 char *
-formtime (how, timetoform)
-int how;
-time_t timetoform;
+formtime (int how, time_t timetoform)
 {
 static char tstring[80];
 struct tm *tm;
 int hr;		/* AM/PM conversion */
-char stamp[5];
+const char * stamp = "";
 
   tm = localtime (&timetoform);
 
@@ -674,50 +661,47 @@ char stamp[5];
   {
     hr = !tm->tm_hour ? 12 :
     	 tm->tm_hour > 12 ? tm->tm_hour - 12 : tm->tm_hour;
-    strcpy (stamp, tm->tm_hour >= 12 ? " PM" : " AM");
+    stamp = tm->tm_hour >= 12 ? " PM" : " AM";
   }
   else
-  {
     hr = tm->tm_hour;
-    strcpy (stamp, "");
-  }
 
   switch (how)
   {
     case 1:
       /* Mon Jan 1, 2000  1:23 PM */
-      sprintf (tstring, "%s %s %d, %d %d:%02d%s",
+      checked_snprintf (tstring, sizeof(tstring), "%s %s %d, %d %d:%02d%s",
       	days[tm->tm_wday], months[tm->tm_mon], tm->tm_mday,
       	1900 + tm->tm_year, hr, tm->tm_min, stamp);
       break;
 
     case 2:
       /* Jan 1, 2000  1:23 PM */
-      sprintf (tstring, "%s %d, %d %d:%02d%s",
+      checked_snprintf (tstring, sizeof(tstring), "%s %d, %d %d:%02d%s",
 	months[tm->tm_mon], tm->tm_mday, 1900 + tm->tm_year,
 	hr, tm->tm_min, stamp);
       break;
 
     case 3:
       /* 1/1/00  1:23 PM */
-      sprintf (tstring, "%d/%d/%02d %d:%02d%s",
+      checked_snprintf (tstring, sizeof(tstring), "%d/%d/%02d %d:%02d%s",
 	tm->tm_mon + 1, tm->tm_mday, tm->tm_year % 100,
 	hr, tm->tm_min, stamp);
       break;
 
     case 4:
       /* 1:23 PM */
-      sprintf (tstring, "%d:%02d%s", hr, tm->tm_min, stamp);
+      checked_snprintf (tstring, sizeof(tstring), "%d:%02d%s", hr, tm->tm_min, stamp);
       break;
 
     case 5:
       /* Jan 1, 2000 */
-      sprintf (tstring, "%s %d, %d",
+      checked_snprintf (tstring, sizeof(tstring), "%s %d, %d",
 	months[tm->tm_mon], tm->tm_mday, 1900 + tm->tm_year);
       break;
 
     case 6:		/* X message */
-      sprintf (tstring, "%d:%02d%s on %s %d, %d",
+      checked_snprintf (tstring, sizeof(tstring), "%d:%02d%s on %s %d, %d",
 	hr, tm->tm_min, stamp, months[tm->tm_mon], tm->tm_mday,
 	1900 + tm->tm_year);
       break;
@@ -731,10 +715,10 @@ char stamp[5];
 
 
 #include <utmpx.h>
-char *gethost()
+char *gethost(void)
 {
-register struct utmpx *ut;
-register char *tp;
+struct utmpx *ut;
+char *tp;
 static char hname[MAXHOSTNAMELEN + 1];
 
   if (*hname)
@@ -742,7 +726,7 @@ static char hname[MAXHOSTNAMELEN + 1];
 
   /* Take our argument's word over anyone else's */
   if (ARGV[1])
-    strncpy (hname, ARGV[1], sizeof (hname) - 1);
+    checked_snprintf (hname, sizeof(hname), "%s", ARGV[1]);
   else
   {
     if ((tp = ttyname (0)) == NULL)
@@ -750,8 +734,8 @@ static char hname[MAXHOSTNAMELEN + 1];
 
     /* So outside buttheads don't 'talk bbs' */
     chmod (tp, 0600);
-    tp = (char *) index (tp, '/') + 5;
-    strncpy (hname, tp, sizeof (hname) - 1);
+    tp = strchr (tp, '/') + 5;
+    checked_snprintf(hname, sizeof(hname), "%s", tp);
 
     /* Not all systems have this, so you may have to roll your own... */
 
@@ -760,7 +744,7 @@ static char hname[MAXHOSTNAMELEN + 1];
       if (  !strcmp (hname, ut->ut_line) 
             && ut->ut_pid == pid && *ut->ut_host  )
       {
-        strncpy (hname, ut->ut_host, sizeof (hname) - 1);
+        checked_snprintf(hname, sizeof(hname), "%s", ut->ut_host);
 	break;
       }
     endutxent();
@@ -773,29 +757,36 @@ static char hname[MAXHOSTNAMELEN + 1];
 /*
  * a case insensitive strstr().
  */
-char *mystrstr(haystack, needle)
-char *haystack;
-char *needle;
+const char *
+mystrstr(const char *haystack, const char* needle)
 {
-    register char *s;
+    const size_t nlen = strlen(needle);
 
+    const char *s;
     for (s = haystack; *s; s++)
-        if ( /* *s == *needle && */ !strncasecmp(s, needle, strlen(needle)))
+        if ( /* *s == *needle && */ !strncasecmp(s, needle, nlen))
             break;
+
     if (!*s)
-        return ((char *) NULL);
+        return (char *) NULL;
     else
-        return (s);
+        return s;
 }
 
-bcdplus1encode (number)
-long number;
+char *
+mystrstr_nonconst(char *haystack, const char* needle)
+{
+    return (char*)mystrstr(haystack, needle);
+}
+
+void
+bcdplus1encode (long number)
 {
 char	digit;
 long	remainder;
 
   if (number < 0)
-    return -1;
+    return;
 
   remainder = number / 10;
   digit = number - remainder * 10 + 1;
@@ -804,19 +795,5 @@ long	remainder;
     bcdplus1encode (remainder);
 
   my_putc (digit, stdout);
-}
-
-
-version()
-{
-  my_printf ("#define BBSNAME		%d\n", BBSNAME);
-  my_printf ("#define BBSUID		%d\n", BBSUID);
-  my_printf ("#define BBSGID		%d\n", BBSGID);
-  my_printf ("#define MAILMSGS		%d\n", MAILMSGS);
-  my_printf ("#define MSGSPERRM		%d\n", MSGSPERRM);
-  my_printf ("#define MAXROOMS		%d\n", MAXROOMS);
-  my_printf ("#define MM_FILELEN	%d\n", MM_FILELEN);
-  my_printf ("#define ROOT		%s\n", ROOT);
-  my_printf ("#define MAXTOTALUSERS	%d\n", MAXTOTALUSERS);
 }
 

@@ -5,10 +5,9 @@
 #include "ext.h"
 
 int
-telrcv(noflush)
-register int *noflush;
+telrcv(int *noflush)
 {
-	register int c;
+	int c;
 
 	for (;;) {
 		if (!INPUT_LEFT())
@@ -191,7 +190,7 @@ gotiac:			switch (c) {
 			break;
 
 		case TS_KILL:
-			if (numposts > 0 && c == numposts & 0xff)
+			if (numposts > 0 && c == (numposts & 0xff))
 				numposts = -numposts;
 			state = TS_DATA;
 			break;
@@ -205,7 +204,7 @@ gotiac:			switch (c) {
 
 
 void
-init_states()
+init_states(void)
 {
   state = TS_DATA;
 

@@ -4,20 +4,34 @@
 #include "defs.h"
 #include "ext.h"
 
+static void assignquickx (int slot, struct user *tmpuser);
+static void change_addr(struct user *tuser, int chflag);
+static void change_aide_info(struct user *tuser);
+static void change_anonymous(struct user *tuser, int chflag);
+static void change_info(struct user *tuser);
+static void change_name(struct user *workuser);
+static void change_pass(struct user *tuser, int noold);
+static void change_reminder(struct user *tuser);
+static struct user * change_user(void);
+static void change_vanityflag (struct user *tmpuser);
+static void do_bigzap (struct user *tmpuser);
+static void foptions(struct user *tuser);
+static void ooptions(struct user *tuser);
+static void show_verified(struct user *workuser);
+static void userlist_config(struct user *tmpuser, int chflag);
+static void xoptions(struct user *tuser);
 
 /*
  * Setup Menu. 
  */
 
 void
-change_setup(workuser)
-struct user *workuser;
+change_setup(struct user *workuser)
 {
-register int c = -1;
-register int i;
+int c = -1;
+int i;
 int     chflag;
 struct user *up = NULL;
-char *name;
 
   if (ouruser->f_twit)
   {
@@ -187,7 +201,7 @@ char *name;
 
       case 'U':
 	my_printf("Change user\n");
-	if (workuser = change_user())
+	if ((workuser = change_user()))
 	  chflag = 1;
 	else
 	{
@@ -276,28 +290,24 @@ char *name;
   }
 }
 
-
-
-void
-change_addr(tuser, chflag)
-  struct user *tuser;
-  int     chflag;
+static void
+change_addr(struct user *tuser, int chflag)
 {
-  char work[81], answer[41];
-
+  char answer[41];
 
   my_printf("\nEnter your address information.  To leave a entry alone, just hit return.\n\n");
 
   if (chflag)
   {
-    sprintf(work, "Name [%s]: ", tuser->real_name);
-    get_string(work, 40, answer, -1);
+    char * name = my_sprintf(NULL,"Name [%s]: ", tuser->real_name);
+    get_string(name, 40, answer, -1);
     if (*answer)
     {
       locks(SEM_USER);
       strcpy(tuser->real_name, answer);
       unlocks(SEM_USER);
     }
+    free(name);
   }
   else
   {
@@ -306,17 +316,20 @@ change_addr(tuser, chflag)
       return;
   }
 
-  sprintf(work, "Street & house/apt# [%s]: ", tuser->addr1);
-  get_string(work, 40, answer, -1);
+  // addr1
+  char * addr1 = my_sprintf(NULL,"Street & house/apt# [%s]: ", tuser->addr1);
+  get_string(addr1, 40, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->addr1, answer);
     unlocks(SEM_USER);
   }
+  free(addr1);
 
-  sprintf (work, "                    [%s]: ", tuser->addr2);
-  get_string (work, 40, answer, -1);
+  // addr2
+  char * addr2 = my_sprintf(NULL,"                    [%s]: ", tuser->addr2);
+  get_string (addr2, 40, answer, -1);
   if (*answer)
   {
     if (!strcmp (answer, "NONE"))
@@ -325,36 +338,41 @@ change_addr(tuser, chflag)
     strcpy (tuser->addr2, answer);
     unlocks (SEM_USER);
   }
+  free(addr2);
 
-  sprintf(work, "City [%s]: ", tuser->city);
-  get_string(work, 20, answer, -1);
+  // city
+  char * city = my_sprintf(NULL,"City [%s]: ", tuser->city);
+  get_string(city, 20, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->city, answer);
     unlocks(SEM_USER);
   }
+  free(city);
 
-  sprintf(work, "State or country [%s]: ", tuser->state);
-  get_string(work, 20, answer, -1);
+  char * state = my_sprintf(NULL,"State or country [%s]: ", tuser->state);
+  get_string(state, 20, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->state, answer);
     unlocks(SEM_USER);
   }
+  free(state);
 
-  sprintf(work, "ZIP or mail code [%s]: ", tuser->zip);
-  get_string(work, 10, answer, -1);
+  char * zip = my_sprintf(NULL,"ZIP or mail code [%s]: ", tuser->zip);
+  get_string(zip, 10, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->zip, answer);
     unlocks(SEM_USER);
   }
+  free(zip);
 
-  sprintf(work, "Phone number (including all prefixes!) [%s]: ", tuser->phone);
-  get_string(work, 20, answer, -1);
+  char * phone = my_sprintf(NULL,"Phone number (including all prefixes!) [%s]: ", tuser->phone);
+  get_string(phone, 20, answer, -1);
   if (*answer)
   {
     if (!strcmp(answer, "NONE"))
@@ -363,18 +381,20 @@ change_addr(tuser, chflag)
     strcpy(tuser->phone, answer);
     unlocks(SEM_USER);
   }
+  free(phone);
 
-  sprintf(work, "Internet e-mail address [%s]: ", tuser->mail);
-  get_string(work, 40, answer, -1);
+  char * email = my_sprintf(NULL,"Internet e-mail address [%s]: ", tuser->mail);
+  get_string(email, 40, answer, -1);
   if (*answer)
   {
     locks(SEM_USER);
     strcpy(tuser->mail, answer);
     unlocks(SEM_USER);
   }
+  free(email);
 
-  sprintf(work, "WWW address [%s]: ", tuser->www);
-  get_string(work, 59, answer, -1);
+  char * www = my_sprintf(NULL,"WWW address [%s]: ", tuser->www);
+  get_string(www, 59, answer, -1);
   if (*answer)
   {
     if (!strcmp(answer, "NONE"))
@@ -383,12 +403,11 @@ change_addr(tuser, chflag)
     strcpy(tuser->www, answer);
     unlocks(SEM_USER);
   }
+  free(www);
 }
 
-
-void
-change_aide_info(tuser)
-struct user *tuser;
+static void
+change_aide_info(struct user *tuser)
 {
   char junk[80];
 
@@ -406,13 +425,10 @@ struct user *tuser;
   }
 }
 
-
-void
-change_anonymous(tuser, chflag)
-register struct user *tuser;
-register int chflag;
+static void
+change_anonymous(struct user *tuser, int chflag)
 {
-  register int c;
+  int c;
 
   my_printf("\nYou have the option of hiding some or all of your personal information (name,\naddress, phone, and e-mail) from others on this BBS.\n\n");
   if (chflag)
@@ -512,19 +528,14 @@ register int chflag;
   }
 }
 
-
-
-
-void
-change_pass(tuser, noold)
-  struct user *tuser;
-  int     noold;
+static void
+change_pass(struct user *tuser, int noold)
 {
 
 char    pas[9],
         original[9], pas2[9];
 char temp[MAXALIAS + 1];
-register int i;
+int i;
 char *cp;
 
   my_printf("\nChanging password for %s...\n", tuser->name);
@@ -573,10 +584,8 @@ char *cp;
   my_printf("\nSo be it.\n");
 }
 
-
-void
-change_reminder(tuser)
-struct user *tuser;
+static void
+change_reminder(struct user *tuser)
 {
   char junk[80];
 
@@ -600,12 +609,11 @@ struct user *tuser;
  * Allow the user to change the description part of his/her profile. 
  */
 
-void
-change_info(tuser)
-  struct user *tuser;
+static void
+change_info(struct user *tuser)
 {
   char junk[5][80];
-  register int i;
+  int i;
 
   if (*tuser->desc1)
     my_printf("\nYour current info:\n %s\n", tuser->desc1);
@@ -652,22 +660,15 @@ change_info(tuser)
   unlocks(SEM_USER);
 }
 
-
-
-void
-change_name(workuser)
-struct user *workuser;
+static void
+change_name(struct user *workuser)
 {
   char work[60];
-  register struct user *tmpuser;
-  register char *name;
-  register char *p;
-  register int c;
-  register int i;
-  register int j;
+  struct user *tmpuser = NULL;
+  int i;
 
   my_printf("\nNew name for user '%s' -> ", workuser->name);
-  name = get_name("", 2);
+  char * name = get_name("", 2);
   if (!*name)
     return;
   else if (!strcmp(workuser->name, name))
@@ -688,7 +689,7 @@ struct user *workuser;
     flush_input(0);
     if (yesno(-1))
     {
-      register long usernum;
+      long usernum;
 
       locks(SEM_NEWBIE);
       usernum = ++msg->eternal;
@@ -752,7 +753,7 @@ struct user *workuser;
 
       msync((void *)tmpuser, sizeof(struct user), MS_SYNC);
 
-      sprintf(work, "NAMECHANGE: %s to %s", workuser->name, name);
+      checked_snprintf(work,sizeof(work), "NAMECHANGE: %s to %s", workuser->name, name);
       logevent(work);
 
       locks(SEM_USER);
@@ -774,9 +775,7 @@ struct user *workuser;
 
 
 void
-do_verify(workuser, ask)
-struct user *workuser;
-int ask;
+do_verify (struct user *workuser, int ask)
 {
   if (ask)
     my_printf("\nVerify information for user: %s.\nAre you sure? (Y/N) -> ", workuser->name);
@@ -801,22 +800,15 @@ int ask;
   }
 }
 
-
-void
-show_verified(workuser)
-struct user *workuser;
+static void
+show_verified(struct user *workuser)
 {
   my_printf("\nReal name: %s\nAddress: %s\nCity: %s\nState: %s\nZIP: %s\nPhone: %s\nEmail: %s\n\n", workuser->A_real_name, workuser->A_addr1, workuser->A_city, workuser->A_state, workuser->A_zip, workuser->A_phone, workuser->A_mail);
 }
 
-
-
-void
-ooptions(tuser)
-register struct user *tuser;
+static void
+ooptions(struct user *tuser)
 {
-  register int answer;
-
 
   my_printf("\nMark yourself as a novice user? -> ");
   if (yesno (tuser->f_novice) != tuser->f_novice)
@@ -881,17 +873,12 @@ register struct user *tuser;
     tuser->f_revwho ^= 1;
     unlocks (SEM_USER);
   }
-
-
-
 }
 
-
-void
-foptions(tuser)
-register struct user *tuser;
+static void
+foptions(struct user *tuser)
 {
-  register int answer;
+  int answer;
 
   my_printf("\nMark user as having bad address information? -> ");
   if (yesno(tuser->f_badinfo) != tuser->f_badinfo)
@@ -1018,10 +1005,8 @@ register struct user *tuser;
   }
 }
 
-
-void
-xoptions(tuser)
-register struct user *tuser;
+static void
+xoptions(struct user *tuser)
 {
   my_printf("Options\n\nHave eXpress messages turned OFF when you first enter the BBS? -> ");
   if (yesno(tuser->f_xoff) != tuser->f_xoff)
@@ -1064,16 +1049,14 @@ register struct user *tuser;
 /*
  * Handles configuration of userlist for X message refusal/acceptance.
  */
-void
-userlist_config(tmpuser, chflag)
-register struct user *tmpuser;
-register int chflag;
+static void
+userlist_config(struct user *tmpuser, int chflag)
 {
-  register int c;
-  register int i, j;
-  register char *name, *tmpname;
-  register struct user *up = NULL;
-  register int which;
+  int c;
+  int i, j;
+  char *name, *tmpname;
+  struct user *up = NULL;
+  int which;
 
   clean_xconf(tmpuser);
   if (chflag && tmpuser->xconftime)
@@ -1151,6 +1134,7 @@ register int chflag;
 	{
 	  j = tmpuser->xconf[i].usernum;
 	  if (!j || (tmpname = getusername(j, 0)))
+          {
 	    if (!j || strcmp(name, tmpname) < 0)
 	    {
 	      for (j = NXCONF - 1; j > i; j--)
@@ -1168,12 +1152,13 @@ register int chflag;
 	      my_printf("\n%s is already in enable/disable list.\n", name);
 	      break;
 	    }
+          }
 	}
 
 	if (i == NXCONF)
 	{
 	  unlocks(SEM_USER);
-	  errlog("SNH %s %s", __FILE__, __LINE__);
+	  errlog("SNH %s %d", __FILE__, __LINE__);
 	}
       }
 
@@ -1213,11 +1198,9 @@ register int chflag;
 
 
 void
-dokey(up)
-struct user *up;
+dokey(struct user *up)
 {
-  char key[6], mykey[6];
-  register int i;
+  int i;
   
 
   if (up != ouruser)
@@ -1249,13 +1232,11 @@ struct user *up;
     errlog("Newbie list full");
 }
 
-
-
-struct user *
-change_user()
+static struct user *
+change_user(void)
 {
-  register struct user *tmpuser = NULL;
-  register char *name;
+  struct user *tmpuser = NULL;
+  char *name;
 
   if (!*profile_default)
     my_printf("\nUser -> ");
@@ -1290,7 +1271,7 @@ change_user()
 
 
 void
-change_doing()
+change_doing(void)
 {
 char doing[50];
 
@@ -1316,14 +1297,13 @@ char doing[50];
 
 
 void
-doingchange (char *doing)
+doingchange (const char *doing)
 {
-char *p;
 int size;
 int count;
 
   size = count = 0;
-  p = doing;
+  const char* p = doing;
   while (*p && count < 27)	/* 27 spaces in the wholist */
   {
     if (*p == '@' || *(p - 1) == '@')
@@ -1337,9 +1317,8 @@ int count;
 }
 
 
-void assignquickx (slot, tmpuser)
-int slot;
-struct user *tmpuser;
+static void
+assignquickx (int slot, struct user *tmpuser)
 {
 char *newname;
 struct user *olduser = NULL;
@@ -1378,12 +1357,10 @@ struct user *up = NULL;
   }
 }
 
-
-void
-do_bigzap (tmpuser)
-struct user *tmpuser;
+static void
+do_bigzap (struct user *tmpuser)
 {
-register int i;
+int i;
 int c;
 
 
@@ -1434,10 +1411,8 @@ int c;
   unlocks (SEM_USER);
 }
 
-
-void
-change_vanityflag (tmpuser)
-struct user *tmpuser;
+static void
+change_vanityflag (struct user *tmpuser)
 {
 char flag[50];
 
@@ -1456,7 +1431,8 @@ char flag[50];
   if (*flag)
   {
     locks (SEM_USER);
-    strncpy (tmpuser->vanityflag, flag, sizeof (tmpuser->vanityflag) - 1);
+    checked_snprintf(tmpuser->vanityflag,
+        sizeof (tmpuser->vanityflag), "%s", flag);
     unlocks (SEM_USER);
   }
 

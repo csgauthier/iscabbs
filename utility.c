@@ -3,12 +3,12 @@
 
 
 int
-openfiles()
+openfiles(void)
 {
- int size;
+ size_t size;
 
   size = sizeof(struct bigbtmp);
-  if (!(bigbtmp = (struct bigbtmp *)mymmap(TMPDATA, &size, 0)))
+  if (!(bigbtmp = (struct bigbtmp *)mmap_file(TMPDATA, &size)))
   {
     my_printf ("btmp\n");
     return(-1);
@@ -16,11 +16,11 @@ openfiles()
 
 #if 1
   size = MM_FILELEN;
-  if (!(msgstart = (unsigned char *)mymmap(MSGMAIN, &size, 0)))
+  if (!(msgstart = mmap_file(MSGMAIN, &size)))
 #else
   size = 0;
   /* Want to set msgsize or whatever to size */
-  if (!(msgstart = (unsigned char *)mymmap(MSGMAIN, &size, 0)))
+  if (!(msgstart = mmap_file(MSGMAIN, &size)))
 #endif
   {
     my_printf ("msgmain\n");
@@ -29,14 +29,14 @@ openfiles()
 /*  madvise((void *)msgstart, size, 0); */
 
   size = sizeof(struct msg);
-  if (!(msg = (struct msg *)mymmap(MSGDATA, &size, 0)))
+  if (!(msg = (struct msg *)mmap_file(MSGDATA, &size)))
   {
     my_printf ("msgdata\n");
     return(-1);
   }
 
   size = 0;
-  if (!(xmsg = (unsigned char *)mymmap(XMSGDATA, &size, 0)))
+  if (!(xmsg = mmap_file(XMSGDATA, &size)))
   {
     my_printf ("xmsgdata\n");
     return(-1);
@@ -45,7 +45,7 @@ openfiles()
 
 
   size = 0;
-  if (!(voteinfo = (struct voteinfo *) mymmap (VOTEFILE, &size, 0)))
+  if (!(voteinfo = (struct voteinfo *) mmap_file (VOTEFILE, &size)))
   {
     my_printf ("voteinfo problem\n");
     return -1;

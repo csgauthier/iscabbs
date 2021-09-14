@@ -2,12 +2,19 @@
 #include "defs.h"
 #include "ext.h"
 
+static void dontoption(int option, int x);
+static void dooption(int option, int x);
+static void send_do(int option, int init, int x);
+static void send_dont(int option, int init, int x);
+static void send_wont(int option, int init, int x);
+static void suboption(int x);
+static void willoption(int option, int x);
+static void wontoption(int option, int x);
 
 void
-qtelrcv(x)
-register int x;
+qtelrcv(int x)
 {
-	register unsigned char c;
+	unsigned char c;
 
 	while (q->qt[x].ncc > 0) {
 		if (q->qt[x].nfrontp - q->qt[x].nbackp > 9)
@@ -49,10 +56,12 @@ register int x;
 				return;
 			}
 			if (q->qt[x].login >= 0 && q->qt[x].login < 5 && !q->qt[x].initstate)
+                        {
 				if (c == 'L')
 					q->qt[x].login++;
 				else
 					q->qt[x].login = 0;
+                        }
 			if (q->qt[x].login >= 5)
 			{
 				dologin(c, x);
@@ -190,15 +199,12 @@ gotiac:			switch (c) {
 	}
 }
 
-
-	void
-send_do(option, init, x)
-	int option, init;
-	int x;
+static void
+send_do(int option, int init, int x)
 {
 	if (init) {
-		if (!q->qt[x].do_dont_resp[option] && his_state_is_will(option) ||
-		    his_want_state_is_will(option))
+		if ((!q->qt[x].do_dont_resp[option] && his_state_is_will(option))
+                    || his_want_state_is_will(option))
 			return;
 		set_his_want_state_will(option);
 		q->qt[x].do_dont_resp[option]++;
@@ -208,10 +214,8 @@ send_do(option, init, x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-	void
-willoption(option, x)
-	int option;
-	int x;
+static void
+willoption(int option, int x)
 {
 	if (option >= 64) {
 		send_dont(option, 0, x);
@@ -223,7 +227,9 @@ willoption(option, x)
 			q->qt[x].do_dont_resp[option]--;
 	}
 	if (!q->qt[x].do_dont_resp[option])
+        {
 	    if (his_want_state_is_wont(option))
+            {
 		if (option == TELOPT_NAWS || option == TELOPT_ENVIRON ||
 		    option == TELOPT_SGA) {
 			set_his_want_state_will(option);
@@ -232,20 +238,20 @@ willoption(option, x)
 			q->qt[x].do_dont_resp[option]++;
 			send_dont(option, 0, x);
 		}
+            }
 	    else
 		if (option == TELOPT_ECHO)
 			send_dont(option, 1, x);
+        }
 	set_his_state_will(option);
 }
 
-	void
-send_dont(option, init, x)
-	int option, init;
-	int x;
+static void
+send_dont(int option, int init, int x)
 {
 	if (init) {
-		if (!q->qt[x].do_dont_resp[option] && his_state_is_wont(option) ||
-		    his_want_state_is_wont(option))
+		if ((!q->qt[x].do_dont_resp[option] && his_state_is_wont(option))
+                    || his_want_state_is_wont(option))
 			return;
 		set_his_want_state_wont(option);
 		q->qt[x].do_dont_resp[option]++;
@@ -255,10 +261,8 @@ send_dont(option, init, x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-	void
-wontoption(option, x)
-	int option;
-	int x;
+static void
+wontoption(int option, int x)
 {
 	if (option >= 64)
 		return;
@@ -275,14 +279,12 @@ wontoption(option, x)
 	set_his_state_wont(option);
 }
 
-	void
-send_will(option, init, x)
-	int option, init;
-	int x;
+static void
+send_will(int option, int init, int x)
 {
 	if (init) {
-		if (!q->qt[x].will_wont_resp[option] && my_state_is_will(option) ||
-		    my_want_state_is_will(option))
+		if ((!q->qt[x].will_wont_resp[option] && my_state_is_will(option))
+                    || my_want_state_is_will(option))
 			return;
 		set_my_want_state_will(option);
 		q->qt[x].will_wont_resp[option]++;
@@ -292,10 +294,8 @@ send_will(option, init, x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-	void
-dooption(option, x)
-	int option;
-	int x;
+static void
+dooption(int option, int x)
 {
 	if (option >= 64) {
 		send_wont(option, 0, x);
@@ -307,6 +307,7 @@ dooption(option, x)
 			q->qt[x].will_wont_resp[option]--;
 	}
 	if (!q->qt[x].will_wont_resp[option] && my_want_state_is_wont(option))
+        {
 		if (option == TELOPT_SGA || option == TELOPT_ECHO) {
 			set_my_want_state_will(option);
 			send_will(option, 0, x);
@@ -314,17 +315,16 @@ dooption(option, x)
 			q->qt[x].will_wont_resp[option]++;
 			send_wont(option, 0, x);
 		}
+        }
 	set_my_state_will(option);
 }
 
-	void
-send_wont(option, init, x)
-	int option, init;
-	int x;
+static void
+send_wont(int option, int init, int x)
 {
 	if (init) {
-		if (!q->qt[x].will_wont_resp[option] && my_state_is_wont(option) ||
-		    my_want_state_is_wont(option))
+		if ((!q->qt[x].will_wont_resp[option] && my_state_is_wont(option))
+                    || my_want_state_is_wont(option))
 			return;
 		set_my_want_state_wont(option);
 		q->qt[x].will_wont_resp[option]++;
@@ -334,10 +334,8 @@ send_wont(option, init, x)
 	*q->qt[x].nfrontp++ = option;
 }
 
-	void
-dontoption(option, x)
-	int option;
-	int x;
+static void
+dontoption(int option, int x)
 {
 	if (option >= 64)
 		return;
@@ -358,12 +356,11 @@ dontoption(option, x)
 	set_my_state_wont(option);
 }
 
-	void
-suboption(x)
-	int x;
+static void
+suboption(int x)
 {
     char *cp, *varp, *valp;
-    register int c;
+    int c;
 
 
     switch (SB_GET()) {
@@ -423,11 +420,8 @@ suboption(x)
 
 
 void
-qinit(x)
-register int x;
+qinit(int x)
 {
-	register int i;
-
 	switch (q->qt[x].initstate) {
 		case T_INIT1:
 			send_do(TELOPT_ENVIRON, 1, x);
@@ -475,7 +469,7 @@ register int x;
 			if (his_will_wont_is_changing(TELOPT_NULL3))
 				return;
 
-			i = q->qt[x].nfrontp - q->qt[x].nbackp;
+			//i = q->qt[x].nfrontp - q->qt[x].nbackp;
 			if (his_do_dont_is_changing(TELOPT_SGA))
 				dooption(TELOPT_SGA, x);
 			if (his_do_dont_is_changing(TELOPT_ECHO))

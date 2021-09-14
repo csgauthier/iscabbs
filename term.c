@@ -1,11 +1,12 @@
 /*
  * term.c - Handles terminal I/O -- maybe eventually be removed.
  */
+#include <sys/ioctl.h>
 #include "defs.h"
 #include "ext.h"
 
 void
-termset()
+termset(void)
 {
 struct winsize mywin;
 
@@ -20,8 +21,8 @@ struct winsize mywin;
 }
 
 
-int
-askansi()
+void
+askansi(void)
 {
   my_printf ("\nAre you on an ANSI terminal? (Y/N) -> ");
   if (yesno (-1))

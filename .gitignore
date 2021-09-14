@@ -1,0 +1,8 @@
+*.[os]
+*.swo
+*.swp
+*~
+/tags
+/TAGS
+/bbs
+/setupbbs
