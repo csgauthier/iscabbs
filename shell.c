@@ -249,7 +249,7 @@ char myname[MAXALIAS + 1];
 	++ouruser->timescalled;
 
 	if (!guest)
-	  my_printf("This is call %d.  There are %d users.\n", ouruser->timescalled, (users-9) );
+	  my_printf("This is call %d.  There are %d users.\n", ouruser->timescalled, (users) );
         if (ouruser->f_aide)
            validate_users(0);
 
