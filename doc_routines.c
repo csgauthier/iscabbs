@@ -741,7 +741,7 @@ static char hname[MAXHOSTNAMELEN + 1];
 
     setutxent();
     while ((ut = getutxent()) != NULL)
-      if (  !strcmp (hname, ut->ut_line) 
+      if (  !strncmp (hname, ut->ut_line, sizeof(ut->ut_line))
             && ut->ut_pid == pid && *ut->ut_host  )
       {
         checked_snprintf(hname, sizeof(hname), "%s", ut->ut_host);
