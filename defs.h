@@ -8,6 +8,10 @@
 #define _POSIX_C_SOURCE 200809L  // enables strdup, popen, etc.
 #endif
 
+#if !defined(_GNU_SOURCE)
+#define _GNU_SOURCE
+#endif
+
 #if !defined(_DEFAULT_SOURCE)
 #define _DEFAULT_SOURCE // enables nice, caddr_t.
 #endif

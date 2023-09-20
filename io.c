@@ -1,5 +1,5 @@
 /* Routines for character input and output to the BBS */
-
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -30,27 +30,30 @@ my_printf (const char *fmt, ...)
     return r;
 }
 
-char*
-my_vsprintf (char* prefix, const char *fmt, va_list ap)
+char   *
+my_vsprintf (char *prefix, const char *fmt, va_list ap)
 {
-    // call once to get buffer size
-    // We need to 'va_copy'` here because we can't restart it.
-    va_list tmpArgs;
-    va_copy(tmpArgs, ap);
-    int n = vsnprintf (NULL, 0, fmt, tmpArgs);
-    va_end (tmpArgs);
-    if (n <= 0)
-        return calloc(1,sizeof(char)); // TODO: handle err.
+    // let vasprintf do all the work for us.
+    char   *buf = NULL;
+    int     n = vasprintf (&buf, fmt, ap);
 
-    if (prefix)
-        n += strlen(prefix);
+    if (n < 0 || buf == NULL) {
+        return strdup ("");
+    }
+    if (prefix == NULL) {
+        return buf;
+    }
 
-    // alloc buffer and call again
-    char * buf = (char*) calloc(n+1, sizeof(char));
-    vsnprintf (buf, n+1, fmt, ap);
-    if (prefix)
-        free(prefix);
-    return buf;
+    // concat the prefix and buf.
+    char   *result = NULL;
+
+    n = asprintf (&result, "%s%s", prefix, buf);
+    free (prefix);
+    free(buf);
+    if (n < 0 || result == NULL) {
+        return strdup ("");
+    }
+    return result;
 }
 
 char*
